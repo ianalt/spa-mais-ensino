@@ -40,11 +40,11 @@ declare module "@mui/material/styles" {
 export const theme = createTheme({
   palette: {
     primary: {
-      main: "#FF7900",
-      darker: "#e86f02",
+      main: "#39C0BA",
+      darker: "#39C0BA",
     },
     secondary: {
-      main: "#028BCA",
+      main: "#F35B69",
     },
     action: {
       selected: "#F5F5F5",
@@ -94,7 +94,7 @@ export const theme = createTheme({
       styleOverrides: {
         colorSecondary: {
           "&$checked": {
-            color: "#FF7900",
+            color: "#39C0BA",
           },
         },
       },
@@ -103,7 +103,7 @@ export const theme = createTheme({
       styleOverrides: {
         colorSecondary: {
           "&$checked": {
-            color: "#FF7900",
+            color: "#39C0BA",
           },
         },
       },

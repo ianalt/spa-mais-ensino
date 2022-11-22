@@ -65,7 +65,7 @@ const WelcomeAppBar = () => {
           >
             <IconButton
               size="large"
-              aria-label="account of current user"
+              aria-label="menu icon"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}

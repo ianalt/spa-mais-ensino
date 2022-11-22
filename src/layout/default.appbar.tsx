@@ -1,21 +1,20 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
+import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 import { Link, useMatch, useResolvedPath } from "react-router-dom";
 
-import { useAppSelector, useAppDispatch } from "../app/hooks";
-import { selectUser, logout } from "../user/userSlice";
 import type { LinkProps } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { logout, selectUser } from "../user/userSlice";
 
 function CustomLink({ children, to, ...props }: LinkProps) {
   let resolved = useResolvedPath(to);
@@ -43,18 +42,6 @@ const navigation = [
     link: "/",
     title: "Home",
   },
-  // {
-  //   link: "/assessments",
-  //   title: "Assessments",
-  // },
-  // {
-  //   link: "/faq",
-  //   title: "FAQ",
-  // },
-  // {
-  //   link: "/manage",
-  //   title: "Manage",
-  // },
 ];
 
 const pages = ["Home"];
@@ -102,7 +89,7 @@ export const DefaultAppBar = () => {
             sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
             variant="square"
           >
-            <img src="/Small_Logo_RGB.svg" alt="OBS Small Logo" />
+            <img src="/Small_Logo_RGB.svg" alt="+Ensino Small Logo" />
           </Avatar>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -170,10 +157,7 @@ export const DefaultAppBar = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar
-                  alt={user.name || "Avatar"}
-                  src="/static/images/avatar/2.jpg"
-                />
+                <Avatar src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu

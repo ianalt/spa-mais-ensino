@@ -9,7 +9,7 @@ import { Outlet } from "react-router-dom";
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="text.secondary">
+    <Typography variant="body2" color="text.secondary" textAlign={"center"}>
       Copyright ©{" "}
       <strong>
         Ian Alt de Oliveira - Universidade Católica de Petrópolis{" "}
@@ -28,8 +28,12 @@ export const DefaultLayout = () => {
         minHeight: "100vh",
       }}
     >
-      {/* <DefaultAppBar /> */}
-      <Container component="main" sx={{ mt: 2, mb: 2 }} maxWidth="xl">
+      <Container
+        component="main"
+        sx={{ mt: 2, mb: 2 }}
+        maxWidth="xl"
+        disableGutters
+      >
         <Outlet />
       </Container>
       <Box

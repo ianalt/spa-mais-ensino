@@ -1,50 +1,45 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../app/store';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "../app/store";
 
-export interface UserBase {
+export interface BasicUserInfo {
   id: number;
-  name: string;
-  level: 'user' | 'admin';
+  email: string;
+  role: "aluno" | "monitor" | "professor" | "admin";
 }
 
-export interface UserState extends UserBase {
+export interface UserState extends BasicUserInfo {
   loggedIn: boolean;
 }
 
 const initialState: UserState = {
-  id: 1,
-  name: 'Ian Alt',
-  level: 'user',
+  id: 0,
+  email: "",
+  role: "aluno",
   loggedIn: false,
 };
 
 export const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    login: (state, action: PayloadAction<UserBase>) => {
-      const { id, name, level } = action.payload;
-      state.name = name;
+    login: (state, action: PayloadAction<BasicUserInfo>) => {
+      const { id, email, role } = action.payload;
       state.id = id;
-      state.level = level;
+      state.email = email;
+      state.role = role;
       state.loggedIn = true;
     },
-    incrementId: (state, action: PayloadAction<number>) => {
-      state.id = state.id + action.payload;
-    },
     logout: (state) => {
-      state.name = initialState.name;
       state.id = initialState.id;
-      state.level = initialState.level;
+      state.email = initialState.email;
+      state.role = initialState.role;
       state.loggedIn = initialState.loggedIn;
-
-      // navigate('/login');
     },
   },
 });
 
-export const { login, logout, incrementId } = userSlice.actions;
+export const { login, logout } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 

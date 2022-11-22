@@ -1,63 +1,93 @@
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { selectUser } from "./user/userSlice";
-import { useAppSelector } from "./app/hooks";
-import { DefaultLayout } from "./layout/default.layout";
-import { BlankLayout } from "./layout/blank.layout";
-import { Counter } from "./features/counter/Counter";
-import WelcomePage from "./features/welcome/WelcomePage";
+import isBefore from "date-fns/isBefore";
+import jwt_decode from "jwt-decode";
+import {
+  Location,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { Login } from "./features/login";
 import NotFoundPage from "./features/not-found/NotFoundPage";
+import WelcomePage from "./features/welcome/WelcomePage";
+import { DefaultLayout } from "./layout/default.layout";
+import WelcomeAppBar from "./layout/welcome.appbar";
+import { login as reduxLogin, selectUser } from "./user/userSlice";
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* //TODO Sign In Page */}
-      {/* <Route element={<WelcomePage />} path="/login" /> */}
-      <Route element={<WelcomePage />} path="/" />
+      <Route
+        element={
+          <CheckLogin>
+            <Login />
+          </CheckLogin>
+        }
+        path="/login"
+      />
 
-      {/* <Route
+      <Route
         element={
           <RequireAuth>
             <DefaultLayout />
           </RequireAuth>
         }
         path="/"
-      > */}
-      {/* <Route index element={<HomePage />} />
-        <Route element={<Assessments />} path="/assessments" />
-        <Route element={<Faq />} path="/faq" />
-        <Route element={<Manage />} path="/manage" />
-        <Route element={<DefaultLayout />} path="/default" /> */}
-      {/* </Route> */}
-
-      {/* <Route
-        element={
-          <RequireAuth>
-            <BlankLayout />
-          </RequireAuth>
-        }
-        path="/evaluation"
       >
-        <Route index element={<Evaluation />} />
-        <Route element={<EvaluationDo />} path="/evaluation/do" />
-        <Route element={<EvaluationResults />} path="/evaluation/results" />
+        <Route path="/" element={<WelcomePage />}></Route>
       </Route>
 
-       */}
       <Route path="*" element={<NotFoundPage />}></Route>
-      {/* <Route element={<Layout />}>
-        <Route path="/" element={<PublicPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/protected"
-          element={
-            <RequireAuth>
-              <ProtectedPage />
-            </RequireAuth>
-          }
-        />
-      </Route> */}
     </Routes>
   );
+};
+
+const CheckLogin = ({ children }: { children: JSX.Element }) => {
+  let location: Location = useLocation();
+
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
+  let [searchParams] = useSearchParams();
+
+  if (user.loggedIn)
+    return (
+      <Navigate
+        to={searchParams.get("redirect") || "/"}
+        state={{ from: location }}
+        replace
+      />
+    );
+
+  const sdnToken = localStorage.getItem(process.env.REACT_APP_TOKEN_NAME!);
+
+  if (sdnToken) {
+    try {
+      const { exp, sub, email }: { exp: number; sub: number; email: string } =
+        jwt_decode(sdnToken);
+      const currentDate = new Date();
+      const expDate = new Date(exp * 1000);
+
+      if (isBefore(currentDate, expDate)) {
+        dispatch(
+          reduxLogin({
+            id: sub,
+            role: "aluno",
+            email: email,
+          })
+        );
+      } else {
+        localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
+        return <Navigate to="/login" state={{ from: location }} replace />;
+      }
+    } catch (e) {
+      localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
+      return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+  }
+
+  return children;
 };
 
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -65,11 +95,13 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   let location = useLocation();
 
   if (!user.loggedIn) {
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to when they were redirected. This allows us to send them
-    // along to that page after they login, which is a nicer user experience
-    // than dropping them off on the home page.
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return (
+      <Navigate
+        to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
+        state={{ from: location }}
+        replace
+      />
+    );
   }
 
   return children;
