@@ -54,9 +54,9 @@ export const DefaultAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  // const handleLogout = () => {
-  //   dispatch(logout());
-  // };
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   const handleOpenNavMenu = (event: any) => {
     setAnchorElNav(event.currentTarget);

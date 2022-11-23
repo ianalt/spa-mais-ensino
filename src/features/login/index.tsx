@@ -159,7 +159,8 @@ export const Login = () => {
                       align="center"
                     >
                       {"Copyright © "}
-                      Ian Alt de Oliveira {new Date().getFullYear()}
+                      Ian Alt de Oliveira - Universidade Católica de Petrópolis{" "}
+                      {new Date().getFullYear()}
                       {"."}
                     </Typography>
                   </Box>
@@ -173,8 +174,8 @@ export const Login = () => {
                   height="100%"
                 >
                   <img
-                    src={"/Small_Logo_RGB.svg"}
-                    alt="Exam"
+                    src="#"
+                    alt="Jovem sentada na cadeira enquanto olha para o notebook."
                     style={{ maxWidth: "100%", maxHeight: "250px" }}
                   />
                 </Box>
