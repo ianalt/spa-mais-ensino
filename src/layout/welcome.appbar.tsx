@@ -13,7 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 
-const pages = ["Cadastrar-se", "Login"];
+const pages = ["Cadastrar-se", "Entrar"];
 
 const WelcomeAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -24,7 +24,9 @@ const WelcomeAppBar = () => {
     setAnchorElNav(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+
     setAnchorElNav(null);
   };
 
@@ -49,7 +51,7 @@ const WelcomeAppBar = () => {
               mr: 2,
               display: { xs: "none", md: "flex" },
               fontWeight: 700,
-              letterSpacing: ".3rem",
+              letterSpacing: ".2rem",
               color: "white",
               textDecoration: "none",
             }}
@@ -97,6 +99,7 @@ const WelcomeAppBar = () => {
               ))}
             </Menu>
           </Box>
+
           <MenuBookOutlinedIcon
             sx={{
               display: { xs: "flex", md: "none" },
@@ -115,13 +118,14 @@ const WelcomeAppBar = () => {
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
               fontWeight: 700,
-              letterSpacing: ".3rem",
+              letterSpacing: ".2rem",
               color: "white",
               textDecoration: "none",
             }}
           >
             +ENSINO
           </Typography>
+
           <Box
             sx={{
               flexGrow: 1,

@@ -19,6 +19,10 @@ import { login as reduxLogin, selectUser } from "./user/userSlice";
 export const AppRoutes = () => {
   return (
     <Routes>
+      <Route element={<DefaultLayout />}>
+        <Route path="/" element={<WelcomePage />}></Route>
+      </Route>
+
       <Route
         element={
           <CheckLogin>
@@ -27,17 +31,6 @@ export const AppRoutes = () => {
         }
         path="/login"
       />
-
-      <Route
-        element={
-          <RequireAuth>
-            <DefaultLayout />
-          </RequireAuth>
-        }
-        path="/"
-      >
-        <Route path="/" element={<WelcomePage />}></Route>
-      </Route>
 
       <Route path="*" element={<NotFoundPage />}></Route>
     </Routes>

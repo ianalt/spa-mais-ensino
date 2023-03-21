@@ -15,9 +15,9 @@ export default function KnowledgeAreaCard({
   description,
 }: KnowledgeAreaCardProps) {
   return (
-    <Card sx={{ maxWidth: 345 }} elevation={4}>
+    <Card sx={{ maxWidth: 350, minHeight: 350, maxHeight: 350 }} elevation={4}>
       <CardActionArea>
-        <CardMedia component="img" height="140" image="#" alt={title} />
+        <CardMedia component="img" height="150" image="#" alt={title} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {title}
