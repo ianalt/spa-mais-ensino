@@ -30,7 +30,7 @@ export const AppRoutes = () => {
           </CheckLogin>
         }
         path="/login"
-      />
+      ></Route>
 
       <Route path="*" element={<NotFoundPage />}></Route>
     </Routes>
@@ -72,11 +72,11 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
         );
       } else {
         localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/" state={{ from: location }} replace />;
       }
     } catch (e) {
       localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
-      return <Navigate to="/login" state={{ from: location }} replace />;
+      return <Navigate to="/" state={{ from: location }} replace />;
     }
   }
 
@@ -87,14 +87,8 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const user = useAppSelector(selectUser);
   let location = useLocation();
 
-  if (!user.loggedIn) {
-    return (
-      <Navigate
-        to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
-        state={{ from: location }}
-        replace
-      />
-    );
+  if (!user.loggedIn || user.role === "usuario") {
+    return <Navigate to={`/`} state={{ from: location }} replace />;
   }
 
   return children;

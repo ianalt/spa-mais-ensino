@@ -4,7 +4,7 @@ import { RootState } from "../app/store";
 export interface BasicUserInfo {
   id: number;
   email: string;
-  role: "aluno" | "monitor" | "professor" | "admin";
+  role: "usuario" | "aluno" | "monitor" | "professor" | "admin";
 }
 
 export interface UserState extends BasicUserInfo {
@@ -14,7 +14,7 @@ export interface UserState extends BasicUserInfo {
 const initialState: UserState = {
   id: 0,
   email: "",
-  role: "aluno",
+  role: "usuario",
   loggedIn: false,
 };
 

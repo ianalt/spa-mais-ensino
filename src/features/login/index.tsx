@@ -77,8 +77,16 @@ export const Login = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Grid container spacing={2}>
+    <Container maxWidth="lg" sx={{ border: "1px solid red" }}>
+      <Grid
+        container
+        spacing={2}
+        width="100%"
+        height="100%"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ border: "1px solid red" }}
+      >
         <Grid item xs={12}>
           <Paper sx={{ mt: 4 }}>
             <Grid container spacing={2}>
@@ -106,16 +114,15 @@ export const Login = () => {
                   )}
                   <form noValidate onSubmit={submitData}>
                     <TextField
+                      id="email"
                       margin="normal"
                       required
                       fullWidth
-                      id="email"
                       label="E-mail"
                       name="email"
                       autoFocus
                       value={email}
                       variant="outlined"
-                      InputLabelProps={{ shrink: true }}
                       placeholder="Digite seu e-mail..."
                       onChange={(e) => setEmail(e.target.value)}
                       error={checkFieldErrors(fieldErrors, "email") !== ""}
@@ -123,16 +130,15 @@ export const Login = () => {
                       disabled={loading}
                     />
                     <TextField
+                      id="password"
                       margin="normal"
                       required
                       fullWidth
                       name="password"
                       label="Senha"
                       type="password"
-                      id="password"
                       autoComplete="current-password"
                       variant="outlined"
-                      InputLabelProps={{ shrink: true }}
                       placeholder="Digite sua senha..."
                       onChange={(e) => setPassword(e.target.value)}
                       value={password}
@@ -152,6 +158,15 @@ export const Login = () => {
                       Login
                     </Button>
                   </form>
+                  <Box mt={4}>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      align="center"
+                    >
+                      Não se cadastrou? Cria sua conta clicando aqui.
+                    </Typography>
+                  </Box>
                   <Box mt={4}>
                     <Typography
                       variant="body2"

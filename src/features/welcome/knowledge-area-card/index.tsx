@@ -6,24 +6,30 @@ import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 
 interface KnowledgeAreaCardProps {
-  title: string;
-  description: string;
+  name: string;
 }
 
-export default function KnowledgeAreaCard({
-  title,
-  description,
-}: KnowledgeAreaCardProps) {
+export default function KnowledgeAreaCard({ name }: KnowledgeAreaCardProps) {
   return (
-    <Card sx={{ maxWidth: 350, minHeight: 350, maxHeight: 350 }} elevation={4}>
+    <Card
+      sx={{ maxWidth: 350, minWidth: 250, minHeight: 250, maxHeight: 250 }}
+      elevation={4}
+    >
       <CardActionArea>
-        <CardMedia component="img" height="150" image="#" alt={title} />
+        <CardMedia
+          component="img"
+          height="150"
+          image="images/undraw_road_to_knowledge_m8s0.png"
+          alt={name}
+        />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {description}
+          <Typography
+            gutterBottom
+            variant="h6"
+            component="div"
+            justifyContent="center"
+          >
+            {name}
           </Typography>
         </CardContent>
       </CardActionArea>
