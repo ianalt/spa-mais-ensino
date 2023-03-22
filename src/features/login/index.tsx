@@ -77,7 +77,7 @@ export const Login = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ border: "1px solid red" }}>
+    <Container maxWidth="lg">
       <Grid
         container
         spacing={2}
@@ -85,7 +85,6 @@ export const Login = () => {
         height="100%"
         justifyContent="center"
         alignItems="center"
-        sx={{ border: "1px solid red" }}
       >
         <Grid item xs={12}>
           <Paper sx={{ mt: 4 }}>
