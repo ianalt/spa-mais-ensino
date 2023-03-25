@@ -4,6 +4,7 @@ import {
   Container,
   Grid,
   LinearProgress,
+  Link,
   Paper,
   TextField,
   Typography,
@@ -28,6 +29,7 @@ export const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  //TODO review login
   const submitData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -49,15 +51,17 @@ export const Login = () => {
       setLoading(true);
       const req = await login(email, password);
 
-      const decodedToken: { id: number; email: string } = jwt_decode(
-        req.data.access_token
-      );
+      const decodedToken: {
+        email: string;
+        sub: number;
+        role: "usuario" | "aluno" | "monitor" | "professor" | "admin";
+      } = jwt_decode(req.data.access_token);
 
       dispatch(
         reduxLogin({
-          id: decodedToken.id,
+          id: decodedToken.sub,
           email: decodedToken.email,
-          role: "aluno",
+          role: decodedToken.role,
         })
       );
 
@@ -66,7 +70,7 @@ export const Login = () => {
         req.data.access_token
       );
 
-      navigate("/");
+      navigate("/a");
     } catch (e: any) {
       if (e.isAxiosError) {
         setRequestError(e.response.data.message);
@@ -78,14 +82,7 @@ export const Login = () => {
 
   return (
     <Container maxWidth="lg">
-      <Grid
-        container
-        spacing={2}
-        width="100%"
-        height="100%"
-        justifyContent="center"
-        alignItems="center"
-      >
+      <Grid container spacing={2} justifyContent="center" alignItems="center">
         <Grid item xs={12}>
           <Paper sx={{ mt: 4 }}>
             <Grid container spacing={2}>
@@ -128,6 +125,7 @@ export const Login = () => {
                       helperText={checkFieldErrors(fieldErrors, "email")}
                       disabled={loading}
                     />
+                    {JSON.stringify(email)}
                     <TextField
                       id="password"
                       margin="normal"
@@ -145,6 +143,7 @@ export const Login = () => {
                       helperText={checkFieldErrors(fieldErrors, "password")}
                       disabled={loading}
                     />
+                    {JSON.stringify(password)}
 
                     <Button
                       type="submit"
@@ -154,7 +153,7 @@ export const Login = () => {
                       color="primary"
                       disabled={loading}
                     >
-                      Login
+                      Entrar
                     </Button>
                   </form>
                   <Box mt={4}>
@@ -163,7 +162,8 @@ export const Login = () => {
                       color="textSecondary"
                       align="center"
                     >
-                      Não se cadastrou? Cria sua conta clicando aqui.
+                      Não se cadastrou? Crie sua conta clicando{" "}
+                      <Link onClick={() => navigate("/cadastro")}>aqui</Link>.
                     </Typography>
                   </Box>
                   <Box mt={4}>

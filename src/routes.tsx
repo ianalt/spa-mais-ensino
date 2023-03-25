@@ -13,7 +13,6 @@ import { Login } from "./features/login";
 import NotFoundPage from "./features/not-found/NotFoundPage";
 import WelcomePage from "./features/welcome/WelcomePage";
 import { DefaultLayout } from "./layout/default.layout";
-import WelcomeAppBar from "./layout/welcome.appbar";
 import { login as reduxLogin, selectUser } from "./user/userSlice";
 
 export const AppRoutes = () => {

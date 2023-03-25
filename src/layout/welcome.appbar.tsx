@@ -12,13 +12,29 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
+import { useNavigate } from "react-router-dom";
 
 const pages = ["Cadastrar-se", "Entrar"];
 
 const WelcomeAppBar = () => {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
+
+  const handlePageNavigation = (page: string) => {
+    switch (page) {
+      case "Entrar":
+        navigate("/login");
+        break;
+      case "Cadastrar-se":
+        navigate("/cadastro");
+        break;
+      default:
+        navigate("*");
+        break;
+    }
+  };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -93,7 +109,12 @@ const WelcomeAppBar = () => {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem
+                  key={page}
+                  onClick={() => {
+                    handlePageNavigation(page);
+                  }}
+                >
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -136,7 +157,9 @@ const WelcomeAppBar = () => {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={() => {
+                  handlePageNavigation(page);
+                }}
                 sx={{
                   m: 2,
                   color: "white",

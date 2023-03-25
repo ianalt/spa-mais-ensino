@@ -10,11 +10,14 @@ import {
   selectKnowledgeAreas,
 } from "../../slices/knowledgeAreasSlice";
 // import { knowledgeAreas } from "../../utils/constants";
-import KnowledgeAreaCard from "./knowledge-area-card";
+import { Link } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
+import KnowledgeAreaCard from "./knowledge-area-card";
+import { useNavigate } from "react-router-dom";
 
 export default function WelcomePage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const knowledgeAreas = useAppSelector(selectKnowledgeAreas);
 
   useEffect(() => {
@@ -198,7 +201,7 @@ export default function WelcomePage() {
           item
           container
           xs={12}
-          justifyContent={{ xs: "center", md: "space-evenly" }}
+          justifyContent={{ xs: "space-evenly" }}
           mb={5}
         >
           {knowledgeAreas.list.map((knowledgeArea) => {
@@ -214,6 +217,85 @@ export default function WelcomePage() {
               </Grid>
             );
           })}
+        </Grid>
+
+        <Grid
+          item
+          container
+          xs={12}
+          my={5}
+          justifyContent="space-between"
+          alignContent="center"
+        >
+          <Grid item container xs={12} md={6.5} mb={{ xs: 3, md: 0 }}>
+            <Paper
+              elevation={4}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Grid item container xs={12}>
+                <Grid item container xs={12}>
+                  <Grid item xs={12} px={2} my={1}>
+                    <Typography
+                      variant="h4"
+                      textAlign={{ xs: "center", md: "left" }}
+                    >
+                      <strong>Dúvidas sobre algum conteúdo?</strong>
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} px={2} mb={1}>
+                    <Typography
+                      variant="h5"
+                      textAlign={{ xs: "center", md: "left" }}
+                    >
+                      Nós te ajudamos, basta publicá-la!
+                    </Typography>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={12} px={2} mt={1} mb={2}>
+                  <Typography
+                    variant="body1"
+                    textAlign={{ xs: "center", md: "left" }}
+                  >
+                    Com a <strong>sessão de comentários</strong> em cada aula
+                    das disciplinas, <strong>professores</strong> e{" "}
+                    <strong>monitores</strong> do <strong>+Ensino</strong> se
+                    responsabilizam não apenas a criarem o conteúdo que você irá
+                    consumir, como também a{" "}
+                    <strong>sanarem suas dúvidas</strong>.
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={5}>
+            <Paper elevation={4}>
+              <img
+                src="images/undraw_road_to_knowledge_m8s0.png"
+                alt="Imagem"
+                height="350"
+                width="100%"
+              />
+            </Paper>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Typography variant="h4" textAlign={"center"} my={3}>
+            <strong>O conhecimento é um direito seu e de todos!</strong>
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Typography variant="h5" textAlign={"center"}>
+            <Link href="#">Cadastre-se</Link> e tenha acesso ao que sempre foi
+            um direito seu!
+          </Typography>
         </Grid>
       </Grid>
     </Box>
