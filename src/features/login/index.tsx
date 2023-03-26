@@ -29,7 +29,10 @@ export const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  //TODO review login
+  const checkFieldEmptiness = (field: string) => {
+    return validator.isEmpty(field, { ignore_whitespace: true });
+  };
+
   const submitData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -38,9 +41,9 @@ export const Login = () => {
 
     let fieldErrors: FieldErrors[] = [];
 
-    if (validator.isEmpty(email, { ignore_whitespace: true }))
+    if (checkFieldEmptiness(email))
       fieldErrors.push({ field: "email", message: "Insira um e-mail válido." });
-    if (validator.isEmpty(password, { ignore_whitespace: true }))
+    if (checkFieldEmptiness(password))
       fieldErrors.push({
         field: "password",
         message: "Insira uma senha válida.",
@@ -49,13 +52,13 @@ export const Login = () => {
 
     try {
       setLoading(true);
-      const req = await login(email, password);
+      const res = await login(email, password);
 
       const decodedToken: {
         email: string;
         sub: number;
         role: "usuario" | "aluno" | "monitor" | "professor" | "admin";
-      } = jwt_decode(req.data.access_token);
+      } = jwt_decode(res.data.access_token);
 
       dispatch(
         reduxLogin({
@@ -67,7 +70,7 @@ export const Login = () => {
 
       localStorage.setItem(
         process.env.REACT_APP_TOKEN_NAME!,
-        req.data.access_token
+        res.data.access_token
       );
 
       navigate("/a");
@@ -125,7 +128,7 @@ export const Login = () => {
                       helperText={checkFieldErrors(fieldErrors, "email")}
                       disabled={loading}
                     />
-                    {JSON.stringify(email)}
+
                     <TextField
                       id="password"
                       margin="normal"
@@ -143,7 +146,6 @@ export const Login = () => {
                       helperText={checkFieldErrors(fieldErrors, "password")}
                       disabled={loading}
                     />
-                    {JSON.stringify(password)}
 
                     <Button
                       type="submit"
@@ -188,7 +190,7 @@ export const Login = () => {
                   height="100%"
                 >
                   <img
-                    src="#"
+                    src="/undraw_online_learning_re_qw08.svg"
                     alt="Jovem sentada na cadeira enquanto olha para o notebook."
                     style={{ maxWidth: "100%", maxHeight: "250px" }}
                   />

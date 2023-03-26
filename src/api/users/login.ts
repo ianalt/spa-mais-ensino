@@ -5,7 +5,7 @@ export const login = async (
   email: string,
   password: string
 ): Promise<AxiosResponse> => {
-  const req = await instance.post(`/auth`, { email, password });
+  const res = await instance.post(`/auth`, { email, password });
 
-  return req;
+  return res;
 };

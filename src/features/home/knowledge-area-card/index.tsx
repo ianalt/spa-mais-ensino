@@ -13,13 +13,13 @@ export default function KnowledgeAreaCard({ name }: KnowledgeAreaCardProps) {
     <Button>
       <Card
         sx={{ maxWidth: 350, minWidth: 250, minHeight: 250, maxHeight: 250 }}
-        elevation={4}
+        elevation={2}
       >
         <CardActionArea>
           <CardMedia
             component="img"
             height="150"
-            image="images/undraw_road_to_knowledge_m8s0.png"
+            image="/undraw_educator_re_ju47.svg"
             alt={name}
           />
           <CardContent>

@@ -22,6 +22,7 @@ export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    //TODO LOGIN HERE
     login: (state, action: PayloadAction<BasicUserInfo>) => {
       const { id, email, role } = action.payload;
       state.id = id;

@@ -9,13 +9,12 @@ import {
   getKnowledgeAreasWelcome,
   selectKnowledgeAreas,
 } from "../../slices/knowledgeAreasSlice";
-// import { knowledgeAreas } from "../../utils/constants";
 import { Link } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
-import KnowledgeAreaCard from "./knowledge-area-card";
 import { useNavigate } from "react-router-dom";
+import KnowledgeAreaCard from "./knowledge-area-card";
 
-export default function WelcomePage() {
+export default function HomePage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const knowledgeAreas = useAppSelector(selectKnowledgeAreas);
@@ -45,20 +44,18 @@ export default function WelcomePage() {
       <Grid container justifyContent={{ md: "center" }} px={{ xs: 2 }}>
         <Grid item container xs={12} my={5} justifyContent="space-between">
           <Grid item xs={12} md={5} mb={{ xs: 3, md: 0 }}>
-            <Paper elevation={4}>
-              <img
-                src="images/undraw_road_to_knowledge_m8s0.png"
-                alt="Imagem"
-                height="350"
-                width="100%"
-              />
-            </Paper>
+            <img
+              src="/undraw_education_f8ru.svg"
+              alt="Imagem"
+              height="350"
+              width="100%"
+            />
           </Grid>
 
           <Grid item container xs={12} md={6.5}>
             <Paper
               component={"div"}
-              elevation={4}
+              elevation={2}
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -123,7 +120,7 @@ export default function WelcomePage() {
         >
           <Grid item container xs={12} md={6.5} mb={{ xs: 3, md: 0 }}>
             <Paper
-              elevation={4}
+              elevation={2}
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -179,14 +176,12 @@ export default function WelcomePage() {
           </Grid>
 
           <Grid item xs={12} md={5}>
-            <Paper elevation={4}>
-              <img
-                src="images/undraw_road_to_knowledge_m8s0.png"
-                alt="Imagem"
-                height="350"
-                width="100%"
-              />
-            </Paper>
+            <img
+              src="/undraw_learning_re_32qv.svg"
+              alt="Imagem"
+              height="350"
+              width="100%"
+            />
           </Grid>
         </Grid>
 
@@ -229,7 +224,7 @@ export default function WelcomePage() {
         >
           <Grid item container xs={12} md={6.5} mb={{ xs: 3, md: 0 }}>
             <Paper
-              elevation={4}
+              elevation={2}
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -274,27 +269,24 @@ export default function WelcomePage() {
           </Grid>
 
           <Grid item xs={12} md={5}>
-            <Paper elevation={4}>
-              <img
-                src="images/undraw_road_to_knowledge_m8s0.png"
-                alt="Imagem"
-                height="350"
-                width="100%"
-              />
-            </Paper>
+            <img
+              src="/undraw_instant_support_re_s7un.svg"
+              alt="Imagem"
+              height="350"
+              width="100%"
+            />
           </Grid>
         </Grid>
 
         <Grid item xs={12}>
           <Typography variant="h4" textAlign={"center"} my={3}>
-            <strong>O conhecimento é um direito seu e de todos!</strong>
+            <strong>O conhecimento é um direito seu e de todos.</strong>
           </Typography>
         </Grid>
 
         <Grid item xs={12}>
           <Typography variant="h5" textAlign={"center"}>
-            <Link href="#">Cadastre-se</Link> e tenha acesso ao que sempre foi
-            um direito seu!
+            <Link href="#">Cadastre-se</Link> para ter acesso ao conteúdo.
           </Typography>
         </Grid>
       </Grid>
