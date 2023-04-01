@@ -10,11 +10,13 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { Link, useMatch, useResolvedPath } from "react-router-dom";
+import { Link, useMatch, useNavigate, useResolvedPath } from "react-router-dom";
+import SearchIcon from "@mui/icons-material/Search";
 
 import type { LinkProps } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout, selectUser } from "../user/userSlice";
+import { alpha, InputBase, styled, TextField } from "@mui/material";
 
 function CustomLink({ children, to, ...props }: LinkProps) {
   let resolved = useResolvedPath(to);
@@ -39,23 +41,90 @@ function CustomLink({ children, to, ...props }: LinkProps) {
 
 const navigation = [
   {
-    link: "/",
-    title: "Home",
+    link: "/mais-ensino",
+    title: "Início",
+  },
+  {
+    link: "/mais-ensino/disciplinas",
+    title: "Disciplinas",
+  },
+  {
+    link: "/mais-ensino/comentarios",
+    title: "Comentários",
+  },
+  {
+    link: "/mais-ensino/relatorios",
+    title: "Relatórios",
+  },
+  {
+    link: "/mais-ensino/gerenciamento",
+    title: "Gerenciamento",
   },
 ];
 
-const pages = ["Home"];
-const settings = ["Settings", "Logout"];
+const pages = [
+  "Início",
+  "Áreas de Conhecimento",
+  "Disciplinas",
+  "Comentários",
+  "Relatórios",
+];
+const settings = ["Configurações", "Sair"];
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(1),
+    width: "auto",
+  },
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: "inherit",
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
+      },
+    },
+  },
+}));
 
 export const DefaultAppBar = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
+    navigate("/");
   };
 
   const handleOpenNavMenu = (event: any) => {
@@ -65,14 +134,21 @@ export const DefaultAppBar = () => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (action = "") => {
+    switch (action) {
+      case "Sair":
+        handleLogout();
+        break;
+      default:
+        break;
+    }
     setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = (action = "") => {
     switch (action) {
-      case "Logout":
-        dispatch(logout());
+      case "Sair":
+        handleLogout();
         break;
       default:
         break;
@@ -85,21 +161,27 @@ export const DefaultAppBar = () => {
     <AppBar position="static" sx={{ bgcolor: "brandBlack.main" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Avatar
-            sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
-            variant="square"
+          <Typography
+            variant="h5"
+            noWrap
+            component="div"
+            color="action.selected"
+            fontWeight={700}
+            letterSpacing={1.2}
+            sx={{ display: { xs: "none", lg: "flex" } }}
+            mr={5}
           >
-            <img src="/Small_Logo_RGB.svg" alt="+Ensino Small Logo" />
-          </Avatar>
+            <span style={{ color: "#39C0BA" }}>+</span>ENSINO
+          </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", lg: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
+              color="primary"
             >
               <MenuIcon />
             </IconButton>
@@ -116,13 +198,13 @@ export const DefaultAppBar = () => {
                 horizontal: "left",
               }}
               open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+              onClose={() => handleCloseNavMenu()}
               sx={{
-                display: { xs: "block", md: "none" },
+                display: { xs: "block", lg: "none" },
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page} onClick={() => handleCloseNavMenu(page)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -132,27 +214,38 @@ export const DefaultAppBar = () => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
+            color="action.selected"
+            fontWeight={700}
+            letterSpacing={1.2}
+            sx={{ flexGrow: 1, display: { xs: "flex", lg: "none" } }}
           >
-            LOGO
+            <span style={{ color: "#39C0BA" }}>+</span>ENSINO
           </Typography>
+
           <Box
             sx={{
               flexGrow: 1,
-              display: { xs: "none", md: "flex" },
+              display: { xs: "none", lg: "flex" },
               height: "64px",
             }}
           >
             {navigation.map(({ title, link }) => (
               <CustomLink to={link}>{title}</CustomLink>
             ))}
-
-            {/* {pages.map((page) => (
-              <Button key={page} onClick={handleCloseNavMenu} sx={{ my: 2, color: "white", display: "block" }}>
-                {page}
-              </Button>
-            ))} */}
           </Box>
+
+          {/* //TODO search bar */}
+          {/* <Box sx={{ flexGrow: 0 }} mx={5} width="100%">
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Pesquisar..."
+                inputProps={{ "aria-label": "pesquisar" }}
+              />
+            </Search>
+          </Box> */}
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">

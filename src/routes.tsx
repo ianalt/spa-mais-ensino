@@ -9,21 +9,20 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { Login } from "./features/login";
-import NotFoundPage from "./features/not-found/NotFoundPage";
 import HomePage from "./features/home";
+import { Login } from "./features/login";
+import ManagePage from "./features/manage";
+import NotFoundPage from "./features/not-found/NotFoundPage";
+import WelcomePage from "./features/welcome";
 import { DefaultLayout } from "./layout/default.layout";
-import { login as reduxLogin, selectUser } from "./user/userSlice";
-import StudentPage from "./features/student";
-import MonitorPage from "./features/monitor";
-import TeacherPage from "./features/teacher";
-import AdminPage from "./features/admin";
+import { WelcomeLayout } from "./layout/welcome.layout";
+import { login as reduxLogin, logout, selectUser } from "./user/userSlice";
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route element={<DefaultLayout />}>
-        <Route path="/" element={<HomePage />} />
+      <Route element={<WelcomeLayout />}>
+        <Route path="/" element={<WelcomePage />} />
       </Route>
 
       <Route
@@ -43,7 +42,8 @@ export const AppRoutes = () => {
         }
         path="/mais-ensino"
       >
-        <Route index element={<AdminPage />} />
+        <Route index element={<HomePage />} />
+        <Route element={<ManagePage />} path="/mais-ensino/gerenciamento" />
       </Route>
 
       <Route element={<DefaultLayout />} path="/default"></Route>
@@ -58,6 +58,15 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   let [searchParams] = useSearchParams();
+
+  if (user.loggedIn)
+    return (
+      <Navigate
+        to={searchParams.get("redirect") || `/mais-ensino`}
+        state={{ from: location }}
+        replace
+      />
+    );
 
   const sdnToken = localStorage.getItem(process.env.REACT_APP_TOKEN_NAME!);
 
@@ -85,16 +94,6 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
             email: email,
           })
         );
-
-        if (user.loggedIn)
-          return (
-            <Navigate
-              //TODO check user role so it can be redirected
-              to={searchParams.get("redirect") || `/mais-ensino/${user.role}`}
-              state={{ from: location }}
-              replace
-            />
-          );
       } else {
         localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
         return <Navigate to="/" state={{ from: location }} replace />;
@@ -115,7 +114,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   if (!user.loggedIn || user.role === "usuario") {
     return (
       <Navigate
-        to={`/?redirect=${encodeURIComponent(location.pathname)}`}
+        to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
         state={{ from: location }}
         replace
       />

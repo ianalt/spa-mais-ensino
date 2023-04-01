@@ -30,3 +30,66 @@ export const knowledgeAreas = [
       "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore facere nostrum unde excepturi cumque corrupti animi, ducimus quis esse, sunt rem dolorem dicta dolore officia tenetur nesciunt neque, consectetur laboriosam.",
   },
 ];
+
+export const usersTable = [
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+  {
+    firstName: "Ian",
+    lastName: "Alt",
+    email: "ian.alt@email.com",
+    role: "admin",
+  },
+];

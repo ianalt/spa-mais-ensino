@@ -12,7 +12,7 @@ export default function KnowledgeAreaCard({ name }: KnowledgeAreaCardProps) {
   return (
     <Button>
       <Card
-        sx={{ maxWidth: 350, minWidth: 250, minHeight: 250, maxHeight: 250 }}
+        sx={{ maxWidth: 300, minWidth: 300, minHeight: 250, maxHeight: 250 }}
         elevation={2}
       >
         <CardActionArea>
@@ -28,6 +28,7 @@ export default function KnowledgeAreaCard({ name }: KnowledgeAreaCardProps) {
               variant="h6"
               component="div"
               justifyContent="center"
+              textAlign="center"
             >
               {name}
             </Typography>

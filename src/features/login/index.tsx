@@ -73,7 +73,7 @@ export const Login = () => {
         res.data.access_token
       );
 
-      navigate("/a");
+      navigate(`/mais-ensino`);
     } catch (e: any) {
       if (e.isAxiosError) {
         setRequestError(e.response.data.message);

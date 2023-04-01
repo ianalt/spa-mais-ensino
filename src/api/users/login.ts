@@ -9,3 +9,9 @@ export const login = async (
 
   return res;
 };
+
+export const fetchUsers = async (): Promise<AxiosResponse> => {
+  const res = await instance.get(`/users`);
+
+  return res;
+};

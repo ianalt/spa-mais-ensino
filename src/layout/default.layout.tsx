@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import { Outlet } from "react-router-dom";
+import { DefaultAppBar } from "./default.appbar";
 // import { DefaultAppBar } from "./default.appbar";
 
 function Copyright() {
@@ -28,6 +29,7 @@ export const DefaultLayout = () => {
         minHeight: "100vh",
       }}
     >
+      <DefaultAppBar />
       <Container
         component="main"
         sx={{ mt: 2, mb: 2 }}
