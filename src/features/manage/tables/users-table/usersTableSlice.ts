@@ -7,19 +7,26 @@ import { User } from "./types/user";
 export interface UsersTableState {
   status: "idle" | "loading" | "failed";
   list: User[];
-  selected?: User | null;
+  selected?: User;
 }
 
 const initialState: UsersTableState = {
   status: "idle",
   list: [],
-  selected: null,
+  selected: undefined,
 };
 
 export const usersTableSlice = createSlice({
   name: "usersTable",
   initialState,
-  reducers: {},
+  reducers: {
+    setSelected: (state, action: PayloadAction<User | undefined>) => {
+      state.selected = action.payload;
+    },
+    setList: (state, action: PayloadAction<User[]>) => {
+      state.list = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getUsersList.pending, (state) => {
@@ -48,7 +55,7 @@ export const getUsersList = createAsyncThunk(
   }
 );
 
-export const {} = usersTableSlice.actions;
+export const { setSelected, setList } = usersTableSlice.actions;
 
 export const selectUsersTable = (state: RootState) => state.usersTable;
 

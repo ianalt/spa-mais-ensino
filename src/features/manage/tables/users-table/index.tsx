@@ -1,66 +1,54 @@
+import * as _ from "lodash";
 import MaterialTable from "material-table";
-import { usersTable } from "../../../../utils/constants";
-import { User } from "./types/user";
+import { Fragment, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
+import { selectUsersTable, setSelected } from "./usersTableSlice";
+import UserDetails from "./dialogs/user-details";
+import { Box } from "@mui/material";
 
-import * as React from "react";
-import Box from "@mui/material/Box";
-import SpeedDial from "@mui/material/SpeedDial";
-import SpeedDialIcon from "@mui/material/SpeedDialIcon";
-import SpeedDialAction from "@mui/material/SpeedDialAction";
-import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
-import SaveIcon from "@mui/icons-material/Save";
-import PrintIcon from "@mui/icons-material/Print";
-import AddIcon from "@mui/icons-material/Add";
-import ShareIcon from "@mui/icons-material/Share";
+export default function UsersTable() {
+  const dispatch = useAppDispatch();
+  const usersTable = useAppSelector(selectUsersTable);
 
-const actions = [{ icon: <AddIcon />, name: "Adicionar" }];
+  const [openDetails, setOpenDetails] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
-function BasicSpeedDial() {
   return (
-    <Box sx={{ height: 320, transform: "translateZ(0px)", flexGrow: 1 }}>
-      <SpeedDial
-        ariaLabel="SpeedDial basic example"
-        sx={{ position: "absolute", bottom: 25, right: 25 }}
-        icon={<SpeedDialIcon />}
-      >
-        {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-          />
-        ))}
-      </SpeedDial>
-    </Box>
-  );
-}
-
-interface UsersTableProps {
-  users: User[];
-}
-
-export default function UsersTable({ users }: UsersTableProps) {
-  return (
-    <React.Fragment>
-      {" "}
+    <Fragment>
       <MaterialTable
         options={{ search: true }}
         actions={[
-          {
+          (rowData) => ({
             icon: "delete",
-            tooltip: "Remover",
-            onClick: (event, rowData: any) => {},
-          },
-          {
+            tooltip:
+              rowData.role === "admin"
+                ? "Administradores não podem remover outros administradores"
+                : "Remover",
+            disabled: rowData.role === "admin",
+            onClick: (event) => {
+              dispatch(setSelected(rowData));
+            },
+          }),
+          (rowData) => ({
             icon: "edit",
-            tooltip: "Editar",
-            onClick: (event, rowData: any) => {},
-          },
-          {
+            tooltip:
+              rowData.role === "admin"
+                ? "Administradores não podem editar informações de outros administradores"
+                : "Editar",
+            disabled: rowData.role === "admin",
+            onClick: (event) => {
+              dispatch(setSelected(rowData));
+            },
+          }),
+          (rowData) => ({
             icon: "search",
             tooltip: "Detalhes",
-            onClick: (event, rowData: any) => {},
-          },
+            onClick: (event) => {
+              dispatch(setSelected(rowData));
+              setOpenDetails(true);
+            },
+          }),
         ]}
         columns={[
           { title: "Nome", field: "firstName" },
@@ -68,10 +56,10 @@ export default function UsersTable({ users }: UsersTableProps) {
           { title: "E-mail", field: "email" },
           { title: "Acesso", field: "role" },
         ]}
-        data={users}
+        data={_.cloneDeep(usersTable.list)}
         title="Lista de usuários"
-      />{" "}
-      <BasicSpeedDial />
-    </React.Fragment>
+      />
+      <UserDetails open={openDetails} onClose={() => setOpenDetails(false)} />
+    </Fragment>
   );
 }

@@ -21,7 +21,13 @@ import { login as reduxLogin, logout, selectUser } from "./user/userSlice";
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route element={<WelcomeLayout />}>
+      <Route
+        element={
+          <CheckLogin>
+            <WelcomeLayout />
+          </CheckLogin>
+        }
+      >
         <Route path="/" element={<WelcomePage />} />
       </Route>
 
@@ -60,13 +66,7 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
   let [searchParams] = useSearchParams();
 
   if (user.loggedIn)
-    return (
-      <Navigate
-        to={searchParams.get("redirect") || `/mais-ensino`}
-        state={{ from: location }}
-        replace
-      />
-    );
+    return <Navigate to={`/mais-ensino`} state={{ from: location }} replace />;
 
   const sdnToken = localStorage.getItem(process.env.REACT_APP_TOKEN_NAME!);
 
@@ -114,7 +114,8 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   if (!user.loggedIn || user.role === "usuario") {
     return (
       <Navigate
-        to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
+        // to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
+        to={`/`}
         state={{ from: location }}
         replace
       />

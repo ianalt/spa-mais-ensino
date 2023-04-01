@@ -42,7 +42,7 @@ export default function ManagePage() {
           {usersTable.status === "loading" ? (
             <CircularProgress />
           ) : (
-            <UsersTable users={_.cloneDeep(usersTable.list)} />
+            <UsersTable />
           )}
         </TabPanel>
         <TabPanel value="2">Áreas de Conhecimento</TabPanel>
