@@ -18,5 +18,5 @@ export interface User {
   phoneNumbers: PhoneNumber[];
   educationInfoList: EducationInfo[];
   comments: any[];
-  subjects: any;
+  subject: any;
 }
