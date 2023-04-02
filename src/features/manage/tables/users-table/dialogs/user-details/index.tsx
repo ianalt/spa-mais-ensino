@@ -1,4 +1,10 @@
-import { forwardRef, Dispatch, SetStateAction, useState } from "react";
+import {
+  forwardRef,
+  Dispatch,
+  SetStateAction,
+  useState,
+  Fragment,
+} from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -9,9 +15,11 @@ import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import { useAppSelector } from "../../../../../../app/hooks";
 import { selectUsersTable, setSelected } from "../../usersTableSlice";
-import { Grid, Typography } from "@mui/material";
+import { Divider, Grid, Typography } from "@mui/material";
 import { User } from "../../types/user";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
+import EducationInfoDetails from "./components/education-info-details";
+import List from "@mui/material/List";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -72,11 +80,11 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
         keepMounted
         onClose={() => onClose(true)}
         aria-describedby="user-details-dialog-slide-description"
-        maxWidth="xs"
+        maxWidth="lg"
         fullWidth
       >
         <DialogTitle>{"Detalhes do usuário"}</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <DialogContentText id="user-details-dialog-slide-description">
             {"Aqui estão as informações sobre este usuário: "}
           </DialogContentText>
@@ -140,8 +148,8 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Typography>
               </Grid>
               <Grid item xs={12}>
-                <Typography>{formatBirthDate()}</Typography>
-                {/* <Typography>{selected?.birthDate}</Typography> */}
+                {/* <Typography>{formatBirthDate()}</Typography> */}
+                <Typography>{selected?.birthDate}</Typography>
               </Grid>
             </Grid>
 
@@ -153,6 +161,42 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.subjects}</Typography>
+                </Grid>
+              </Grid>
+            ) : null}
+
+            {/* Informações educacionais */}
+            {selected?.role !== "admin" ? (
+              <Grid item container xs={6}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>
+                    {selected?.role === "estudante"
+                      ? "Informações educacionais: "
+                      : "Formação: "}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  {selected ? (
+                    <List
+                      sx={{
+                        width: "100%",
+                        bgcolor: "background.paper",
+                      }}
+                    >
+                      {selected.educationInfoList.map((educationInfo, i) => {
+                        return (
+                          <Fragment>
+                            <EducationInfoDetails
+                              educationInfo={educationInfo}
+                            />
+                            {i + 1 !== selected.educationInfoList.length ? (
+                              <Divider variant="fullWidth" component="li" />
+                            ) : null}
+                          </Fragment>
+                        );
+                      })}
+                    </List>
+                  ) : null}
                 </Grid>
               </Grid>
             ) : null}
