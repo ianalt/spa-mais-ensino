@@ -1,10 +1,10 @@
-import * as _ from "lodash";
-import MaterialTable from "material-table";
-import { Fragment, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
-import { selectUsersTable, setSelected } from "./usersTableSlice";
-import UserDetails from "./dialogs/user-details";
-import { Box } from "@mui/material";
+import * as _ from 'lodash';
+import MaterialTable from 'material-table';
+import { Fragment, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
+import { selectUsersTable, setSelected } from './usersTableSlice';
+import UserDetails from './dialogs/user-details';
+import { Box } from '@mui/material';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -17,33 +17,33 @@ export default function UsersTable() {
   return (
     <Fragment>
       <MaterialTable
-        options={{ search: true }}
+        options={{ search: true, filtering: true }}
         actions={[
           (rowData) => ({
-            icon: "delete",
+            icon: 'delete',
             tooltip:
-              rowData.role === "admin"
-                ? "Administradores não podem remover outros administradores"
-                : "Remover",
-            disabled: rowData.role === "admin",
+              rowData.role === 'admin'
+                ? 'Administradores não podem remover outros administradores'
+                : 'Remover',
+            disabled: rowData.role === 'admin',
             onClick: (event) => {
               dispatch(setSelected(rowData));
             },
           }),
           (rowData) => ({
-            icon: "edit",
+            icon: 'edit',
             tooltip:
-              rowData.role === "admin"
-                ? "Administradores não podem editar informações de outros administradores"
-                : "Editar",
-            disabled: rowData.role === "admin",
+              rowData.role === 'admin'
+                ? 'Administradores não podem editar informações de outros administradores'
+                : 'Editar',
+            disabled: rowData.role === 'admin',
             onClick: (event) => {
               dispatch(setSelected(rowData));
             },
           }),
           (rowData) => ({
-            icon: "search",
-            tooltip: "Detalhes",
+            icon: 'search',
+            tooltip: 'Detalhes',
             onClick: (event) => {
               dispatch(setSelected(rowData));
               setOpenDetails(true);
@@ -51,10 +51,11 @@ export default function UsersTable() {
           }),
         ]}
         columns={[
-          { title: "Nome", field: "firstName" },
-          { title: "Sobrenome(s)", field: "lastName" },
-          { title: "E-mail", field: "email" },
-          { title: "Acesso", field: "role" },
+          { title: 'Nome', field: 'firstName' },
+          { title: 'Sobrenome(s)', field: 'lastName' },
+          { title: 'E-mail', field: 'email' },
+          { title: 'Acesso', field: 'role' },
+          { title: 'Ativo?', field: 'active', type: 'boolean' },
         ]}
         data={_.cloneDeep(usersTable.list)}
         title="Lista de usuários"

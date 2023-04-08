@@ -1,11 +1,9 @@
 import { Grid } from "@mui/material";
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { EducationInfo } from "../../../../types/education-info";
+import { EducationInfo } from "../../../types/education-info";
 
 interface EducationInfoDetailsProps {
   educationInfo: EducationInfo;

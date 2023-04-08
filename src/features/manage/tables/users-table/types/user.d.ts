@@ -5,6 +5,7 @@ import { PhoneNumber } from "./phone-number";
 
 export interface User {
   id: number;
+  active: boolean;
   role: "estudante" | "monitor" | "professor" | "admin";
   email: string;
   firstName: string;

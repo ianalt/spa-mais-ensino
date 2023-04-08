@@ -1,14 +1,16 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import counterReducer from "../features/counter/counterSlice";
-import userReducer from "../user/userSlice";
-import knowledgeAreasReducer from "../slices/knowledgeAreasSlice";
+import knowledgeAreasTableReducer from "../features/manage/tables/knowledge-areas-table/knowledgeAreasTableSlice";
 import usersTableReducer from "../features/manage/tables/users-table/usersTableSlice";
+import knowledgeAreasReducer from "../slices/knowledgeAreasSlice";
+import userReducer from "../user/userSlice";
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
     user: userReducer,
     knowledgeAreas: knowledgeAreasReducer,
     usersTable: usersTableReducer,
+    knowledgeAreasTable: knowledgeAreasTableReducer,
   },
 });
 

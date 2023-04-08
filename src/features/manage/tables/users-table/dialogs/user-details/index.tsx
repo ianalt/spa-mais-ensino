@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import { Dispatch, Fragment, SetStateAction, forwardRef } from "react";
 import { useAppSelector } from "../../../../../../app/hooks";
 import { selectUsersTable, setSelected } from "../../usersTableSlice";
-import EducationInfoDetails from "./components/education-info-details";
+import EducationInfoDetails from "../components/education-info-details";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -153,6 +153,15 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Grid>
               </Grid>
 
+              <Grid item container xs={"auto"} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{"Ativo?"} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{selected?.active ? "Sim" : "Não"}</Typography>
+                </Grid>
+              </Grid>
+
               {selected?.role === "monitor" ||
               selected?.role === "professor" ? (
                 <Grid item container xs={"auto"} py={1} pr={1}>
@@ -235,14 +244,3 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
     </div>
   );
 }
-
-// firstName: string;
-// lastName: string;
-// email: string;
-// role: "estudante" | "monitor" | "professor" | "admin";
-// cpf: string;
-// birthDate: Date;
-// comments: any[];
-// subjects: any;
-
-// educationInfoList: EducationInfo[];
