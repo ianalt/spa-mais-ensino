@@ -45,7 +45,7 @@ export const subjectsTableSlice = createSlice({
 });
 
 export const getSubjectsList = createAsyncThunk(
-  'knowledgeAreasTable/getSubjects',
+  'subjectsTable/getSubjects',
   async () => {
     const response = await fetchSubjects();
     const subjects: Subject[] = response.data;

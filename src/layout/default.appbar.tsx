@@ -1,22 +1,21 @@
-import MenuIcon from "@mui/icons-material/Menu";
-import AppBar from "@mui/material/AppBar";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Toolbar from "@mui/material/Toolbar";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import * as React from "react";
-import { Link, useMatch, useNavigate, useResolvedPath } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+import MenuIcon from '@mui/icons-material/Menu';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import * as React from 'react';
+import { Link, useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
 
-import type { LinkProps } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { logout, selectUser } from "../user/userSlice";
-import { alpha, InputBase, styled, TextField } from "@mui/material";
+import { InputBase, alpha, styled } from '@mui/material';
+import type { LinkProps } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { logout, selectUser } from '../user/userSlice';
 
 function CustomLink({ children, to, ...props }: LinkProps) {
   let resolved = useResolvedPath(to);
@@ -26,10 +25,10 @@ function CustomLink({ children, to, ...props }: LinkProps) {
     <Box
       display="flex"
       alignItems="center"
-      sx={{ backgroundColor: match ? "primary.main" : "brandBlack.main", p: 2 }}
+      sx={{ backgroundColor: match ? 'primary.main' : 'brandBlack.main', p: 2 }}
     >
       <Link
-        style={{ textDecoration: "none", color: "#FFF" }}
+        style={{ textDecoration: 'none', color: '#FFF' }}
         to={to}
         {...props}
       >
@@ -41,73 +40,73 @@ function CustomLink({ children, to, ...props }: LinkProps) {
 
 const navigation = [
   {
-    link: "/mais-ensino",
-    title: "Início",
+    link: '/mais-ensino',
+    title: 'Início',
   },
   {
-    link: "/mais-ensino/disciplinas",
-    title: "Disciplinas",
+    link: '/mais-ensino/disciplinas',
+    title: 'Disciplinas',
   },
   {
-    link: "/mais-ensino/comentarios",
-    title: "Comentários",
+    link: '/mais-ensino/comentarios',
+    title: 'Comentários',
   },
   {
-    link: "/mais-ensino/relatorios",
-    title: "Relatórios",
+    link: '/mais-ensino/relatorios',
+    title: 'Relatórios',
   },
   {
-    link: "/mais-ensino/gerenciamento",
-    title: "Gerenciamento",
+    link: '/mais-ensino/gerenciamento',
+    title: 'Gerenciamento',
   },
 ];
 
 const pages = [
-  "Início",
-  "Áreas de Conhecimento",
-  "Disciplinas",
-  "Comentários",
-  "Relatórios",
+  'Início',
+  'Áreas de Conhecimento',
+  'Disciplinas',
+  'Comentários',
+  'Relatórios',
 ];
-const settings = ["Configurações", "Sair"];
+const settings = ['Configurações', 'Sair'];
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
+  '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(1),
-    width: "auto",
+    width: 'auto',
   },
 }));
 
-const SearchIconWrapper = styled("div")(({ theme }) => ({
+const SearchIconWrapper = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
+  color: 'inherit',
+  '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '20ch',
       },
     },
   },
@@ -124,7 +123,7 @@ export const DefaultAppBar = () => {
   const handleLogout = () => {
     dispatch(logout());
     localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
-    navigate("/");
+    navigate('/');
   };
 
   const handleOpenNavMenu = (event: any) => {
@@ -134,9 +133,9 @@ export const DefaultAppBar = () => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = (action = "") => {
+  const handleCloseNavMenu = (action = '') => {
     switch (action) {
-      case "Sair":
+      case 'Sair':
         handleLogout();
         break;
       default:
@@ -145,9 +144,9 @@ export const DefaultAppBar = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = (action = "") => {
+  const handleCloseUserMenu = (action = '') => {
     switch (action) {
-      case "Sair":
+      case 'Sair':
         handleLogout();
         break;
       default:
@@ -158,7 +157,7 @@ export const DefaultAppBar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ bgcolor: "brandBlack.main" }}>
+    <AppBar position="static" sx={{ bgcolor: 'brandBlack.main' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -168,13 +167,14 @@ export const DefaultAppBar = () => {
             color="action.selected"
             fontWeight={700}
             letterSpacing={1.2}
-            sx={{ display: { xs: "none", lg: "flex" } }}
+            sx={{ display: { xs: 'none', lg: 'flex' } }}
             mr={5}
+            textAlign="center"
           >
-            <span style={{ color: "#39C0BA" }}>+</span>ENSINO
+            <span style={{ color: '#39C0BA' }}>+</span>ENSINO
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", lg: "none" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', lg: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -189,18 +189,18 @@ export const DefaultAppBar = () => {
               id="menu-appbar"
               anchorEl={anchorElNav}
               anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
+                vertical: 'bottom',
+                horizontal: 'left',
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
+                vertical: 'top',
+                horizontal: 'left',
               }}
               open={Boolean(anchorElNav)}
               onClose={() => handleCloseNavMenu()}
               sx={{
-                display: { xs: "block", lg: "none" },
+                display: { xs: 'block', lg: 'none' },
               }}
             >
               {pages.map((page) => (
@@ -217,16 +217,16 @@ export const DefaultAppBar = () => {
             color="action.selected"
             fontWeight={700}
             letterSpacing={1.2}
-            sx={{ flexGrow: 1, display: { xs: "flex", lg: "none" } }}
+            sx={{ flexGrow: 1, display: { xs: 'flex', lg: 'none' } }}
           >
-            <span style={{ color: "#39C0BA" }}>+</span>ENSINO
+            <span style={{ color: '#39C0BA' }}>+</span>ENSINO
           </Typography>
 
           <Box
             sx={{
               flexGrow: 1,
-              display: { xs: "none", lg: "flex" },
-              height: "64px",
+              display: { xs: 'none', lg: 'flex' },
+              height: '64px',
             }}
           >
             {navigation.map(({ title, link }) => (
@@ -254,17 +254,17 @@ export const DefaultAppBar = () => {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: "45px" }}
+              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
               onClose={() => handleCloseUserMenu()}

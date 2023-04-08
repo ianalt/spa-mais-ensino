@@ -1,9 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchKnowledgeAreas } from '../../../../api/knowledge-areas/knowledge-areas.req';
-import { RootState } from '../../../../app/store';
-import { KnowledgeArea } from '../../../../slices/knowledgeAreasSlice';
-import { Category } from './types/category';
 import { fetchCategories } from '../../../../api/categories/categories.req';
+import { RootState } from '../../../../app/store';
+import { Category } from './types/category';
 
 export interface CategoriesTableState {
   status: 'idle' | 'loading' | 'failed';

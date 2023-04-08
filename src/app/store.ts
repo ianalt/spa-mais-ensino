@@ -6,6 +6,7 @@ import knowledgeAreasReducer from '../slices/knowledgeAreasSlice';
 import userReducer from '../user/userSlice';
 import subjectsTableReducer from '../features/manage/tables/subjects-table/subjectsTableSlice';
 import categoriesTableReducer from '../features/manage/tables/categories-table/categoriesTableSlice';
+import topicsTableReducer from '../features/manage/tables/topics-table/topicsTableSlice';
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
@@ -15,6 +16,7 @@ export const store = configureStore({
     knowledgeAreasTable: knowledgeAreasTableReducer,
     subjectsTable: subjectsTableReducer,
     categoriesTable: categoriesTableReducer,
+    topicsTable: topicsTableReducer,
   },
 });
 
