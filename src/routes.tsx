@@ -1,5 +1,5 @@
-import isBefore from "date-fns/isBefore";
-import jwt_decode from "jwt-decode";
+import isBefore from 'date-fns/isBefore';
+import jwt_decode from 'jwt-decode';
 import {
   Location,
   Navigate,
@@ -7,16 +7,17 @@ import {
   Routes,
   useLocation,
   useSearchParams,
-} from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "./app/hooks";
-import HomePage from "./features/home";
-import { Login } from "./features/login";
-import ManagePage from "./features/manage";
-import NotFoundPage from "./features/not-found/NotFoundPage";
-import WelcomePage from "./features/welcome";
-import { DefaultLayout } from "./layout/default.layout";
-import { WelcomeLayout } from "./layout/welcome.layout";
-import { login as reduxLogin, logout, selectUser } from "./user/userSlice";
+} from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from './app/hooks';
+import HomePage from './features/home';
+import { Login } from './features/login';
+import ManagePage from './features/manage';
+import NotFoundPage from './features/not-found/NotFoundPage';
+import WelcomePage from './features/welcome';
+import { DefaultLayout } from './layout/default.layout';
+import { WelcomeLayout } from './layout/welcome.layout';
+import { login as reduxLogin, logout, selectUser } from './user/userSlice';
+import SignUp from './features/sign-up';
 
 export const AppRoutes = () => {
   return (
@@ -34,11 +35,20 @@ export const AppRoutes = () => {
       <Route
         element={
           <CheckLogin>
+            <SignUp />
+          </CheckLogin>
+        }
+        path="/cadastro"
+      />
+
+      <Route
+        element={
+          <CheckLogin>
             <Login />
           </CheckLogin>
         }
         path="/login"
-      ></Route>
+      />
 
       <Route
         element={
@@ -81,7 +91,7 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
         exp: number;
         sub: number;
         email: string;
-        role: "usuario" | "aluno" | "monitor" | "professor" | "admin";
+        role: 'usuario' | 'aluno' | 'monitor' | 'professor' | 'admin';
       } = jwt_decode(sdnToken);
       const currentDate = new Date();
       const expDate = new Date(exp * 1000);
@@ -111,11 +121,11 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const user = useAppSelector(selectUser);
   let location = useLocation();
 
-  if (!user.loggedIn || user.role === "usuario") {
+  if (!user.loggedIn || user.role === 'usuario') {
     return (
       <Navigate
         // to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
-        to={`/`}
+        to="/"
         state={{ from: location }}
         replace
       />
