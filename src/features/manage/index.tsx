@@ -12,17 +12,27 @@ import {
   selectKnowledgeAreasTable,
 } from './tables/knowledge-areas-table/knowledgeAreasTableSlice';
 import SubjectsTable from './tables/subjects-table';
-import { getSubjectsList } from './tables/subjects-table/subjectsTableSlice';
+import {
+  getSubjectsList,
+  selectSubjectsTable,
+} from './tables/subjects-table/subjectsTableSlice';
 import UsersTable from './tables/users-table';
 import {
   getUsersList,
   selectUsersTable,
 } from './tables/users-table/usersTableSlice';
+import CategoriesTable from './tables/categories-table';
+import {
+  getCategoriesList,
+  selectCategoriesTable,
+} from './tables/categories-table/categoriesTableSlice';
 
 export default function ManagePage() {
   const dispatch = useAppDispatch();
   const usersTable = useAppSelector(selectUsersTable);
   const knowledgeAreasTable = useAppSelector(selectKnowledgeAreasTable);
+  const subjectsTable = useAppSelector(selectSubjectsTable);
+  const categoriesTable = useAppSelector(selectCategoriesTable);
   const [value, setValue] = React.useState('1');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -33,6 +43,7 @@ export default function ManagePage() {
     dispatch(getUsersList());
     dispatch(getKnowledgeAreasList());
     dispatch(getSubjectsList());
+    dispatch(getCategoriesList());
   }, []);
 
   return (
@@ -62,13 +73,20 @@ export default function ManagePage() {
           )}
         </TabPanel>
         <TabPanel value="3">
-          {knowledgeAreasTable.status === 'loading' ? (
+          {subjectsTable.status === 'loading' ? (
             <CircularProgress />
           ) : (
             <SubjectsTable />
           )}
         </TabPanel>
-        <TabPanel value="4">Categorias</TabPanel>
+        <TabPanel value="4">
+          {' '}
+          {categoriesTable.status === 'loading' ? (
+            <CircularProgress />
+          ) : (
+            <CategoriesTable />
+          )}
+        </TabPanel>
         <TabPanel value="5">Tópicos</TabPanel>
       </TabContext>
     </Box>
