@@ -51,7 +51,7 @@ export default function UsersTable() {
           }),
         ]}
         columns={[
-          { title: 'Nome', field: 'firstName' },
+          { title: 'Nome', field: 'firstName', defaultSort: 'asc' },
           { title: 'Sobrenome(s)', field: 'lastName' },
           { title: 'E-mail', field: 'email' },
           { title: 'Acesso', field: 'role' },

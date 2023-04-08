@@ -50,7 +50,7 @@ export default function KnowledgeAreaDetails({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{'Detalhes do usuário'}</DialogTitle>
+        <DialogTitle>{'Detalhes da área de conhecimento'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="knowledge-area-details-dialog-slide-description">
             {'Aqui estão as informações sobre esta área de conhecimento: '}
@@ -75,7 +75,7 @@ export default function KnowledgeAreaDetails({
 
               <Grid item container xs="auto" py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'Ativo?'} </Typography>
+                  <Typography fontWeight={700}>{'Ativa?'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.active ? 'Sim' : 'Não'}</Typography>

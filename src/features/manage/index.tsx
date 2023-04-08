@@ -11,6 +11,8 @@ import {
   getKnowledgeAreasList,
   selectKnowledgeAreasTable,
 } from './tables/knowledge-areas-table/knowledgeAreasTableSlice';
+import SubjectsTable from './tables/subjects-table';
+import { getSubjectsList } from './tables/subjects-table/subjectsTableSlice';
 import UsersTable from './tables/users-table';
 import {
   getUsersList,
@@ -30,6 +32,7 @@ export default function ManagePage() {
   React.useEffect(() => {
     dispatch(getUsersList());
     dispatch(getKnowledgeAreasList());
+    dispatch(getSubjectsList());
   }, []);
 
   return (
@@ -58,7 +61,13 @@ export default function ManagePage() {
             <KnowledgeAreasTable />
           )}
         </TabPanel>
-        <TabPanel value="3">Disciplinas</TabPanel>
+        <TabPanel value="3">
+          {knowledgeAreasTable.status === 'loading' ? (
+            <CircularProgress />
+          ) : (
+            <SubjectsTable />
+          )}
+        </TabPanel>
         <TabPanel value="4">Categorias</TabPanel>
         <TabPanel value="5">Tópicos</TabPanel>
       </TabContext>

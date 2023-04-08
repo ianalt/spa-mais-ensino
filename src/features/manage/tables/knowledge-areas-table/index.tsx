@@ -45,10 +45,10 @@ export default function KnowledgeAreasTable() {
           }),
         ]}
         columns={[
-          { title: 'Nome', field: 'name' },
+          { title: 'Nome', field: 'name', defaultSort: 'asc' },
           { title: 'Descrição', field: 'description' },
           {
-            title: 'Ativo?',
+            title: 'Ativa?',
             field: 'active',
             type: 'boolean',
           },
