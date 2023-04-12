@@ -1,18 +1,18 @@
-import { Chip, Divider, Grid, Typography } from "@mui/material";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import List from "@mui/material/List";
-import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
-import { format } from "date-fns";
-import { Dispatch, Fragment, SetStateAction, forwardRef } from "react";
-import { useAppSelector } from "../../../../../../app/hooks";
-import { selectUsersTable, setSelected } from "../../usersTableSlice";
-import EducationInfoDetails from "../components/education-info-details";
+import { Chip, Divider, Grid, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import List from '@mui/material/List';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
+import { format } from 'date-fns';
+import { Dispatch, Fragment, SetStateAction, forwardRef } from 'react';
+import { useAppSelector } from '../../../../../../app/hooks';
+import { selectUsersTable, setSelected } from '../../usersTableSlice';
+import EducationInfoDetails from '../components/education-info-details';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -38,9 +38,9 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
   };
 
   const formatRole = () => {
-    return selected?.role.split("").reduce((acc, val, i) => {
+    return selected?.role.split('').reduce((acc, val, i) => {
       return (acc += `${i === 0 ? val.toUpperCase() : val}`);
-    }, "");
+    }, '');
   };
 
   const formatCpf = () => {
@@ -52,9 +52,9 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
 
   // não usando date-fns porque n tá funcionando
   const formatBirthDate = () => {
-    if (!selected) return "—";
+    if (!selected) return '—';
 
-    const date = format(selected.birthDate, "DD/MM/YYYY");
+    const date = format(selected.birthDate, 'DD/MM/YYYY');
 
     // const year = selected.birthDate.getFullYear();
     // const month = selected.birthDate.getMonth() + 1;
@@ -76,13 +76,13 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
         maxWidth="lg"
         fullWidth
       >
-        <DialogTitle>{"Detalhes do usuário"}</DialogTitle>
+        <DialogTitle>{'Detalhes do usuário'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="user-details-dialog-slide-description">
-            {"Aqui estão as informações sobre este usuário: "}
+            {'Aqui estão as informações sobre este usuário: '}
           </DialogContentText>
 
-          <Grid container justifyContent={"flex-start"}>
+          <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
               <Divider>
                 <Chip label="Dados Básicos" />
@@ -92,9 +92,9 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
             {/* info pessoal essencial */}
             <Grid item container xs={12} my={1}>
               {/* Nome */}
-              <Grid item container xs={"auto"} py={1} pr={1}>
+              <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{"Nome:"} </Typography>
+                  <Typography fontWeight={700}>{'Nome:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.firstName}</Typography>
@@ -102,9 +102,9 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
               </Grid>
 
               {/* Sobrenome */}
-              <Grid item container xs={"auto"} py={1} pr={1}>
+              <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{"Sobrenome(s):"} </Typography>
+                  <Typography fontWeight={700}>{'Sobrenome(s):'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.lastName}</Typography>
@@ -112,10 +112,10 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
               </Grid>
 
               {/* Data de nascimento */}
-              <Grid item container xs={"auto"} py={1} pr={1}>
+              <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
                   <Typography fontWeight={700}>
-                    {"Data de nascimento:"}{" "}
+                    {'Data de nascimento:'}{' '}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -125,9 +125,9 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
               </Grid>
 
               {/* CPF */}
-              <Grid item container xs={"auto"} py={1} pr={1}>
+              <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{"CPF:"} </Typography>
+                  <Typography fontWeight={700}>{'CPF:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{formatCpf()}</Typography>
@@ -135,48 +135,48 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
               </Grid>
 
               {/* E-mail */}
-              <Grid item container xs={"auto"} py={1} pr={1}>
+              <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{"E-mail:"} </Typography>
+                  <Typography fontWeight={700}>{'E-mail:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.email}</Typography>
                 </Grid>
               </Grid>
 
-              <Grid item container xs={"auto"} py={1} pr={1}>
+              <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{"Acesso:"} </Typography>
+                  <Typography fontWeight={700}>{'Acesso:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{formatRole()}</Typography>
                 </Grid>
               </Grid>
 
-              <Grid item container xs={"auto"} py={1} pr={1}>
-                <Grid item xs={12}>
-                  <Typography fontWeight={700}>{"Ativo?"} </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>{selected?.active ? "Sim" : "Não"}</Typography>
-                </Grid>
-              </Grid>
-
-              {selected?.role === "monitor" ||
-              selected?.role === "professor" ? (
-                <Grid item container xs={"auto"} py={1} pr={1}>
+              {selected?.role === 'monitor' ||
+              selected?.role === 'professor' ? (
+                <Grid item container xs={'auto'} py={1} pr={1}>
                   <Grid item xs={12}>
-                    <Typography fontWeight={700}>{"Disciplina:"} </Typography>
+                    <Typography fontWeight={700}>{'Disciplina:'} </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography>{selected?.subject || "—"}</Typography>
+                    <Typography>{selected?.subject || '—'}</Typography>
                   </Grid>
                 </Grid>
               ) : null}
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Ativo?'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{selected?.active ? 'Sim' : 'Não'}</Typography>
+                </Grid>
+              </Grid>
             </Grid>
 
             {/* Informações educacionais */}
-            {selected?.role !== "admin" ? (
+            {selected?.role !== 'admin' ? (
               <>
                 <Grid item xs={12} my={2}>
                   <Divider>
@@ -188,8 +188,8 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                   {selected ? (
                     <List
                       sx={{
-                        width: "100%",
-                        bgcolor: "background.paper",
+                        width: '100%',
+                        bgcolor: 'background.paper',
                       }}
                     >
                       {selected.educationInfoList.map((educationInfo, i) => {

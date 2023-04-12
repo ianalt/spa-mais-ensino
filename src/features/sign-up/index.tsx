@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validator from 'validator';
 import { useAppDispatch } from '../../app/hooks';
@@ -11,27 +11,83 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 
+import { IMaskInput } from 'react-imask';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+
 const steps = [
+  'Dados para criação da conta',
   'Dados pessoais',
   'Dados de moradia',
-  'Dados para contato',
   'Dados educacionais',
   'Dados financeiros',
 ];
 
-// export default function SignUp() {
-//   return (
-//     <Box sx={{ width: '100%' }}>
-//       <Stepper activeStep={0} alternativeLabel>
-//         {steps.map((label) => (
-//           <Step key={label}>
-//             <StepLabel>{label}</StepLabel>
-//           </Step>
-//         ))}
-//       </Stepper>
-//     </Box>
-//   );
-// }
+interface TextMaskCustomProps {
+  onChange: (event: { target: { name: string; value: string } }) => void;
+  name: string;
+}
+
+const CpfMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
+  function TextMaskCustom(props, ref) {
+    const { onChange, ...other } = props;
+    return (
+      <IMaskInput
+        {...other}
+        mask="000.000.000-00"
+        definitions={{
+          '#': /[1-9]/,
+        }}
+        // inputRef={ref}
+        onAccept={(value: any) =>
+          onChange({ target: { name: props.name, value } })
+        }
+        overwrite
+      />
+    );
+  }
+);
+
+const PhoneNumberMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
+  function TextMaskCustom(props, ref) {
+    const { onChange, ...other } = props;
+    return (
+      <IMaskInput
+        {...other}
+        mask="(00) 0 0000-0000"
+        definitions={{
+          '#': /[1-9]/,
+        }}
+        // inputRef={ref}
+        onAccept={(value: any) =>
+          onChange({ target: { name: props.name, value } })
+        }
+        overwrite
+      />
+    );
+  }
+);
+
+const CepMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
+  function TextMaskCustom(props, ref) {
+    const { onChange, ...other } = props;
+    return (
+      <IMaskInput
+        {...other}
+        mask="00000-000"
+        definitions={{
+          '#': /[1-9]/,
+        }}
+        // inputRef={ref}
+        onAccept={(value: any) =>
+          onChange({ target: { name: props.name, value } })
+        }
+        overwrite
+      />
+    );
+  }
+);
 
 interface EthnicityOption {
   label: string;
@@ -39,6 +95,11 @@ interface EthnicityOption {
 }
 
 interface GenderOption {
+  label: string;
+  value: string;
+}
+
+interface StateOption {
   label: string;
   value: string;
 }
@@ -58,6 +119,18 @@ export default function SignUp() {
   const [ethnicity, setEthnicity] = useState<EthnicityOption | undefined>();
   const [gender, setGender] = useState<GenderOption | undefined>();
 
+  const [phoneNumber1, setPhoneNumber1] = useState<string>('');
+  const [phoneNumber2, setPhoneNumber2] = useState<string>('');
+
+  const [cep, setCep] = useState<string>('');
+  const [street, setStreet] = useState<string>('');
+  const [streetNumber, setStreetNumber] = useState<string>('');
+  const [neighborhood, setNeighborhood] = useState<string>('');
+  const [complement, setComplement] = useState<string>('');
+
+  const [generalIncome, setGeneralIncome] = useState<number>(0);
+  const [totalHouseHoldMembers, setTotalHouseHoldMembers] = useState<number>(0);
+
   const checkFieldEmptiness = (field: string) => {
     return validator.isEmpty(field, { ignore_whitespace: true });
   };
@@ -66,14 +139,56 @@ export default function SignUp() {
     return validator.isLength(field, { min, max });
   };
 
-  const formatCpf = (cpf: string) => {
-    const digits = cpf.split('');
+  const convertCpf = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
 
-    return digits.reduce((acc, val, i) => {
-      return (acc += `${
-        i === 2 || i === 5 ? `${val}.` : i === 8 ? `${val}-` : val
-      }`);
-    }, '');
+    const convertedCpf = input
+      .split('')
+      .filter((char) => {
+        return char !== '.' && char !== '-';
+      })
+      .join('');
+
+    setCpf(convertedCpf);
+  };
+
+  const convertPhoneNumber1 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+
+    const convertedPhoneNumber = input
+      .split('')
+      .filter((char) => {
+        return char !== ' ' && char !== '(' && char !== ')' && char !== '-';
+      })
+      .join('');
+
+    setPhoneNumber1(convertedPhoneNumber);
+  };
+
+  const convertPhoneNumber2 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+
+    const convertedPhoneNumber = input
+      .split('')
+      .filter((char) => {
+        return char !== ' ' && char !== '(' && char !== ')' && char !== '-';
+      })
+      .join('');
+
+    setPhoneNumber2(convertedPhoneNumber);
+  };
+
+  const convertCep = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+
+    const convertedCep = input
+      .split('')
+      .filter((char) => {
+        return char !== '-';
+      })
+      .join('');
+
+    setCep(convertedCep);
   };
 
   const handleNextStep = () => {
@@ -85,7 +200,7 @@ export default function SignUp() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ border: '1px solid red' }}>
+    <Container maxWidth="xl">
       <Grid my={5} />
 
       <Grid container justifyContent="center" px={{ xs: 2 }}>
@@ -151,12 +266,101 @@ export default function SignUp() {
           </Box>
         </Grid>
 
-        <Grid item container xs={12} my={5}>
-          <Grid item container xs={12} mb={3} sx={{ border: '1px solid red' }}>
+        <Grid item container xs={12} my={5} justifyContent={'center'}>
+          <Grid item container xs={10} mb={3}>
             <form noValidate>
-              {/* Dados pessoais */}
+              {/* Dados para conta */}
               {step === 0 ? (
-                <Grid item xs={10} container>
+                <Grid item xs={12} container>
+                  <Grid item xs={12} container>
+                    <Grid item xs={5.5} mr={2}>
+                      <TextField
+                        id="email"
+                        margin="normal"
+                        required
+                        fullWidth
+                        label="E-mail"
+                        name="email"
+                        value={email}
+                        variant="outlined"
+                        placeholder="Digite seu e-mail..."
+                        onChange={(e) => setEmail(e.target.value)}
+                        type="email"
+                        // error={checkFieldErrors(fieldErrors, "email") !== ""}
+                        // helperText={checkFieldErrors(fieldErrors, "email")}
+                        // disabled={loading}
+                      />
+                    </Grid>
+
+                    <Grid item xs={5.5} mr={2}>
+                      <TextField
+                        id="email-confirmation"
+                        margin="normal"
+                        required
+                        fullWidth
+                        label="Confirmação de e-mail"
+                        name="email"
+                        value={emailConfirmation}
+                        variant="outlined"
+                        placeholder="Confirme seu e-mail..."
+                        onChange={(e) => setEmailConfirmation(e.target.value)}
+                        type="email"
+                        // error={checkFieldErrors(fieldErrors, "email") !== ""}
+                        // helperText={checkFieldErrors(fieldErrors, "email")}
+                        // disabled={loading}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={12} container>
+                    <Grid item xs={7} container>
+                      <Grid item xs={5.5} mr={2}>
+                        <TextField
+                          id="password"
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="password"
+                          label="Senha"
+                          type="password"
+                          variant="outlined"
+                          placeholder="Digite sua senha..."
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          // error={}
+                          // helperText={checkFieldErrors(fieldErrors, "password")}
+                          // disabled={loading}
+                        />
+                      </Grid>
+
+                      <Grid item xs={5.5} mr={2}>
+                        <TextField
+                          id="password-confirmation"
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="password-confirmation"
+                          label="Confirmação de senha"
+                          type="password"
+                          variant="outlined"
+                          placeholder="Confirme sua senha..."
+                          value={passwordConfirmation}
+                          onChange={(e) =>
+                            setPasswordConfirmation(e.target.value)
+                          }
+                          // error={checkFieldErrors(fieldErrors, "password") !== ""}
+                          // helperText={checkFieldErrors(fieldErrors, "password")}
+                          // disabled={loading}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ) : null}
+
+              {/* Dados pessoais */}
+              {step === 1 ? (
+                <Grid item xs={12} container>
                   <Grid item container xs={12}>
                     <Grid item xs={5.5} mr={2}>
                       <TextField
@@ -198,23 +402,6 @@ export default function SignUp() {
 
                   <Grid item xs={12} container>
                     <Grid item xs={3} mr={2}>
-                      <TextField
-                        id="cpf"
-                        margin="normal"
-                        required
-                        fullWidth
-                        label="CPF"
-                        name="cpf"
-                        variant="outlined"
-                        value={cpf}
-                        onChange={(e) => setCpf(e.target.value)}
-                        // error={checkFieldLength(cpf, 11, 11)}
-                        // helperText={checkFieldErrors(fieldErrors, "email")}
-                        // disabled={loading}
-                      />
-                    </Grid>
-
-                    <Grid item xs={3} mr={2}>
                       <Autocomplete
                         id="ethnicity-options"
                         options={[1, 2]}
@@ -245,113 +432,259 @@ export default function SignUp() {
                         )}
                       />
                     </Grid>
-                  </Grid>
 
-                  <Grid item xs={8} container>
-                    <Grid item xs={5.5} mr={2}>
-                      <TextField
-                        id="email"
-                        margin="normal"
+                    <Grid item xs={3} ml={2} mr={2} py={2}>
+                      <InputLabel htmlFor="formatted-cpf-mask-input">
+                        CPF
+                      </InputLabel>
+                      <Input
                         required
-                        fullWidth
-                        label="E-mail"
-                        name="email"
-                        value={email}
-                        variant="outlined"
-                        placeholder="Digite seu e-mail..."
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        // error={checkFieldErrors(fieldErrors, "email") !== ""}
-                        // helperText={checkFieldErrors(fieldErrors, "email")}
-                        // disabled={loading}
-                      />
-                    </Grid>
-
-                    <Grid item xs={5.5} mr={2}>
-                      <TextField
-                        id="email-confirmation"
-                        margin="normal"
-                        required
-                        fullWidth
-                        label="Confirmação de e-mail"
-                        name="email"
-                        value={emailConfirmation}
-                        variant="outlined"
-                        placeholder="Confirme seu e-mail..."
-                        onChange={(e) => setEmailConfirmation(e.target.value)}
-                        type="email"
-                        // error={checkFieldErrors(fieldErrors, "email") !== ""}
-                        // helperText={checkFieldErrors(fieldErrors, "email")}
-                        // disabled={loading}
+                        value={cpf}
+                        onChange={convertCpf}
+                        name="cpf"
+                        id="formatted-cpf-mask-input"
+                        inputComponent={CpfMaskCustom as any}
+                        placeholder="Digite seu CPF..."
                       />
                     </Grid>
                   </Grid>
 
-                  <Grid item xs={7} container>
-                    <Grid item xs={5.5} mr={2}>
-                      <TextField
-                        id="password"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Senha"
-                        type="password"
-                        variant="outlined"
-                        placeholder="Digite sua senha..."
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        // error={}
-                        // helperText={checkFieldErrors(fieldErrors, "password")}
-                        // disabled={loading}
-                      />
+                  <Grid item xs={10} container>
+                    <Grid item container xs={3}>
+                      <Grid item xs={12} mr={2} py={2}>
+                        <InputLabel htmlFor="formatted-phone-number-1-mask-input">
+                          Número de celular *
+                        </InputLabel>
+                        <Input
+                          required
+                          autoFocus
+                          value={phoneNumber1}
+                          onChange={convertPhoneNumber1}
+                          name="phone-number-1"
+                          id="formatted-phone-number-mask-input"
+                          inputComponent={PhoneNumberMaskCustom as any}
+                        />
+                      </Grid>
                     </Grid>
 
-                    <Grid item xs={5.5} mr={2}>
+                    <Grid item container xs={3}>
+                      <Grid item xs={12} mr={2} py={2}>
+                        <InputLabel htmlFor="formatted-phone-number-2-mask-input">
+                          Segundo número (opcional)
+                        </InputLabel>
+                        <Input
+                          value={phoneNumber2}
+                          onChange={convertPhoneNumber2}
+                          name="phone-number-2"
+                          id="formatted-phone-number-mask-input"
+                          inputComponent={PhoneNumberMaskCustom as any}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12} container>
+                    {/* //TODO apply money mask */}
+                    <Grid xs={5.5} mr={2}>
                       <TextField
-                        id="password-confirmation"
+                        id="general-income"
                         margin="normal"
                         required
                         fullWidth
-                        name="password-confirmation"
-                        label="Confirmação de senha"
-                        type="password"
+                        name="general-income"
+                        type="number"
+                        label="Renda familiar total"
                         variant="outlined"
-                        placeholder="Confirme sua senha..."
-                        value={passwordConfirmation}
+                        placeholder="Digite o valor total de sua renda familiar..."
+                        value={generalIncome}
                         onChange={(e) =>
-                          setPasswordConfirmation(e.target.value)
+                          setGeneralIncome(parseFloat(e.target.value))
                         }
-                        // error={checkFieldErrors(fieldErrors, "password") !== ""}
-                        // helperText={checkFieldErrors(fieldErrors, "password")}
-                        // disabled={loading}
+                        //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "password")}
+                        //   disabled={loading}
+                      />
+                    </Grid>
+
+                    <Grid xs={5.5} mr={2}>
+                      <TextField
+                        id="total-household-members"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="total-household-members"
+                        type="number"
+                        label="Total de membros na moradia"
+                        variant="outlined"
+                        placeholder="Digite o número total de membros em sua moradia..."
+                        value={totalHouseHoldMembers}
+                        onChange={(e) => {
+                          setTotalHouseHoldMembers(parseInt(e.target.value));
+                        }}
+                        //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "password")}
+                        //   disabled={loading}
                       />
                     </Grid>
                   </Grid>
                 </Grid>
               ) : null}
 
-              {/* {step === 1 ? : null} */}
-              <Grid
-                item
-                xs={12}
-                my={4}
-                container
-                justifyContent="space-between"
-                sx={{ border: '1px solid green' }}
-              >
-                <Grid item ml={3}>
+              {/* Dados de moradia */}
+              {step === 2 ? (
+                <Grid item xs={12} container>
+                  <Grid item container xs={12}>
+                    <Grid item xs={3} mr={2} py={2}>
+                      <InputLabel htmlFor="formatted-cep-mask-input">
+                        CEP
+                      </InputLabel>
+                      <Input
+                        required
+                        autoFocus
+                        value={cep}
+                        onChange={convertCep}
+                        name="cep"
+                        id="formatted-cep-mask-input"
+                        inputComponent={CepMaskCustom as any}
+                        placeholder="Digite seu CEP..."
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid item container xs={12}>
+                    <Grid item xs={5.5} mr={2}>
+                      <TextField
+                        id="street"
+                        margin="normal"
+                        required
+                        fullWidth
+                        label="Rua"
+                        name="street"
+                        value={street}
+                        variant="outlined"
+                        placeholder="Digite sua rua..."
+                        onChange={(e) => setStreet(e.target.value)}
+                        //   error={checkFieldErrors(fieldErrors, "email") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "email")}
+                        //   disabled={loading}
+                      />
+                    </Grid>
+
+                    <Grid xs={2} mr={2}>
+                      <TextField
+                        id="street-number"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="street-number"
+                        label="Número"
+                        variant="outlined"
+                        value={streetNumber}
+                        onChange={(e) => setStreetNumber(e.target.value)}
+                        //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "password")}
+                        //   disabled={loading}
+                      />
+                    </Grid>
+
+                    <Grid xs={3} mr={2}>
+                      <TextField
+                        id="neighborhood"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="neighborhood"
+                        label="Bairro"
+                        variant="outlined"
+                        placeholder="Digite o seu bairro..."
+                        value={neighborhood}
+                        onChange={(e) => setNeighborhood(e.target.value)}
+                        //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "password")}
+                        //   disabled={loading}
+                      />
+                    </Grid>
+
+                    <Grid xs={5.5} mr={2}>
+                      <TextField
+                        id="complement"
+                        margin="normal"
+                        fullWidth
+                        name="complement"
+                        label="Complemento"
+                        variant="outlined"
+                        placeholder="Digite informações adicionais, caso haja..."
+                        value={complement}
+                        onChange={(e) => setComplement(e.target.value)}
+                        //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "password")}
+                        //   disabled={loading}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={12} container>
+                    <Grid item xs={3} mr={2}>
+                      <Autocomplete
+                        id="city"
+                        options={[1, 2]}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="Selecione sua cidade..."
+                          />
+                        )}
+                      />
+                    </Grid>
+
+                    <Grid item xs={3} mr={2}>
+                      <Autocomplete
+                        id="state"
+                        options={[1, 2]}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="Selecione seu estado..."
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ) : null}
+
+              <Grid item xs={12} container my={4}>
+                <Grid item xs={3} container justifyContent="flex-start">
                   {step > 0 ? (
-                    <Button variant="contained" onClick={handlePreviousStep}>
+                    <Button
+                      size="large"
+                      variant="contained"
+                      onClick={handlePreviousStep}
+                    >
                       Voltar
                     </Button>
                   ) : null}
                 </Grid>
 
-                <Grid item mr={3}>
+                <Grid item xs={6} />
+
+                <Grid item xs={3} container justifyContent="flex-end">
                   {step < steps.length - 1 ? (
-                    <Button variant="contained" onClick={handleNextStep}>
+                    <Button
+                      size="large"
+                      variant="contained"
+                      onClick={handleNextStep}
+                    >
                       Próximo
+                    </Button>
+                  ) : step === steps.length - 1 ? (
+                    <Button size="large" variant="contained">
+                      Cadastrar-se
                     </Button>
                   ) : null}
                 </Grid>
@@ -363,25 +696,3 @@ export default function SignUp() {
     </Container>
   );
 }
-
-// @IsString()
-// cep: string;
-
-// @IsString()
-// street: string;
-
-// @IsString()
-// streetNumber: string;
-
-// @IsString()
-// neighborhood: string;
-
-// @IsOptional()
-// @IsString()
-// complement: string;
-
-// @IsString()
-// city: string;
-
-// @IsEnum(State)
-// state: State;
