@@ -2,26 +2,24 @@ import { Autocomplete, Button, Container, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
 import { forwardRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validator from 'validator';
 import { useAppDispatch } from '../../app/hooks';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
-
-import { IMaskInput } from 'react-imask';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
+import { IMaskInput } from 'react-imask';
+import { viacep } from '../../api/cep/cep.req';
 
 const steps = [
   'Dados para criação da conta',
   'Dados pessoais',
   'Dados de moradia',
   'Dados educacionais',
-  'Dados financeiros',
 ];
 
 interface TextMaskCustomProps {
@@ -99,26 +97,103 @@ interface GenderOption {
   value: string;
 }
 
-interface StateOption {
+interface UfOption {
   label: string;
   value: string;
 }
+
+//TODO separar gênero e identidade de gênero
+const ufOptions: UfOption[] = [
+  { label: 'AC', value: 'AC' },
+  { label: 'AL', value: 'AL' },
+  { label: 'AP', value: 'AP' },
+  { label: 'AM', value: 'AM' },
+  { label: 'BA', value: 'BA' },
+  { label: 'CE', value: 'CE' },
+  { label: 'DF', value: 'DF' },
+  { label: 'ES', value: 'ES' },
+  { label: 'GO', value: 'GO' },
+  { label: 'MA', value: 'MA' },
+  { label: 'MT', value: 'MT' },
+  { label: 'MS', value: 'MS' },
+  { label: 'MG', value: 'MG' },
+  { label: 'PA', value: 'PA' },
+  { label: 'PB', value: 'PB' },
+  { label: 'PR', value: 'PR' },
+  { label: 'PE', value: 'PE' },
+  { label: 'PI', value: 'PI' },
+  { label: 'RJ', value: 'RJ' },
+  { label: 'RN', value: 'RN' },
+  { label: 'RS', value: 'RS' },
+  { label: 'RO', value: 'RO' },
+  { label: 'RR', value: 'RR' },
+  { label: 'SC', value: 'SC' },
+  { label: 'SP', value: 'SP' },
+  { label: 'SE', value: 'SE' },
+  { label: 'TO', value: 'TO' },
+];
+const genderOptions: GenderOption[] = [
+  {
+    label: 'Homem',
+    value: 'Homem',
+  },
+  {
+    label: 'Mulher',
+    value: 'Mulher',
+  },
+  {
+    label: 'Não-Binário',
+    value: 'Não-Binário',
+  },
+  {
+    label: 'Outro',
+    value: 'Outro',
+  },
+];
+
+const ethnicityOptions: EthnicityOption[] = [
+  {
+    label: 'Amarela',
+    value: 'Amarela',
+  },
+  {
+    label: 'Branca',
+    value: 'Branca',
+  },
+  {
+    label: 'Indígena',
+    value: 'Indígena',
+  },
+  {
+    label: 'Parda',
+    value: 'Parda',
+  },
+  {
+    label: 'Preta',
+    value: 'Preta',
+  },
+];
 
 export default function SignUp() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [step, setStep] = useState<number>(0);
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
+
   const [email, setEmail] = useState<string>('');
   const [emailConfirmation, setEmailConfirmation] = useState<string>('');
+  const [emailConfirmed, setEmailConfirmed] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
-  const [cpf, setCpf] = useState<string>('');
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
-  const [ethnicity, setEthnicity] = useState<EthnicityOption | undefined>();
-  const [gender, setGender] = useState<GenderOption | undefined>();
+  const [passwordConfirmed, setPasswordConfirmed] = useState<boolean>(false);
 
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [cpf, setCpf] = useState<string>('');
+  const [ethnicity, setEthnicity] = useState<EthnicityOption | null>();
+  const [gender, setGender] = useState<GenderOption | null>();
+  const [generalIncome, setGeneralIncome] = useState<number>(0);
+  const [totalHouseHoldMembers, setTotalHouseHoldMembers] = useState<number>(0);
   const [phoneNumber1, setPhoneNumber1] = useState<string>('');
   const [phoneNumber2, setPhoneNumber2] = useState<string>('');
 
@@ -127,9 +202,58 @@ export default function SignUp() {
   const [streetNumber, setStreetNumber] = useState<string>('');
   const [neighborhood, setNeighborhood] = useState<string>('');
   const [complement, setComplement] = useState<string>('');
+  const [city, setCity] = useState<string>('');
+  const [uf, setUf] = useState<UfOption | null>();
 
-  const [generalIncome, setGeneralIncome] = useState<number>(0);
-  const [totalHouseHoldMembers, setTotalHouseHoldMembers] = useState<number>(0);
+  //TODO educational
+
+  const resetAddressFields = () => {
+    setStreet('');
+    setStreetNumber('');
+    setNeighborhood('');
+    setComplement('');
+    setCity('');
+    setUf(null);
+  };
+
+  const handleCepSearch = async () => {
+    try {
+      const data = await viacep.cep(cep);
+
+      const { logradouro, complemento, bairro, localidade } = data;
+
+      setStreet(logradouro);
+      setStreetNumber('');
+      setNeighborhood(bairro);
+      setComplement(complemento);
+      setCity(localidade);
+
+      setUf(ufOptions.find((option) => option.value === data.uf));
+    } catch (error) {
+      resetAddressFields();
+      console.log(error);
+    }
+  };
+
+  const handleWelcomePage = () => {
+    navigate('/');
+  };
+
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
+
+  const handlePreviousStep = () => {
+    setStep(step - 1);
+  };
+
+  const handleConfirmEmail = () => {
+    setEmailConfirmed(email === emailConfirmation);
+  };
+
+  const handleConfirmPassword = () => {
+    setPasswordConfirmed(password === passwordConfirmation);
+  };
 
   const checkFieldEmptiness = (field: string) => {
     return validator.isEmpty(field, { ignore_whitespace: true });
@@ -189,14 +313,6 @@ export default function SignUp() {
       .join('');
 
     setCep(convertedCep);
-  };
-
-  const handleNextStep = () => {
-    setStep(step + 1);
-  };
-
-  const handlePreviousStep = () => {
-    setStep(step - 1);
   };
 
   return (
@@ -267,7 +383,7 @@ export default function SignUp() {
         </Grid>
 
         <Grid item container xs={12} my={5} justifyContent={'center'}>
-          <Grid item container xs={10} mb={3}>
+          <Grid item container xs={10} mb={3} justifyContent={'center'}>
             <form noValidate>
               {/* Dados para conta */}
               {step === 0 ? (
@@ -278,15 +394,20 @@ export default function SignUp() {
                         id="email"
                         margin="normal"
                         required
+                        autoFocus
                         fullWidth
                         label="E-mail"
                         name="email"
                         value={email}
                         variant="outlined"
                         placeholder="Digite seu e-mail..."
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+
+                          handleConfirmEmail();
+                        }}
                         type="email"
-                        // error={checkFieldErrors(fieldErrors, "email") !== ""}
+                        error={emailConfirmed}
                         // helperText={checkFieldErrors(fieldErrors, "email")}
                         // disabled={loading}
                       />
@@ -303,9 +424,13 @@ export default function SignUp() {
                         value={emailConfirmation}
                         variant="outlined"
                         placeholder="Confirme seu e-mail..."
-                        onChange={(e) => setEmailConfirmation(e.target.value)}
+                        onChange={(e) => {
+                          setEmailConfirmation(e.target.value);
+
+                          handleConfirmEmail();
+                        }}
                         type="email"
-                        // error={checkFieldErrors(fieldErrors, "email") !== ""}
+                        error={emailConfirmed}
                         // helperText={checkFieldErrors(fieldErrors, "email")}
                         // disabled={loading}
                       />
@@ -322,11 +447,15 @@ export default function SignUp() {
                           fullWidth
                           name="password"
                           label="Senha"
-                          type="password"
                           variant="outlined"
                           placeholder="Digite sua senha..."
                           value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+
+                            handleConfirmPassword();
+                          }}
+                          type="password"
                           // error={}
                           // helperText={checkFieldErrors(fieldErrors, "password")}
                           // disabled={loading}
@@ -341,13 +470,15 @@ export default function SignUp() {
                           fullWidth
                           name="password-confirmation"
                           label="Confirmação de senha"
-                          type="password"
                           variant="outlined"
                           placeholder="Confirme sua senha..."
                           value={passwordConfirmation}
-                          onChange={(e) =>
-                            setPasswordConfirmation(e.target.value)
-                          }
+                          onChange={(e) => {
+                            setPasswordConfirmation(e.target.value);
+
+                            handleConfirmPassword();
+                          }}
+                          type="password"
                           // error={checkFieldErrors(fieldErrors, "password") !== ""}
                           // helperText={checkFieldErrors(fieldErrors, "password")}
                           // disabled={loading}
@@ -404,7 +535,15 @@ export default function SignUp() {
                     <Grid item xs={3} mr={2}>
                       <Autocomplete
                         id="ethnicity-options"
-                        options={[1, 2]}
+                        value={ethnicity}
+                        onChange={(
+                          event: any,
+                          newValue: EthnicityOption | null
+                        ) => {
+                          setEthnicity(newValue);
+                        }}
+                        options={ethnicityOptions}
+                        getOptionLabel={(option) => option.label}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -420,7 +559,15 @@ export default function SignUp() {
                     <Grid item xs={3} mr={2}>
                       <Autocomplete
                         id="gender-options"
-                        options={[1, 2]}
+                        options={genderOptions}
+                        value={gender}
+                        onChange={(
+                          event: any,
+                          newValue: GenderOption | null
+                        ) => {
+                          setGender(newValue);
+                        }}
+                        getOptionLabel={(option) => option.label}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -435,7 +582,7 @@ export default function SignUp() {
 
                     <Grid item xs={3} ml={2} mr={2} py={2}>
                       <InputLabel htmlFor="formatted-cpf-mask-input">
-                        CPF
+                        CPF *
                       </InputLabel>
                       <Input
                         required
@@ -457,7 +604,6 @@ export default function SignUp() {
                         </InputLabel>
                         <Input
                           required
-                          autoFocus
                           value={phoneNumber1}
                           onChange={convertPhoneNumber1}
                           name="phone-number-1"
@@ -484,7 +630,7 @@ export default function SignUp() {
                   </Grid>
                   <Grid item xs={12} container>
                     {/* //TODO apply money mask */}
-                    <Grid xs={5.5} mr={2}>
+                    <Grid xs={4} mr={2}>
                       <TextField
                         id="general-income"
                         margin="normal"
@@ -505,7 +651,7 @@ export default function SignUp() {
                       />
                     </Grid>
 
-                    <Grid xs={5.5} mr={2}>
+                    <Grid xs={2} mr={2}>
                       <TextField
                         id="total-household-members"
                         margin="normal"
@@ -515,7 +661,6 @@ export default function SignUp() {
                         type="number"
                         label="Total de membros na moradia"
                         variant="outlined"
-                        placeholder="Digite o número total de membros em sua moradia..."
                         value={totalHouseHoldMembers}
                         onChange={(e) => {
                           setTotalHouseHoldMembers(parseInt(e.target.value));
@@ -533,9 +678,9 @@ export default function SignUp() {
               {step === 2 ? (
                 <Grid item xs={12} container>
                   <Grid item container xs={12}>
-                    <Grid item xs={3} mr={2} py={2}>
+                    <Grid item xs={2} mr={2} py={2}>
                       <InputLabel htmlFor="formatted-cep-mask-input">
-                        CEP
+                        CEP *
                       </InputLabel>
                       <Input
                         required
@@ -548,6 +693,15 @@ export default function SignUp() {
                         placeholder="Digite seu CEP..."
                       />
                     </Grid>
+                    <Grid item xs={4} mr={2} py={2} alignSelf="flex-end">
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={handleCepSearch}
+                      >
+                        Buscar
+                      </Button>
+                    </Grid>
                   </Grid>
 
                   <Grid item container xs={12}>
@@ -557,11 +711,11 @@ export default function SignUp() {
                         margin="normal"
                         required
                         fullWidth
-                        label="Rua"
+                        label="Endereço"
                         name="street"
                         value={street}
                         variant="outlined"
-                        placeholder="Digite sua rua..."
+                        placeholder="Digite seu endereço..."
                         onChange={(e) => setStreet(e.target.value)}
                         //   error={checkFieldErrors(fieldErrors, "email") !== ""}
                         //   helperText={checkFieldErrors(fieldErrors, "email")}
@@ -623,33 +777,40 @@ export default function SignUp() {
                   </Grid>
 
                   <Grid item xs={12} container>
-                    <Grid item xs={3} mr={2}>
-                      <Autocomplete
+                    <Grid item xs={4} mr={2}>
+                      <TextField
                         id="city"
-                        options={[1, 2]}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            margin="normal"
-                            required
-                            fullWidth
-                            label="Selecione sua cidade..."
-                          />
-                        )}
+                        margin="normal"
+                        fullWidth
+                        required
+                        name="city"
+                        label="Cidade"
+                        variant="outlined"
+                        placeholder="Digite sua cidade..."
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "password")}
+                        //   disabled={loading}
                       />
                     </Grid>
 
-                    <Grid item xs={3} mr={2}>
+                    <Grid item xs={1} mr={2}>
                       <Autocomplete
-                        id="state"
-                        options={[1, 2]}
+                        id="uf-options"
+                        value={uf}
+                        onChange={(event: any, newValue: UfOption | null) => {
+                          setUf(newValue);
+                        }}
+                        options={ufOptions}
+                        getOptionLabel={(option) => option.label}
                         renderInput={(params) => (
                           <TextField
                             {...params}
                             margin="normal"
                             required
                             fullWidth
-                            label="Selecione seu estado..."
+                            label="UF"
                           />
                         )}
                       />
@@ -658,6 +819,10 @@ export default function SignUp() {
                 </Grid>
               ) : null}
 
+              {/* Dados educacionais */}
+              {/* {step === 3 ? () : null} */}
+
+              {/* Botões de navegação */}
               <Grid item xs={12} container my={4}>
                 <Grid item xs={3} container justifyContent="flex-start">
                   {step > 0 ? (
@@ -665,13 +830,22 @@ export default function SignUp() {
                       size="large"
                       variant="contained"
                       onClick={handlePreviousStep}
+                      disabled={step <= 0}
                     >
                       Voltar
                     </Button>
                   ) : null}
                 </Grid>
 
-                <Grid item xs={6} />
+                <Grid item xs={6} container justifyContent="center">
+                  <Button
+                    size="large"
+                    variant="contained"
+                    onClick={handleWelcomePage}
+                  >
+                    Página inicial
+                  </Button>
+                </Grid>
 
                 <Grid item xs={3} container justifyContent="flex-end">
                   {step < steps.length - 1 ? (
@@ -679,6 +853,7 @@ export default function SignUp() {
                       size="large"
                       variant="contained"
                       onClick={handleNextStep}
+                      disabled={step >= steps.length - 1}
                     >
                       Próximo
                     </Button>
