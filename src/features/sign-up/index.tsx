@@ -9,11 +9,14 @@ import Typography from '@mui/material/Typography';
 import { forwardRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validator from 'validator';
-import { useAppDispatch } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
 import { IMaskInput } from 'react-imask';
 import { viacep } from '../../api/cep/cep.req';
+import ServerRequestDatePicker from './components/ServerRequestDatePicker';
+import { selectSignUp } from './signUpSlice';
+import { NumericFormat, NumericFormatProps } from 'react-number-format';
 
 const steps = [
   'Dados para criação da conta',
@@ -67,6 +70,26 @@ const PhoneNumberMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
   }
 );
 
+const YearMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
+  function TextMaskCustom(props, ref) {
+    const { onChange, ...other } = props;
+    return (
+      <IMaskInput
+        {...other}
+        mask="0000"
+        definitions={{
+          '#': /[1-9]/,
+        }}
+        // inputRef={ref}
+        onAccept={(value: any) =>
+          onChange({ target: { name: props.name, value } })
+        }
+        overwrite
+      />
+    );
+  }
+);
+
 const CepMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
   function TextMaskCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -87,6 +110,35 @@ const CepMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
   }
 );
 
+interface NumericCustomProps {
+  onChange: (event: { target: { name: string; value: string } }) => void;
+  name: string;
+}
+
+const NumericFormatCustom = forwardRef<NumericFormatProps, NumericCustomProps>(
+  function NumericFormatCustom(props, ref) {
+    const { onChange, ...other } = props;
+
+    return (
+      <NumericFormat
+        {...other}
+        getInputRef={ref}
+        onValueChange={(values) => {
+          onChange({
+            target: {
+              name: props.name,
+              value: values.value,
+            },
+          });
+        }}
+        thousandSeparator
+        valueIsNumericString
+        prefix="R$"
+      />
+    );
+  }
+);
+
 interface EthnicityOption {
   label: string;
   value: string;
@@ -102,7 +154,11 @@ interface UfOption {
   value: string;
 }
 
-//TODO separar gênero e identidade de gênero
+interface SchoolingLevelOption {
+  label: string;
+  value: string;
+}
+
 const ufOptions: UfOption[] = [
   { label: 'AC', value: 'AC' },
   { label: 'AL', value: 'AL' },
@@ -132,6 +188,15 @@ const ufOptions: UfOption[] = [
   { label: 'SE', value: 'SE' },
   { label: 'TO', value: 'TO' },
 ];
+
+const schoolingLevelOptions: SchoolingLevelOption[] = [
+  { label: 'Ensino Técnico Incompleto', value: 'Ensino Técnico Incompleto' },
+  { label: 'Ensino Técnico Completo', value: 'Ensino Técnico Completo' },
+  { label: 'Ensino Médio Incompleto', value: 'Ensino Médio Incompleto' },
+  { label: 'Ensino Médio Completo', value: 'Ensino Médio Completo' },
+  { label: 'Supletivo', value: 'Supletivo' },
+];
+
 const genderOptions: GenderOption[] = [
   {
     label: 'Homem',
@@ -178,6 +243,10 @@ export default function SignUp() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const signUp = useAppSelector(selectSignUp);
+
+  const { birthDate } = signUp;
+
   const [step, setStep] = useState<number>(0);
 
   const [email, setEmail] = useState<string>('');
@@ -206,6 +275,12 @@ export default function SignUp() {
   const [uf, setUf] = useState<UfOption | null>();
 
   //TODO educational
+  const [schoolingLevel, setSchoolingLevel] =
+    useState<SchoolingLevelOption | null>();
+  const [courseName, setCourseName] = useState<string | null>();
+  const [institutionName, setInstitutionName] = useState<string>('');
+  const [startYear, setStartYear] = useState<string>('');
+  const [conclusionYear, setConclusionYear] = useState<string | null>();
 
   const resetAddressFields = () => {
     setStreet('');
@@ -493,7 +568,7 @@ export default function SignUp() {
               {step === 1 ? (
                 <Grid item xs={12} container>
                   <Grid item container xs={12}>
-                    <Grid item xs={5.5} mr={2}>
+                    <Grid item xs={4} mr={2}>
                       <TextField
                         id="first-name"
                         margin="normal"
@@ -512,7 +587,7 @@ export default function SignUp() {
                       />
                     </Grid>
 
-                    <Grid xs={5.5} mr={2}>
+                    <Grid xs={4} mr={2}>
                       <TextField
                         id="last-name"
                         margin="normal"
@@ -528,6 +603,25 @@ export default function SignUp() {
                         //   helperText={checkFieldErrors(fieldErrors, "password")}
                         //   disabled={loading}
                       />
+                    </Grid>
+
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      mr={2}
+                      // sx={{ border: '1px solid red' }}
+                      // alignItems="center"
+                    >
+                      <Grid item xs={12}>
+                        <Typography>Data de nascimento *</Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <ServerRequestDatePicker />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography variant="body2">MM/DD/AAAA</Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
 
@@ -631,7 +725,7 @@ export default function SignUp() {
                   <Grid item xs={12} container>
                     {/* //TODO apply money mask */}
                     <Grid xs={4} mr={2}>
-                      <TextField
+                      {/* <TextField
                         id="general-income"
                         margin="normal"
                         required
@@ -645,6 +739,27 @@ export default function SignUp() {
                         onChange={(e) =>
                           setGeneralIncome(parseFloat(e.target.value))
                         }
+                        //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                        //   helperText={checkFieldErrors(fieldErrors, "password")}
+                        //   disabled={loading}
+                      /> */}
+
+                      <TextField
+                        id="general-income"
+                        required
+                        name="general-income"
+                        label="Renda familiar total"
+                        margin="normal"
+                        variant="outlined"
+                        placeholder="Digite o valor total de sua renda familiar..."
+                        fullWidth
+                        value={generalIncome}
+                        onChange={(e) =>
+                          setGeneralIncome(parseFloat(e.target.value))
+                        }
+                        InputProps={{
+                          inputComponent: NumericFormatCustom as any,
+                        }}
                         //   error={checkFieldErrors(fieldErrors, "password") !== ""}
                         //   helperText={checkFieldErrors(fieldErrors, "password")}
                         //   disabled={loading}
@@ -796,6 +911,7 @@ export default function SignUp() {
                     </Grid>
 
                     <Grid item xs={1} mr={2}>
+                      {/* //TODO fix UF bug */}
                       <Autocomplete
                         id="uf-options"
                         value={uf}
@@ -820,7 +936,83 @@ export default function SignUp() {
               ) : null}
 
               {/* Dados educacionais */}
-              {/* {step === 3 ? () : null} */}
+              {step === 3 ? (
+                <Grid item xs={12} container>
+                  <Grid item xs={12} mr={2}>
+                    <TextField
+                      id="instituition-name"
+                      autoFocus
+                      margin="normal"
+                      fullWidth
+                      required
+                      name="instituition-name"
+                      label="Nome da instituição"
+                      variant="outlined"
+                      placeholder="Digite o nome da instituição..."
+                      value={institutionName}
+                      onChange={(e) => setInstitutionName(e.target.value)}
+                      //   error={checkFieldErrors(fieldErrors, "password") !== ""}
+                      //   helperText={checkFieldErrors(fieldErrors, "password")}
+                      //   disabled={loading}
+                    />
+                  </Grid>
+
+                  <Grid item xs={5.5} mr={2}>
+                    <Autocomplete
+                      id="schooling-level-options"
+                      value={schoolingLevel}
+                      onChange={(
+                        event: any,
+                        newValue: SchoolingLevelOption | null
+                      ) => {
+                        setSchoolingLevel(newValue);
+                      }}
+                      options={schoolingLevelOptions}
+                      getOptionLabel={(option) => option.label}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          margin="normal"
+                          required
+                          fullWidth
+                          label="Nível de escolaridade"
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={3} container>
+                    <Grid item xs={12} mr={2} py={2}>
+                      <InputLabel htmlFor="formatted-start-year-mask-input">
+                        Ano de início *
+                      </InputLabel>
+                      <Input
+                        required
+                        value={startYear}
+                        onChange={(e) => setStartYear(e.target.value)}
+                        name="start-year"
+                        id="formatted-start-year-mask-input"
+                        inputComponent={YearMaskCustom as any}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={3} container>
+                    <Grid item xs={12} mr={2} py={2}>
+                      <InputLabel htmlFor="formatted-conclusion-year-mask-input">
+                        Ano de conclusão
+                      </InputLabel>
+                      <Input
+                        value={conclusionYear}
+                        onChange={(e) => setConclusionYear(e.target.value)}
+                        name="conclusion-year"
+                        id="formatted-conclusion-year-mask-input"
+                        inputComponent={YearMaskCustom as any}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ) : null}
 
               {/* Botões de navegação */}
               <Grid item xs={12} container my={4}>
