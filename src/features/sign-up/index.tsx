@@ -1,242 +1,45 @@
 import { Autocomplete, Button, Container, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import { forwardRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validator from 'validator';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import { IMaskInput } from 'react-imask';
 import { viacep } from '../../api/cep/cep.req';
-import ServerRequestDatePicker from './components/ServerRequestDatePicker';
-import { selectSignUp } from './signUpSlice';
-import { NumericFormat, NumericFormatProps } from 'react-number-format';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import BirthDatePicker from './components/BirthDatePicker';
+import {
+  CepMaskCustom,
+  CpfMaskCustom,
+  NumericFormatCustom,
+  PhoneNumberMaskCustom,
+  YearMaskCustom,
+} from './masks';
+import {
+  ethnicityOptions,
+  genderOptions,
+  schoolingLevelOptions,
+  ufOptions,
+} from './options';
+import { selectSignUp, setBirthDate } from './signUpSlice';
+import { EthnicityOption } from './types/ethnicity-option';
+import { GenderOption } from './types/gender-option';
+import { SchoolingLevelOption } from './types/schooling-level-option';
+import { SignUpBody } from './types/sign-up-body';
+import { UfOption } from './types/uf-option';
+import { FieldErrors } from '../../utils/checkFieldErrors';
 
 const steps = [
   'Dados para criação da conta',
   'Dados pessoais',
   'Dados de moradia',
   'Dados educacionais',
-];
-
-interface TextMaskCustomProps {
-  onChange: (event: { target: { name: string; value: string } }) => void;
-  name: string;
-}
-
-const CpfMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
-  function TextMaskCustom(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-      <IMaskInput
-        {...other}
-        mask="000.000.000-00"
-        definitions={{
-          '#': /[1-9]/,
-        }}
-        // inputRef={ref}
-        onAccept={(value: any) =>
-          onChange({ target: { name: props.name, value } })
-        }
-        overwrite
-      />
-    );
-  }
-);
-
-const PhoneNumberMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
-  function TextMaskCustom(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-      <IMaskInput
-        {...other}
-        mask="(00) 0 0000-0000"
-        definitions={{
-          '#': /[1-9]/,
-        }}
-        // inputRef={ref}
-        onAccept={(value: any) =>
-          onChange({ target: { name: props.name, value } })
-        }
-        overwrite
-      />
-    );
-  }
-);
-
-const YearMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
-  function TextMaskCustom(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-      <IMaskInput
-        {...other}
-        mask="0000"
-        definitions={{
-          '#': /[1-9]/,
-        }}
-        // inputRef={ref}
-        onAccept={(value: any) =>
-          onChange({ target: { name: props.name, value } })
-        }
-        overwrite
-      />
-    );
-  }
-);
-
-const CepMaskCustom = forwardRef<HTMLElement, TextMaskCustomProps>(
-  function TextMaskCustom(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-      <IMaskInput
-        {...other}
-        mask="00000-000"
-        definitions={{
-          '#': /[1-9]/,
-        }}
-        // inputRef={ref}
-        onAccept={(value: any) =>
-          onChange({ target: { name: props.name, value } })
-        }
-        overwrite
-      />
-    );
-  }
-);
-
-interface NumericCustomProps {
-  onChange: (event: { target: { name: string; value: string } }) => void;
-  name: string;
-}
-
-const NumericFormatCustom = forwardRef<NumericFormatProps, NumericCustomProps>(
-  function NumericFormatCustom(props, ref) {
-    const { onChange, ...other } = props;
-
-    return (
-      <NumericFormat
-        {...other}
-        getInputRef={ref}
-        onValueChange={(values) => {
-          onChange({
-            target: {
-              name: props.name,
-              value: values.value,
-            },
-          });
-        }}
-        thousandSeparator
-        valueIsNumericString
-        prefix="R$"
-      />
-    );
-  }
-);
-
-interface EthnicityOption {
-  label: string;
-  value: string;
-}
-
-interface GenderOption {
-  label: string;
-  value: string;
-}
-
-interface UfOption {
-  label: string;
-  value: string;
-}
-
-interface SchoolingLevelOption {
-  label: string;
-  value: string;
-}
-
-const ufOptions: UfOption[] = [
-  { label: 'AC', value: 'AC' },
-  { label: 'AL', value: 'AL' },
-  { label: 'AP', value: 'AP' },
-  { label: 'AM', value: 'AM' },
-  { label: 'BA', value: 'BA' },
-  { label: 'CE', value: 'CE' },
-  { label: 'DF', value: 'DF' },
-  { label: 'ES', value: 'ES' },
-  { label: 'GO', value: 'GO' },
-  { label: 'MA', value: 'MA' },
-  { label: 'MT', value: 'MT' },
-  { label: 'MS', value: 'MS' },
-  { label: 'MG', value: 'MG' },
-  { label: 'PA', value: 'PA' },
-  { label: 'PB', value: 'PB' },
-  { label: 'PR', value: 'PR' },
-  { label: 'PE', value: 'PE' },
-  { label: 'PI', value: 'PI' },
-  { label: 'RJ', value: 'RJ' },
-  { label: 'RN', value: 'RN' },
-  { label: 'RS', value: 'RS' },
-  { label: 'RO', value: 'RO' },
-  { label: 'RR', value: 'RR' },
-  { label: 'SC', value: 'SC' },
-  { label: 'SP', value: 'SP' },
-  { label: 'SE', value: 'SE' },
-  { label: 'TO', value: 'TO' },
-];
-
-const schoolingLevelOptions: SchoolingLevelOption[] = [
-  { label: 'Ensino Técnico Incompleto', value: 'Ensino Técnico Incompleto' },
-  { label: 'Ensino Técnico Completo', value: 'Ensino Técnico Completo' },
-  { label: 'Ensino Médio Incompleto', value: 'Ensino Médio Incompleto' },
-  { label: 'Ensino Médio Completo', value: 'Ensino Médio Completo' },
-  { label: 'Supletivo', value: 'Supletivo' },
-];
-
-const genderOptions: GenderOption[] = [
-  {
-    label: 'Homem',
-    value: 'Homem',
-  },
-  {
-    label: 'Mulher',
-    value: 'Mulher',
-  },
-  {
-    label: 'Não-Binário',
-    value: 'Não-Binário',
-  },
-  {
-    label: 'Outro',
-    value: 'Outro',
-  },
-];
-
-const ethnicityOptions: EthnicityOption[] = [
-  {
-    label: 'Amarela',
-    value: 'Amarela',
-  },
-  {
-    label: 'Branca',
-    value: 'Branca',
-  },
-  {
-    label: 'Indígena',
-    value: 'Indígena',
-  },
-  {
-    label: 'Parda',
-    value: 'Parda',
-  },
-  {
-    label: 'Preta',
-    value: 'Preta',
-  },
 ];
 
 export default function SignUp() {
@@ -248,6 +51,9 @@ export default function SignUp() {
   const { birthDate } = signUp;
 
   const [step, setStep] = useState<number>(0);
+
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors[]>([]);
+  const [requestError, setRequestError] = useState('');
 
   const [email, setEmail] = useState<string>('');
   const [emailConfirmation, setEmailConfirmation] = useState<string>('');
@@ -274,7 +80,6 @@ export default function SignUp() {
   const [city, setCity] = useState<string>('');
   const [uf, setUf] = useState<UfOption | null>();
 
-  //TODO educational
   const [schoolingLevel, setSchoolingLevel] =
     useState<SchoolingLevelOption | null>();
   const [courseName, setCourseName] = useState<string | null>();
@@ -289,6 +94,51 @@ export default function SignUp() {
     setComplement('');
     setCity('');
     setUf(null);
+  };
+
+  //TODO validation
+  const handleSignUp = () => {
+    const body: SignUpBody = {
+      user: {
+        email,
+        password,
+        firstName,
+        lastName,
+        cpf,
+        birthDate: new Date(birthDate),
+        ethnicity: ethnicity ? ethnicity.value : '',
+        gender: gender ? gender.value : '',
+      },
+
+      address: {
+        cep,
+        street,
+        streetNumber,
+        neighborhood,
+        complement,
+        city,
+        state: uf ? uf.value : '',
+      },
+
+      phoneNumbers: [phoneNumber1, phoneNumber2].map((phone) => {
+        return {
+          phoneNumber: phone,
+        };
+      }),
+
+      educationInfo: {
+        schoolingLevel: schoolingLevel ? schoolingLevel.value : '',
+        courseName,
+        institutionName,
+        startYear,
+        conclusionYear,
+      },
+
+      financialInfo: {
+        generalIncome,
+        totalHouseHoldMembers,
+      },
+    };
   };
 
   const handleCepSearch = async () => {
@@ -389,6 +239,10 @@ export default function SignUp() {
 
     setCep(convertedCep);
   };
+
+  useEffect(() => {
+    dispatch(setBirthDate(''));
+  }, []);
 
   return (
     <Container maxWidth="xl">
@@ -617,7 +471,7 @@ export default function SignUp() {
                         <Typography>Data de nascimento *</Typography>
                       </Grid>
                       <Grid item xs={12}>
-                        <ServerRequestDatePicker />
+                        <BirthDatePicker />
                       </Grid>
                       <Grid item xs={12}>
                         <Typography variant="body2">MM/DD/AAAA</Typography>
@@ -644,7 +498,7 @@ export default function SignUp() {
                             margin="normal"
                             required
                             fullWidth
-                            label="Selecione sua etnia..."
+                            label="Qual sua etnia?"
                           />
                         )}
                       />
@@ -668,7 +522,7 @@ export default function SignUp() {
                             margin="normal"
                             required
                             fullWidth
-                            label="Selecione seu gênero..."
+                            label="Como você se identifica?"
                           />
                         )}
                       />
@@ -1050,7 +904,11 @@ export default function SignUp() {
                       Próximo
                     </Button>
                   ) : step === steps.length - 1 ? (
-                    <Button size="large" variant="contained">
+                    <Button
+                      size="large"
+                      variant="contained"
+                      onClick={handleSignUp}
+                    >
                       Cadastrar-se
                     </Button>
                   ) : null}

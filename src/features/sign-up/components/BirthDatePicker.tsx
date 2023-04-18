@@ -44,7 +44,8 @@ const dateString = `${currentDate.getFullYear()}-${
 
 const initialValue = dayjs(dateString);
 
-export default function ServerRequestDatePicker() {
+//TODO bug when typing date and then not selecting one in the calendar (AVOID)
+export default function BirthDatePicker() {
   const dispatch = useAppDispatch();
 
   const signUp = useAppSelector(selectSignUp);
@@ -53,7 +54,9 @@ export default function ServerRequestDatePicker() {
   const requestAbortController = React.useRef<AbortController | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
-  const [value, setValue] = React.useState<Dayjs | null>(initialValue);
+  const [value, setValue] = React.useState<Dayjs | null>(
+    birthDate ? dayjs(birthDate) : initialValue
+  );
 
   const fetchHighlightedDays = (date: Dayjs) => {
     const controller = new AbortController();
