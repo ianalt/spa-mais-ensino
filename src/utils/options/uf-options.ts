@@ -1,0 +1,32 @@
+import { UfOption } from './types/uf-option';
+import { Uf } from '../enums/uf.enum';
+
+export const ufOptions: UfOption[] = [
+  { label: 'AC', value: Uf.AC },
+  { label: 'AL', value: Uf.AL },
+  { label: 'AP', value: Uf.AP },
+  { label: 'AM', value: Uf.AM },
+  { label: 'BA', value: Uf.BA },
+  { label: 'CE', value: Uf.CE },
+  { label: 'DF', value: Uf.DF },
+  { label: 'ES', value: Uf.ES },
+  { label: 'GO', value: Uf.GO },
+  { label: 'MA', value: Uf.MA },
+  { label: 'MT', value: Uf.MT },
+  { label: 'MS', value: Uf.MS },
+  { label: 'MG', value: Uf.MG },
+  { label: 'PA', value: Uf.PA },
+  { label: 'PB', value: Uf.PB },
+  { label: 'PR', value: Uf.PR },
+  { label: 'PE', value: Uf.PE },
+  { label: 'PI', value: Uf.PI },
+  { label: 'RJ', value: Uf.RJ },
+  { label: 'RN', value: Uf.RN },
+  { label: 'RS', value: Uf.RS },
+  { label: 'RO', value: Uf.RO },
+  { label: 'RR', value: Uf.RR },
+  { label: 'SC', value: Uf.SC },
+  { label: 'SP', value: Uf.SP },
+  { label: 'SE', value: Uf.SE },
+  { label: 'TO', value: Uf.TO },
+];

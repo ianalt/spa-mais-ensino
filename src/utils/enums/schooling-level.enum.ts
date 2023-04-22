@@ -1,0 +1,17 @@
+export enum SchoolingLevel {
+  ETI = 'Ensino Técnico Incompleto',
+  ETC = 'Ensino Técnico Completo',
+  EMI = 'Ensino Médio Incompleto',
+  EMC = 'Ensino Médio Completo',
+  S = 'Supletivo',
+  ESI = 'Ensino Superior Incompleto',
+  ESC = 'Ensino Superior Completo',
+  PGI = 'Pós-Graduação Incompleta',
+  PGC = 'Pós-Graduação Completa',
+  MI = 'Mestrado Incompleto',
+  MC = 'Mestrado Completo',
+  DI = 'Doutorado Incompleto',
+  DC = 'Doutorado Completo',
+  PDI = 'Pós-Doutorado Incompleto',
+  PDC = 'Pós-Doutorado Completo',
+}

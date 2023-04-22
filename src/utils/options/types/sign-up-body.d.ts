@@ -1,3 +1,7 @@
+import { Ethnicity } from '../../enums/ethnicity.enum';
+import { Gender } from '../../enums/gender.enum';
+import { SchoolingLevel } from '../../enums/schooling-level.enum';
+
 export interface SignUpBody {
   user: {
     email: string;
@@ -5,10 +9,9 @@ export interface SignUpBody {
     firstName: string;
     lastName: string;
     cpf: string;
-    //TODO change to Date later
-    birthDate: Date;
-    ethnicity: string;
-    gender: string;
+    birthDate: string;
+    ethnicity: Ethnicity;
+    gender: Gender;
   };
 
   address: {
@@ -18,7 +21,7 @@ export interface SignUpBody {
     neighborhood: string;
     complement: string;
     city: string;
-    state: string;
+    uf: Uf;
   };
 
   phoneNumbers: {
@@ -26,7 +29,7 @@ export interface SignUpBody {
   }[];
 
   educationInfo: {
-    schoolingLevel: string;
+    schoolingLevel: SchoolingLevel;
     courseName?: string | null;
     institutionName: string;
     startYear: string;
