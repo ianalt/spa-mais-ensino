@@ -43,6 +43,7 @@ import { SignUpBody } from '../../utils/options/types/sign-up-body';
 import { UfOption } from '../../utils/options/types/uf-option';
 import { ufOptions } from '../../utils/options/uf-options';
 import { performSignUp, selectSignUp } from './signUpSlice';
+import { convertBirthDate } from '../../utils/conversions/convert-birth-date';
 
 const steps = [
   'Dados para criação da conta',
@@ -104,116 +105,6 @@ export default function SignUp() {
     setUf(null);
   };
 
-  //TODO validation
-
-  const handleEmailValidation = () => {
-    setEmailConfirmed(
-      email === emailConfirmation &&
-        validateEmail(email) &&
-        validateEmail(emailConfirmation)
-    );
-  };
-
-  const handleSignUp = () => {
-    const body: SignUpBody = {
-      user: {
-        email,
-        password,
-        firstName,
-        lastName,
-        cpf,
-        birthDate: convertBirthDate(birthDate),
-        ethnicity: ethnicity ? ethnicity.value : Ethnicity.AMARELA,
-        gender: gender ? gender.value : Gender.HOMEM_CIS,
-      },
-
-      address: {
-        cep,
-        street,
-        streetNumber,
-        neighborhood,
-        complement,
-        city,
-        uf: uf ? uf.value : Uf.RJ,
-      },
-
-      phoneNumbers: [phoneNumber1, phoneNumber2].map((phone) => {
-        return {
-          phoneNumber: phone,
-        };
-      }),
-
-      educationInfo: {
-        schoolingLevel: schoolingLevel
-          ? schoolingLevel.value
-          : SchoolingLevel.DC,
-        courseName,
-        institutionName,
-        startYear,
-        conclusionYear,
-      },
-
-      financialInfo: {
-        generalIncome,
-        totalHouseHoldMembers,
-      },
-    };
-
-    // console.log(body);
-
-    try {
-      dispatch(performSignUp(body));
-      console.log(body);
-    } catch (e: any) {
-      if (e.isAxiosError) {
-        setRequestError(e.response.data.message);
-      }
-    }
-  };
-
-  const handleCepSearch = async () => {
-    try {
-      const data = await viacep.cep(cep);
-
-      const { logradouro, complemento, bairro, localidade } = data;
-
-      setStreet(logradouro);
-      setStreetNumber('');
-      setNeighborhood(bairro);
-      setComplement(complemento);
-      setCity(localidade);
-      setUf(ufOptions.find((option) => option.value === data.uf));
-    } catch (error) {
-      resetAddressFields();
-      console.log(error);
-    }
-  };
-
-  const handleWelcomePage = () => {
-    navigate('/');
-  };
-
-  const handleNextStep = () => {
-    setStep(step + 1);
-  };
-
-  const handlePreviousStep = () => {
-    setStep(step - 1);
-  };
-
-  const handleConfirmPassword = () => {
-    setPasswordConfirmed(password === passwordConfirmation);
-  };
-
-  const convertBirthDate = (date: string) => {
-    const dateParts = date.split('/');
-
-    const convertedBirthDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-    console.log(convertedBirthDate);
-
-    return convertedBirthDate;
-  };
-
   const convertCpf = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
 
@@ -264,6 +155,96 @@ export default function SignUp() {
       .join('');
 
     setCep(convertedCep);
+  };
+
+  //TODO validation
+
+  const handleEmailValidation = () => {
+    setEmailConfirmed(
+      email === emailConfirmation &&
+        validateEmail(email) &&
+        validateEmail(emailConfirmation)
+    );
+  };
+
+  const handleSignUp = () => {
+    const body: SignUpBody = {
+      user: {
+        email,
+        password,
+        firstName,
+        lastName,
+        cpf,
+        birthDate: convertBirthDate(birthDate),
+        ethnicity: ethnicity?.value,
+        gender: gender?.value,
+      },
+
+      address: {
+        cep,
+        street,
+        streetNumber,
+        neighborhood,
+        complement,
+        city,
+        uf: uf?.value,
+      },
+
+      phoneNumbers: [phoneNumber1, phoneNumber2].map((phone) => {
+        return {
+          phoneNumber: phone,
+        };
+      }),
+
+      educationInfo: {
+        schoolingLevel: schoolingLevel?.value,
+        courseName,
+        institutionName,
+        startYear,
+        conclusionYear,
+      },
+
+      financialInfo: {
+        generalIncome,
+        totalHouseHoldMembers,
+      },
+    };
+
+    dispatch(performSignUp(body));
+  };
+
+  const handleCepSearch = async () => {
+    try {
+      const data = await viacep.cep(cep);
+
+      const { logradouro, complemento, bairro, localidade } = data;
+
+      setStreet(logradouro);
+      setStreetNumber('');
+      setNeighborhood(bairro);
+      setComplement(complemento);
+      setCity(localidade);
+      setUf(ufOptions.find((option) => option.value === data.uf));
+    } catch (error) {
+      resetAddressFields();
+      console.log(error);
+    }
+  };
+
+  const handleWelcomePage = () => {
+    navigate('/');
+  };
+
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
+
+  const handlePreviousStep = () => {
+    setStep(step - 1);
+  };
+
+  const handleConfirmPassword = () => {
+    setPasswordConfirmed(password === passwordConfirmation);
   };
 
   return (
@@ -334,13 +315,6 @@ export default function SignUp() {
         </Grid>
 
         <Grid item container xs={12} my={5} justifyContent={'center'}>
-          {/* //TODO req error */}
-          {requestError !== '' && (
-            <Grid item xs={10} mb={3} justifyContent={'center'}>
-              <Alert severity="error">{requestError}</Alert>
-            </Grid>
-          )}
-
           <Grid item container xs={10} mb={3} justifyContent={'center'}>
             {/* Dados para conta */}
             {step === 0 ? (

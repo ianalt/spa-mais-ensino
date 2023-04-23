@@ -2,25 +2,29 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { registerNewUser } from '../../api/sign-up/signup';
 import { SignUpBody } from '../../utils/options/types/sign-up-body';
+import { AccountStatus } from './types/account-status';
 
 export interface SignUpState {
   status: 'idle' | 'loading' | 'failed';
   isLoading: boolean;
+  accountStatus: AccountStatus | null;
 }
 
 const initialState: SignUpState = {
   status: 'idle',
   isLoading: false,
+  accountStatus: null,
 };
 
 export const signUpSlice = createSlice({
   name: 'signUp',
   initialState,
   reducers: {
-    // setBirthDate: (state, action: PayloadAction<string>) => {
-    //   const date = action.payload;
-    //   state.birthDate = date;
-    // },
+    resetSignUp: (state) => {
+      state.status = initialState.status;
+      state.isLoading = initialState.isLoading;
+      state.accountStatus = initialState.accountStatus;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -32,25 +36,23 @@ export const signUpSlice = createSlice({
         state.status = 'failed';
         state.isLoading = false;
       })
-      .addCase(performSignUp.fulfilled, (state, action: PayloadAction<any>) => {
-        state.status = 'idle';
-        state.isLoading = false;
-      });
+      .addCase(
+        performSignUp.fulfilled,
+        (state, action: PayloadAction<AccountStatus>) => {
+          state.status = 'idle';
+          state.isLoading = false;
+          state.accountStatus = action.payload;
+        }
+      );
   },
 });
 
 export const performSignUp = createAsyncThunk(
   'signUp/performSignUp',
   async (body: SignUpBody) => {
-    try {
-      const response = await registerNewUser(body);
+    const response = await registerNewUser(body);
 
-      return response.data;
-    } catch (e: any) {
-      if (e.isAxiosError) {
-        console.log(e.response.data.message);
-      }
-    }
+    return response.data;
   }
 );
 

@@ -10,8 +10,8 @@ export interface SignUpBody {
     lastName: string;
     cpf: string;
     birthDate: string;
-    ethnicity: Ethnicity;
-    gender: Gender;
+    ethnicity?: Ethnicity;
+    gender?: Gender;
   };
 
   address: {
@@ -21,7 +21,7 @@ export interface SignUpBody {
     neighborhood: string;
     complement: string;
     city: string;
-    uf: Uf;
+    uf?: Uf;
   };
 
   phoneNumbers: {
@@ -29,7 +29,7 @@ export interface SignUpBody {
   }[];
 
   educationInfo: {
-    schoolingLevel: SchoolingLevel;
+    schoolingLevel?: SchoolingLevel;
     courseName?: string | null;
     institutionName: string;
     startYear: string;
