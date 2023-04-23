@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Alert,
   Autocomplete,
@@ -7,7 +8,6 @@ import {
   Container,
   TextField,
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Input from '@mui/material/Input';
@@ -17,15 +17,15 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { viacep } from '../../api/cep/cep.req';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { FieldErrors } from '../../utils/checkFieldErrors';
-import { validateEmail } from './error-handlings/validate-email';
-import { validateField } from './error-handlings/validate-field';
-import { validatePassword } from './error-handlings/validate-password';
+import { FieldErrors, checkFieldErrors } from '../../utils/checkFieldErrors';
 import { convertBirthDate } from '../../utils/conversions/convert-birth-date';
+import { Ethnicity } from '../../utils/enums/ethnicity.enum';
+import { Gender } from '../../utils/enums/gender.enum';
+import { SchoolingLevel } from '../../utils/enums/schooling-level.enum';
 import { BirthDateCustom } from '../../utils/masks/birth-date-mask';
 import { CepMaskCustom } from '../../utils/masks/cep-mask';
 import { CpfMaskCustom } from '../../utils/masks/cpf-mask';
@@ -41,11 +41,12 @@ import { SchoolingLevelOption } from '../../utils/options/types/schooling-level-
 import { SignUpBody } from '../../utils/options/types/sign-up-body';
 import { UfOption } from '../../utils/options/types/uf-option';
 import { ufOptions } from '../../utils/options/uf-options';
-import { performSignUp, selectSignUp } from './signUpSlice';
-import { Uf } from '../../utils/enums/uf.enum';
-import { Ethnicity } from '../../utils/enums/ethnicity.enum';
-import { Gender } from '../../utils/enums/gender.enum';
-import { SchoolingLevel } from '../../utils/enums/schooling-level.enum';
+import { validateEmail } from './error-handlings/validate-email';
+import { validateField } from './error-handlings/validate-field';
+import { validatePassword } from './error-handlings/validate-password';
+import { performSignUp, resetSignUp, selectSignUp } from './signUpSlice';
+import { validateCpf } from './error-handlings/validate-cpf';
+import { validateBirthDate } from './error-handlings/validate-birth-date';
 
 const steps = [
   'Dados para criação da conta',
@@ -60,10 +61,11 @@ export default function SignUp() {
 
   const signUp = useAppSelector(selectSignUp);
 
+  const { status, isLoading, error } = signUp;
+
   const [step, setStep] = useState<number>(0);
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors[]>([]);
-  const [requestError, setRequestError] = useState('');
 
   const [email, setEmail] = useState<string>('');
   const [emailConfirmation, setEmailConfirmation] = useState<string>('');
@@ -106,7 +108,7 @@ export default function SignUp() {
       firstName: 'TesteTrês',
       lastName: 'Testado',
       cpf: '09853645726',
-      birthDate: '2005-03-17',
+      birthDate: '2005--17',
       ethnicity: Ethnicity.BRANCA,
       gender: Gender.HOMEM_CIS,
     },
@@ -199,13 +201,29 @@ export default function SignUp() {
   };
 
   //TODO validation
+  const handleFieldValidation = (
+    fieldName: string,
+    field: string,
+    message: string
+  ) => {
+    if (validateField(field))
+      fieldErrors.push({
+        field: fieldName,
+        message: 'Insira um e-mail válido.',
+      });
+  };
 
-  const handleEmailValidation = () => {
-    setEmailConfirmed(
-      email === emailConfirmation &&
-        validateEmail(email) &&
-        validateEmail(emailConfirmation)
-    );
+  const handleCpfValidation = () => {
+    if (validateCpf(cpf))
+      fieldErrors.push({ field: 'cpf', message: 'Insira um CPF válido.' });
+  };
+
+  const handleBirthDateValidation = () => {
+    if (validateBirthDate(birthDate))
+      fieldErrors.push({
+        field: 'birth-date',
+        message: 'Insira uma data de nascimento válida.',
+      });
   };
 
   const handleSignUp = () => {
@@ -288,13 +306,17 @@ export default function SignUp() {
     setPasswordConfirmed(password === passwordConfirmation);
   };
 
+  useEffect(() => {
+    dispatch(resetSignUp());
+  }, []);
+
   return (
     <Container maxWidth="xl">
       <Grid my={5} />
 
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={signUp.isLoading}
+        open={isLoading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -364,11 +386,19 @@ export default function SignUp() {
 
         <Grid item container xs={12} my={5} justifyContent={'center'}>
           <Grid item container xs={10} mb={3} justifyContent={'center'}>
-            {signUp.status === 'failed' ? (
+            {status === 'failed' ? (
               <Grid item xs={12} container>
                 <Alert severity="error">
-                  <strong>Erro ao cadastrar. </strong>
-                  {signUp.error}
+                  <Typography variant="body1">
+                    <strong>Erro ao cadastrar. </strong>
+                  </Typography>
+                  {error.map((e: string) => {
+                    return (
+                      <Typography key={e} variant="body2">
+                        {e}.
+                      </Typography>
+                    );
+                  })}
                 </Alert>
               </Grid>
             ) : (
@@ -393,8 +423,6 @@ export default function SignUp() {
                       placeholder="Digite seu e-mail..."
                       onChange={(e) => {
                         setEmail(e.target.value);
-
-                        handleEmailValidation();
                       }}
                       type="email"
                       // error={!emailConfirmed}
@@ -420,8 +448,6 @@ export default function SignUp() {
                       placeholder="Confirme seu e-mail..."
                       onChange={(e) => {
                         setEmailConfirmation(e.target.value);
-
-                        handleEmailValidation();
                       }}
                       type="email"
                       // error={!emailConfirmed}
@@ -475,10 +501,6 @@ export default function SignUp() {
                         value={passwordConfirmation}
                         onChange={(e) => {
                           setPasswordConfirmation(e.target.value);
-
-                          validatePassword(passwordConfirmation);
-
-                          handleConfirmPassword();
                         }}
                         type="password"
                         // error={checkFieldErrors(fieldErrors, "password") !== ""}
@@ -510,11 +532,15 @@ export default function SignUp() {
                       onChange={(e) => {
                         setFirstName(e.target.value);
 
-                        validateField(firstName);
+                        handleFieldValidation(
+                          'first-name',
+                          firstName,
+                          'Insira um nome válido.'
+                        );
                       }}
-                      //   error={checkFieldErrors(fieldErrors, "email") !== ""}
-                      //   helperText={checkFieldErrors(fieldErrors, "email")}
-                      //   disabled={loading}
+                      error={checkFieldErrors(fieldErrors, 'first-name') !== ''}
+                      helperText={checkFieldErrors(fieldErrors, 'first-name')}
+                      disabled={isLoading}
                     />
                   </Grid>
 
@@ -532,11 +558,15 @@ export default function SignUp() {
                       onChange={(e) => {
                         setLastName(e.target.value);
 
-                        validateField(lastName);
+                        handleFieldValidation(
+                          'last-name',
+                          lastName,
+                          'Insira um sobrenome válido.'
+                        );
                       }}
-                      //   error={checkFieldErrors(fieldErrors, "password") !== ""}
-                      //   helperText={checkFieldErrors(fieldErrors, "password")}
-                      //   disabled={loading}
+                      error={checkFieldErrors(fieldErrors, 'last-name') !== ''}
+                      helperText={checkFieldErrors(fieldErrors, 'last-name')}
+                      disabled={isLoading}
                     />
                   </Grid>
                 </Grid>
@@ -546,6 +576,7 @@ export default function SignUp() {
                     <Autocomplete
                       id="ethnicity-options"
                       value={ethnicity}
+                      defaultValue={ethnicity}
                       onChange={(
                         event: any,
                         newValue: EthnicityOption | null
@@ -571,6 +602,7 @@ export default function SignUp() {
                       id="gender-options"
                       options={genderOptions}
                       value={gender}
+                      defaultValue={gender}
                       onChange={(event: any, newValue: GenderOption | null) => {
                         setGender(newValue);
                       }}
@@ -592,13 +624,22 @@ export default function SignUp() {
                       CPF *
                     </InputLabel>
                     <Input
+                      id="formatted-cpf-mask-input"
+                      name="cpf"
                       required
                       value={cpf}
-                      onChange={convertCpf}
-                      name="cpf"
-                      id="formatted-cpf-mask-input"
                       inputComponent={CpfMaskCustom as any}
                       placeholder="XXX.XXX.XXX-XX"
+                      // onChange={convertCpf}
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>
+                      ) => {
+                        convertCpf(event);
+
+                        handleCpfValidation();
+                      }}
+                      error={checkFieldErrors(fieldErrors, 'cpf') !== ''}
+                      disabled={isLoading}
                     />
                   </Grid>
 
@@ -608,15 +649,20 @@ export default function SignUp() {
                       Data de nascimento *
                     </InputLabel>
                     <Input
+                      id="formatted-birth-date-mask-input"
+                      name="birth-date"
                       required
                       value={birthDate}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        setBirthDate(event.target.value)
-                      }
-                      name="birth-date"
-                      id="formatted-birth-date-mask-input"
                       inputComponent={BirthDateCustom as any}
                       placeholder="DD/MM/AAAA"
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>
+                      ) => {
+                        setBirthDate(event.target.value);
+
+                        handleBirthDateValidation();
+                      }}
+                      error={checkFieldErrors(fieldErrors, 'birth-date') !== ''}
                     />
                   </Grid>
                 </Grid>
@@ -628,11 +674,11 @@ export default function SignUp() {
                         Número de celular *
                       </InputLabel>
                       <Input
+                        id="formatted-phone-number-mask-input"
+                        name="phone-number-1"
                         required
                         value={phoneNumber1}
                         onChange={convertPhoneNumber1}
-                        name="phone-number-1"
-                        id="formatted-phone-number-mask-input"
                         placeholder="(XX) X XXXX-XXXX"
                         inputComponent={PhoneNumberMaskCustom as any}
                       />

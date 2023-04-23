@@ -65,7 +65,14 @@ export const performSignUp = createAsyncThunk(
       return response.data;
     } catch (e: any) {
       if (e.isAxiosError) {
-        return thunkAPI.rejectWithValue(e.response.data.message);
+        const errors = e.response.data.message.map((error: string) => {
+          const afterDot = error.indexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        console.log(errors);
+        return thunkAPI.rejectWithValue(errors);
       }
     }
   }
