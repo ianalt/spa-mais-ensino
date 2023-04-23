@@ -3,17 +3,20 @@ import { RootState } from '../../app/store';
 import { registerNewUser } from '../../api/sign-up/signup';
 import { SignUpBody } from '../../utils/options/types/sign-up-body';
 import { AccountStatus } from './types/account-status';
+import axios, { AxiosError } from 'axios';
 
 export interface SignUpState {
   status: 'idle' | 'loading' | 'failed';
   isLoading: boolean;
   accountStatus: AccountStatus | null;
+  error?: any;
 }
 
 const initialState: SignUpState = {
   status: 'idle',
   isLoading: false,
   accountStatus: null,
+  error: null,
 };
 
 export const signUpSlice = createSlice({
@@ -24,6 +27,10 @@ export const signUpSlice = createSlice({
       state.status = initialState.status;
       state.isLoading = initialState.isLoading;
       state.accountStatus = initialState.accountStatus;
+      state.error = initialState.error;
+    },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -32,9 +39,11 @@ export const signUpSlice = createSlice({
         state.status = 'loading';
         state.isLoading = true;
       })
-      .addCase(performSignUp.rejected, (state) => {
+      .addCase(performSignUp.rejected, (state, action) => {
         state.status = 'failed';
         state.isLoading = false;
+        //TODO get Error message
+        state.error = action.payload;
       })
       .addCase(
         performSignUp.fulfilled,
@@ -49,14 +58,20 @@ export const signUpSlice = createSlice({
 
 export const performSignUp = createAsyncThunk(
   'signUp/performSignUp',
-  async (body: SignUpBody) => {
-    const response = await registerNewUser(body);
+  async (body: SignUpBody, thunkAPI) => {
+    try {
+      const response = await registerNewUser(body);
 
-    return response.data;
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        return thunkAPI.rejectWithValue(e.response.data.message);
+      }
+    }
   }
 );
 
-export const {} = signUpSlice.actions;
+export const { resetSignUp } = signUpSlice.actions;
 
 export const selectSignUp = (state: RootState) => state.signUp;
 

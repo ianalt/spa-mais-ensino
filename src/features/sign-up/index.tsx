@@ -1,10 +1,13 @@
 import {
   Alert,
   Autocomplete,
+  Backdrop,
   Button,
+  CircularProgress,
   Container,
   TextField,
 } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Input from '@mui/material/Input';
@@ -22,11 +25,7 @@ import { FieldErrors } from '../../utils/checkFieldErrors';
 import { validateEmail } from './error-handlings/validate-email';
 import { validateField } from './error-handlings/validate-field';
 import { validatePassword } from './error-handlings/validate-password';
-
-import { Ethnicity } from '../../utils/enums/ethnicity.enum';
-import { Gender } from '../../utils/enums/gender.enum';
-import { SchoolingLevel } from '../../utils/enums/schooling-level.enum';
-import { Uf } from '../../utils/enums/uf.enum';
+import { convertBirthDate } from '../../utils/conversions/convert-birth-date';
 import { BirthDateCustom } from '../../utils/masks/birth-date-mask';
 import { CepMaskCustom } from '../../utils/masks/cep-mask';
 import { CpfMaskCustom } from '../../utils/masks/cpf-mask';
@@ -43,7 +42,10 @@ import { SignUpBody } from '../../utils/options/types/sign-up-body';
 import { UfOption } from '../../utils/options/types/uf-option';
 import { ufOptions } from '../../utils/options/uf-options';
 import { performSignUp, selectSignUp } from './signUpSlice';
-import { convertBirthDate } from '../../utils/conversions/convert-birth-date';
+import { Uf } from '../../utils/enums/uf.enum';
+import { Ethnicity } from '../../utils/enums/ethnicity.enum';
+import { Gender } from '../../utils/enums/gender.enum';
+import { SchoolingLevel } from '../../utils/enums/schooling-level.enum';
 
 const steps = [
   'Dados para criação da conta',
@@ -95,6 +97,45 @@ export default function SignUp() {
   const [institutionName, setInstitutionName] = useState<string>('');
   const [startYear, setStartYear] = useState<string>('');
   const [conclusionYear, setConclusionYear] = useState<string | null>();
+
+  //TODO remove dummy
+  const testDummy: SignUpBody = {
+    user: {
+      email: 'ian.alt@email.com',
+      password: 'Teste1234*',
+      firstName: 'TesteTrês',
+      lastName: 'Testado',
+      cpf: '09853645726',
+      birthDate: '2005-03-17',
+      ethnicity: Ethnicity.BRANCA,
+      gender: Gender.HOMEM_CIS,
+    },
+    address: {
+      cep: '1234567',
+      street: 'Rua Nóbrega',
+      streetNumber: '1789',
+      neighborhood: 'Valparaíso',
+      complement: 'Casa verde',
+      city: 'Petrópolis',
+      uf: 'RJ',
+    },
+    phoneNumbers: [
+      {
+        phoneNumber: '24912343647',
+      },
+    ],
+    educationInfo: {
+      schoolingLevel: SchoolingLevel.EMC,
+      courseName: null,
+      institutionName: 'Colégio Liceu',
+      startYear: '2020',
+      conclusionYear: '2022',
+    },
+    financialInfo: {
+      generalIncome: 1000,
+      totalHouseHoldMembers: 2,
+    },
+  };
 
   const resetAddressFields = () => {
     setStreet('');
@@ -210,7 +251,7 @@ export default function SignUp() {
       },
     };
 
-    dispatch(performSignUp(body));
+    dispatch(performSignUp(testDummy));
   };
 
   const handleCepSearch = async () => {
@@ -250,6 +291,13 @@ export default function SignUp() {
   return (
     <Container maxWidth="xl">
       <Grid my={5} />
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={signUp.isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
       <Grid container justifyContent="center" px={{ xs: 2 }}>
         <Grid item container xs={12} my={5} justifyContent="space-between">
@@ -316,6 +364,17 @@ export default function SignUp() {
 
         <Grid item container xs={12} my={5} justifyContent={'center'}>
           <Grid item container xs={10} mb={3} justifyContent={'center'}>
+            {signUp.status === 'failed' ? (
+              <Grid item xs={12} container>
+                <Alert severity="error">
+                  <strong>Erro ao cadastrar. </strong>
+                  {signUp.error}
+                </Alert>
+              </Grid>
+            ) : (
+              <></>
+            )}
+
             {/* Dados para conta */}
             {step === 0 ? (
               <Grid item xs={12} container>
@@ -539,7 +598,7 @@ export default function SignUp() {
                       name="cpf"
                       id="formatted-cpf-mask-input"
                       inputComponent={CpfMaskCustom as any}
-                      placeholder="Digite seu CPF..."
+                      placeholder="XXX.XXX.XXX-XX"
                     />
                   </Grid>
 
@@ -574,6 +633,7 @@ export default function SignUp() {
                         onChange={convertPhoneNumber1}
                         name="phone-number-1"
                         id="formatted-phone-number-mask-input"
+                        placeholder="(XX) X XXXX-XXXX"
                         inputComponent={PhoneNumberMaskCustom as any}
                       />
                     </Grid>
@@ -584,11 +644,13 @@ export default function SignUp() {
                       <InputLabel htmlFor="formatted-phone-number-2-mask-input">
                         Segundo número (opcional)
                       </InputLabel>
+                      {JSON.stringify(phoneNumber2)}
                       <Input
                         value={phoneNumber2}
                         onChange={convertPhoneNumber2}
                         name="phone-number-2"
                         id="formatted-phone-number-mask-input"
+                        placeholder="(XX) X XXXX-XXXX"
                         inputComponent={PhoneNumberMaskCustom as any}
                       />
                     </Grid>
@@ -650,7 +712,8 @@ export default function SignUp() {
                       variant="outlined"
                       value={totalHouseHoldMembers}
                       onChange={(e) => {
-                        setTotalHouseHoldMembers(parseInt(e.target.value));
+                        const n = parseInt(e.target.value);
+                        setTotalHouseHoldMembers(Number.isNaN(n) ? 0 : n);
                       }}
                       //   error={checkFieldErrors(fieldErrors, "password") !== ""}
                       //   helperText={checkFieldErrors(fieldErrors, "password")}
@@ -915,14 +978,15 @@ export default function SignUp() {
 
           <Grid item xs={3} container justifyContent="flex-end">
             {step < steps.length - 1 ? (
-              <Button
+              <LoadingButton
                 size="large"
                 variant="contained"
                 onClick={handleNextStep}
                 disabled={step >= steps.length - 1}
+                loading={signUp.isLoading}
               >
                 Próximo
-              </Button>
+              </LoadingButton>
             ) : step === steps.length - 1 ? (
               <Button size="large" variant="contained" onClick={handleSignUp}>
                 Cadastrar-se
