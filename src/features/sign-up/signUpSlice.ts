@@ -65,13 +65,18 @@ export const performSignUp = createAsyncThunk(
       return response.data;
     } catch (e: any) {
       if (e.isAxiosError) {
-        const errors = e.response.data.message.map((error: string) => {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
           const afterDot = error.indexOf('.') + 1;
 
           return error.substring(afterDot);
         });
 
-        console.log(errors);
         return thunkAPI.rejectWithValue(errors);
       }
     }
