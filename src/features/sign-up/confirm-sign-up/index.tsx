@@ -90,15 +90,25 @@ export default function ConfirmSignUp({
             }
           </DialogContentText>
 
-          <Grid container justifyContent={'flex-start'}>
-            <Grid item xs={12} my={2}>
-              <Divider>
-                <Chip label="Dados Básicos" />
-              </Divider>
-            </Grid>
-
+          <Grid container>
             {/* info pessoal essencial */}
-            <Grid container xs={12} my={1}>
+            <Grid item xs={12} container>
+              <Grid item xs={12} my={2}>
+                <Divider>
+                  <Chip label="Dados Básicos" />
+                </Divider>
+              </Grid>
+
+              {/* E-mail */}
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'E-mail:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{user.email}</Typography>
+                </Grid>
+              </Grid>
+
               {/* Nome */}
               <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
@@ -127,7 +137,6 @@ export default function ConfirmSignUp({
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  {/* <Typography>{formatBirthDate()}</Typography> */}
                   <Typography>{formatBirthDate()}</Typography>
                 </Grid>
               </Grid>
@@ -142,35 +151,153 @@ export default function ConfirmSignUp({
                 </Grid>
               </Grid>
 
-              {/* E-mail */}
               <Grid item container xs={'auto'} py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'E-mail:'} </Typography>
+                  <Typography fontWeight={700}>{'Gênero:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography>{user.email}</Typography>
+                  <Typography>{user.gender}</Typography>
                 </Grid>
               </Grid>
 
-              {/* Informações educacionais */}
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Etnia:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{user.ethnicity}</Typography>
+                </Grid>
+              </Grid>
 
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>
+                    {'Renda familiar geral:'}{' '}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>R${financialInfo.generalIncome}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>
+                    {'Total de membros em domicílio:'}{' '}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{financialInfo.totalHouseHoldMembers}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Telefone(s):'} </Typography>
+                </Grid>
+                {phoneNumbers.map((phone, i) => {
+                  return (
+                    <Grid item xs={'auto'}>
+                      <Typography>
+                        {phone.phoneNumber}
+                        {phoneNumbers.length === 2 && i === 1 ? ' / ' : ''}
+                      </Typography>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Grid>
+
+            <Grid item xs={8} container>
+              <Grid item xs={12} my={2}>
+                <Divider>
+                  <Chip label="Endereço" />
+                </Divider>
+              </Grid>
+
+              {/* CEP */}
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'CEP:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{address.cep}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Rua:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{address.street}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Número:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{address.streetNumber}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Complemento:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{address.complement}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Bairro:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{address.neighborhood}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Cidade:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{address.city}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={'auto'} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'UF:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{address.uf}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            {/* Informações educacionais */}
+            <Grid item xs={4} container justifyContent="center">
               <Grid item xs={12} my={2}>
                 <Divider>
                   <Chip label="Formação Acadêmica" />
                 </Divider>
               </Grid>
 
-              <Grid item xs={12}>
-                <Typography
-                  component="span"
-                  variant="body1"
-                  color="text.primary"
-                >
-                  {educationInfo.institutionName}
-                </Typography>
-              </Grid>
+              <Grid item xs={'auto'} container justifyContent="center" p={1}>
+                <Grid item xs={12}>
+                  <Typography
+                    component="span"
+                    variant="body1"
+                    color="text.primary"
+                  >
+                    {educationInfo.institutionName}
+                  </Typography>
+                </Grid>
 
-              <Grid item xs={12} container>
                 <Grid item xs={12}>
                   <Typography
                     component="span"
@@ -180,6 +307,7 @@ export default function ConfirmSignUp({
                     {educationInfo.schoolingLevel}
                   </Typography>
                 </Grid>
+
                 <Grid item xs={12}>
                   <Typography
                     component="span"
