@@ -19,6 +19,8 @@ import { WelcomeLayout } from './layout/welcome.layout';
 import { login as reduxLogin, logout, selectUser } from './user/userSlice';
 import SignUp from './features/sign-up';
 
+import SignUpCompleted from './features/sign-up/SignUpCompleted';
+
 export const AppRoutes = () => {
   return (
     <Routes>
@@ -63,6 +65,7 @@ export const AppRoutes = () => {
       </Route>
 
       <Route element={<DefaultLayout />} path="/default"></Route>
+      {/* <Route element={<SignUpCompleted />} path="/sign-up-completed"></Route> */}
       <Route path="*" element={<NotFoundPage />}></Route>
     </Routes>
   );

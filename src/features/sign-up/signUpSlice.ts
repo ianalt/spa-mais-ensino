@@ -2,20 +2,20 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { registerNewUser } from '../../api/sign-up/signup';
 import { SignUpBody } from '../../utils/options/types/sign-up-body';
-import { AccountStatus } from './types/account-status';
+import { AccountInfo } from './types/account-info';
 import axios, { AxiosError } from 'axios';
 
 export interface SignUpState {
   status: 'idle' | 'loading' | 'failed';
   isLoading: boolean;
-  accountStatus: AccountStatus | null;
+  accountInfo: AccountInfo | null;
   error?: any;
 }
 
 const initialState: SignUpState = {
   status: 'idle',
   isLoading: false,
-  accountStatus: null,
+  accountInfo: null,
   error: null,
 };
 
@@ -26,7 +26,7 @@ export const signUpSlice = createSlice({
     resetSignUp: (state) => {
       state.status = initialState.status;
       state.isLoading = initialState.isLoading;
-      state.accountStatus = initialState.accountStatus;
+      state.accountInfo = initialState.accountInfo;
       state.error = initialState.error;
     },
     setError: (state, action: PayloadAction<string>) => {
@@ -47,10 +47,10 @@ export const signUpSlice = createSlice({
       })
       .addCase(
         performSignUp.fulfilled,
-        (state, action: PayloadAction<AccountStatus>) => {
+        (state, action: PayloadAction<AccountInfo>) => {
           state.status = 'idle';
           state.isLoading = false;
-          state.accountStatus = action.payload;
+          state.accountInfo = action.payload;
         }
       );
   },

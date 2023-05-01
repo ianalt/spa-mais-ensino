@@ -23,11 +23,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { viacep } from '../../api/cep/cep.req';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { FieldErrors, checkFieldErrors } from '../../utils/checkFieldErrors';
 import { convertBirthDate } from '../../utils/conversions/convert-birth-date';
-import { Ethnicity } from '../../utils/enums/ethnicity.enum';
-import { Gender } from '../../utils/enums/gender.enum';
-import { SchoolingLevel } from '../../utils/enums/schooling-level.enum';
 import { BirthDateCustom } from '../../utils/masks/birth-date-mask';
 import { CepMaskCustom } from '../../utils/masks/cep-mask';
 import { CpfMaskCustom } from '../../utils/masks/cpf-mask';
@@ -43,9 +39,9 @@ import { SchoolingLevelOption } from '../../utils/options/types/schooling-level-
 import { SignUpBody } from '../../utils/options/types/sign-up-body';
 import { UfOption } from '../../utils/options/types/uf-option';
 import { ufOptions } from '../../utils/options/uf-options';
+import SignUpCompleted from './SignUpCompleted';
 import ConfirmSignUp from './confirm-sign-up';
 import { resetSignUp, selectSignUp } from './signUpSlice';
-import AccountStatus from './AccountStatus';
 
 const steps = [
   'Dados para criação da conta',
@@ -60,52 +56,16 @@ export default function SignUp() {
 
   const signUp = useAppSelector(selectSignUp);
 
-  const { status, isLoading, error, accountStatus } = signUp;
+  const { status, isLoading, error, accountInfo } = signUp;
 
   const [step, setStep] = useState<number>(0);
 
   const [openConfirmSignUp, setOpenConfirmSignUp] = useState<boolean>(false);
 
   //TODO remove dummy
-  const testDummy: SignUpBody = {
-    user: {
-      email: 'ian.alt@email.com',
-      password: 'Teste12aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa34*',
-      firstName: 'TesteTaaaaaarês',
-      lastName: 'Testado',
-      cpf: '09853645726',
-      birthDate: '2005--17',
-      ethnicity: Ethnicity.BRANCA,
-      gender: Gender.HOMEM_CIS,
-    },
-    address: {
-      cep: '123407',
-      street: 'Rua Nóbrega',
-      streetNumber: '1789',
-      neighborhood: 'Valparaíso',
-      complement: 'Casa verde',
-      city: 'Petrópolis',
-      uf: 'RJ',
-    },
-    phoneNumbers: [
-      {
-        phoneNumber: '24912343647',
-      },
-    ],
-    educationInfo: {
-      schoolingLevel: SchoolingLevel.EMC,
-      courseName: null,
-      institutionName: 'Colégio Liceu',
-      startYear: '2020',
-      conclusionYear: '2022',
-    },
-    financialInfo: {
-      generalIncome: 1000,
-      totalHouseHoldMembers: 2,
-    },
-  };
+  const initialBody = {} as SignUpBody;
 
-  const [signUpBody, setSignUpBody] = useState<SignUpBody>(testDummy);
+  const [signUpBody, setSignUpBody] = useState<SignUpBody>(initialBody);
 
   const [email, setEmail] = useState<string>('');
   const [emailConfirmation, setEmailConfirmation] = useState<string>('');
@@ -328,16 +288,12 @@ export default function SignUp() {
         onClose={handleCloseConfirmSignUp}
         onConfirm={() => {
           handleCloseConfirmSignUp();
-
-          alert(signUp.accountStatus);
         }}
-        //TODO change to body
         signUpBody={signUpBody}
-        // signUpBody={testDummy}
       />
-      {!isLoading && accountStatus ? (
+      {!isLoading && accountInfo ? (
         <Container maxWidth="xl">
-          <AccountStatus />
+          <SignUpCompleted />
         </Container>
       ) : (
         <Container maxWidth="xl">
