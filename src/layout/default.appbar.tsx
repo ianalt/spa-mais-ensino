@@ -11,8 +11,6 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { Link, useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
-
-import { InputBase, alpha, styled } from '@mui/material';
 import type { LinkProps } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { logout, selectUser } from '../user/userSlice';
@@ -52,6 +50,10 @@ const navigation = [
     title: 'Comentários',
   },
   {
+    link: '/mais-ensino/minha-disciplina',
+    title: 'Minha Disciplina',
+  },
+  {
     link: '/mais-ensino/relatorios',
     title: 'Relatórios',
   },
@@ -63,54 +65,14 @@ const navigation = [
 
 const pages = [
   'Início',
-  'Áreas de Conhecimento',
   'Disciplinas',
   'Comentários',
+  'Minha Disciplina',
   'Relatórios',
+  'Gerenciamento',
 ];
+
 const settings = ['Configurações', 'Sair'];
-
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(1),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
-      },
-    },
-  },
-}));
 
 export const DefaultAppBar = () => {
   const dispatch = useAppDispatch();
@@ -119,6 +81,48 @@ export const DefaultAppBar = () => {
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const filterUserPages = () => {
+    if (user.role === 'estudante')
+      return pages.filter((page) => {
+        return (
+          page !== 'Comentários' &&
+          page !== 'Minha Disciplina' &&
+          page !== 'Relatórios' &&
+          page !== 'Gerenciamento'
+        );
+      });
+
+    if (user.role === 'monitor' || user.role === 'professor')
+      return pages.filter((page) => {
+        return page !== 'Relatórios' && page !== 'Gerenciamento';
+      });
+
+    return pages.filter((page) => {
+      return page !== 'Minha Disciplina';
+    });
+  };
+
+  const filterUserNavigation = () => {
+    if (user.role === 'estudante')
+      return navigation.filter((nav) => {
+        return (
+          nav.title !== 'Comentários' &&
+          nav.title !== 'Minha Disciplina' &&
+          nav.title !== 'Relatórios' &&
+          nav.title !== 'Gerenciamento'
+        );
+      });
+
+    if (user.role === 'monitor' || user.role === 'professor')
+      return navigation.filter((nav) => {
+        return nav.title !== 'Relatórios' && nav.title !== 'Gerenciamento';
+      });
+
+    return navigation.filter((nav) => {
+      return nav.title !== 'Minha Disciplina';
+    });
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -203,7 +207,7 @@ export const DefaultAppBar = () => {
                 display: { xs: 'block', lg: 'none' },
               }}
             >
-              {pages.map((page) => (
+              {filterUserPages().map((page) => (
                 <MenuItem key={page} onClick={() => handleCloseNavMenu(page)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
@@ -229,26 +233,13 @@ export const DefaultAppBar = () => {
               height: '64px',
             }}
           >
-            {navigation.map(({ title, link }) => (
+            {filterUserNavigation().map(({ title, link }) => (
               <CustomLink to={link}>{title}</CustomLink>
             ))}
           </Box>
 
-          {/* //TODO search bar */}
-          {/* <Box sx={{ flexGrow: 0 }} mx={5} width="100%">
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Pesquisar..."
-                inputProps={{ "aria-label": "pesquisar" }}
-              />
-            </Search>
-          </Box> */}
-
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="Abrir menu de usuário">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar src="/static/images/avatar/2.jpg" />
               </IconButton>

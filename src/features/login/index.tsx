@@ -8,23 +8,23 @@ import {
   Paper,
   TextField,
   Typography,
-} from "@mui/material";
-import Alert from "@mui/material/Alert";
-import jwt_decode from "jwt-decode";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import validator from "validator";
-import { login } from "../../api/users/login";
-import { useAppDispatch } from "../../app/hooks";
-import { login as reduxLogin } from "../../user/userSlice";
-import { checkFieldErrors, FieldErrors } from "../../utils/checkFieldErrors";
+} from '@mui/material';
+import Alert from '@mui/material/Alert';
+import jwt_decode from 'jwt-decode';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import validator from 'validator';
+import { login } from '../../api/users/login';
+import { useAppDispatch } from '../../app/hooks';
+import { login as reduxLogin } from '../../user/userSlice';
+import { checkFieldErrors, FieldErrors } from '../../utils/checkFieldErrors';
 
 export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors[]>([]);
-  const [requestError, setRequestError] = useState("");
+  const [requestError, setRequestError] = useState('');
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -37,16 +37,16 @@ export const Login = () => {
     e.preventDefault();
 
     setFieldErrors([]);
-    setRequestError("");
+    setRequestError('');
 
     let fieldErrors: FieldErrors[] = [];
 
     if (checkFieldEmptiness(email))
-      fieldErrors.push({ field: "email", message: "Insira um e-mail válido." });
+      fieldErrors.push({ field: 'email', message: 'Insira um e-mail válido.' });
     if (checkFieldEmptiness(password))
       fieldErrors.push({
-        field: "password",
-        message: "Insira uma senha válida.",
+        field: 'password',
+        message: 'Insira uma senha válida.',
       });
     if (fieldErrors.length !== 0) return setFieldErrors(fieldErrors);
 
@@ -57,7 +57,7 @@ export const Login = () => {
       const decodedToken: {
         email: string;
         sub: number;
-        role: "usuario" | "aluno" | "monitor" | "professor" | "admin";
+        role: 'usuario' | 'estudante' | 'monitor' | 'professor' | 'admin';
       } = jwt_decode(res.data.access_token);
 
       dispatch(
@@ -91,14 +91,14 @@ export const Login = () => {
             <Grid container spacing={2}>
               <Grid item xs={5}>
                 <Box p={4}>
-                  <Typography variant="h4" sx={{ marginTop: "6px" }}>
+                  <Typography variant="h4" sx={{ marginTop: '6px' }}>
                     {process.env.REACT_APP_NAME}
                   </Typography>
                   <Typography
                     color="textSecondary"
                     variant="subtitle1"
                     align="left"
-                    style={{ marginBottom: "12px" }}
+                    style={{ marginBottom: '12px' }}
                   >
                     {process.env.REACT_APP_DESCRIPTION}
                   </Typography>
@@ -108,7 +108,7 @@ export const Login = () => {
                       <LinearProgress color="primary" />
                     </Box>
                   )}
-                  {requestError !== "" && (
+                  {requestError !== '' && (
                     <Alert severity="error">{requestError}</Alert>
                   )}
                   <form noValidate onSubmit={submitData}>
@@ -124,8 +124,8 @@ export const Login = () => {
                       variant="outlined"
                       placeholder="Digite seu e-mail..."
                       onChange={(e) => setEmail(e.target.value)}
-                      error={checkFieldErrors(fieldErrors, "email") !== ""}
-                      helperText={checkFieldErrors(fieldErrors, "email")}
+                      error={checkFieldErrors(fieldErrors, 'email') !== ''}
+                      helperText={checkFieldErrors(fieldErrors, 'email')}
                       disabled={loading}
                     />
 
@@ -142,8 +142,8 @@ export const Login = () => {
                       placeholder="Digite sua senha..."
                       onChange={(e) => setPassword(e.target.value)}
                       value={password}
-                      error={checkFieldErrors(fieldErrors, "password") !== ""}
-                      helperText={checkFieldErrors(fieldErrors, "password")}
+                      error={checkFieldErrors(fieldErrors, 'password') !== ''}
+                      helperText={checkFieldErrors(fieldErrors, 'password')}
                       disabled={loading}
                     />
 
@@ -164,8 +164,8 @@ export const Login = () => {
                       color="textSecondary"
                       align="center"
                     >
-                      Não se cadastrou? Crie sua conta clicando{" "}
-                      <Link onClick={() => navigate("/cadastro")}>aqui</Link>.
+                      Não se cadastrou? Crie sua conta clicando{' '}
+                      <Link onClick={() => navigate('/cadastro')}>aqui</Link>.
                     </Typography>
                   </Box>
                   <Box mt={4}>
@@ -174,10 +174,10 @@ export const Login = () => {
                       color="textSecondary"
                       align="center"
                     >
-                      {"Copyright © "}
-                      Ian Alt de Oliveira - Universidade Católica de Petrópolis{" "}
+                      {'Copyright © '}
+                      Ian Alt de Oliveira - Universidade Católica de Petrópolis{' '}
                       {new Date().getFullYear()}
-                      {"."}
+                      {'.'}
                     </Typography>
                   </Box>
                 </Box>
@@ -192,7 +192,7 @@ export const Login = () => {
                   <img
                     src="/undraw_online_learning_re_qw08.svg"
                     alt="Jovem sentada na cadeira enquanto olha para o notebook."
-                    style={{ maxWidth: "100%", maxHeight: "250px" }}
+                    style={{ maxWidth: '100%', maxHeight: '250px' }}
                   />
                 </Box>
               </Grid>

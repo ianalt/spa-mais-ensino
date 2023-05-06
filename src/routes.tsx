@@ -13,15 +13,16 @@ import HomePage from './features/home';
 import { Login } from './features/login';
 import ManagePage from './features/manage';
 import NotFoundPage from './features/not-found/NotFoundPage';
+import SignUp from './features/sign-up';
 import WelcomePage from './features/welcome';
 import { DefaultLayout } from './layout/default.layout';
 import { WelcomeLayout } from './layout/welcome.layout';
-import { login as reduxLogin, logout, selectUser } from './user/userSlice';
-import SignUp from './features/sign-up';
+import { login as reduxLogin, selectUser } from './user/userSlice';
 
-import SignUpCompleted from './features/sign-up/SignUpCompleted';
-
+//TODO fix nav errors
 export const AppRoutes = () => {
+  const user = useAppSelector(selectUser);
+
   return (
     <Routes>
       <Route
@@ -61,14 +62,44 @@ export const AppRoutes = () => {
         path="/mais-ensino"
       >
         <Route index element={<HomePage />} />
-        <Route element={<ManagePage />} path="/mais-ensino/gerenciamento" />
+        <Route
+          element={
+            <RequireRole role="admin">
+              <ManagePage />
+            </RequireRole>
+          }
+          path="/mais-ensino/gerenciamento"
+        />
       </Route>
 
       <Route element={<DefaultLayout />} path="/default"></Route>
-      {/* <Route element={<SignUpCompleted />} path="/sign-up-completed"></Route> */}
       <Route path="*" element={<NotFoundPage />}></Route>
     </Routes>
   );
+};
+
+const RequireRole = ({
+  children,
+  role,
+}: {
+  children: JSX.Element;
+  role: string;
+}) => {
+  const user = useAppSelector(selectUser);
+  let location = useLocation();
+
+  if (user.role !== role) {
+    return (
+      <Navigate
+        // to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
+        to="/mais-ensino"
+        state={{ from: location }}
+        replace
+      />
+    );
+  }
+
+  return children;
 };
 
 const CheckLogin = ({ children }: { children: JSX.Element }) => {
@@ -94,7 +125,7 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
         exp: number;
         sub: number;
         email: string;
-        role: 'usuario' | 'aluno' | 'monitor' | 'professor' | 'admin';
+        role: 'usuario' | 'estudante' | 'monitor' | 'professor' | 'admin';
       } = jwt_decode(sdnToken);
       const currentDate = new Date();
       const expDate = new Date(exp * 1000);

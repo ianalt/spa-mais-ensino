@@ -41,7 +41,7 @@ import { UfOption } from '../../utils/options/types/uf-option';
 import { ufOptions } from '../../utils/options/uf-options';
 import SignUpCompleted from './SignUpCompleted';
 import ConfirmSignUp from './confirm-sign-up';
-import { resetSignUp, selectSignUp } from './signUpSlice';
+import { resetSignUp, selectSignUp, setSignUpBody } from './signUpSlice';
 
 const steps = [
   'Dados para criação da conta',
@@ -61,11 +61,6 @@ export default function SignUp() {
   const [step, setStep] = useState<number>(0);
 
   const [openConfirmSignUp, setOpenConfirmSignUp] = useState<boolean>(false);
-
-  //TODO remove dummy
-  const initialBody = {} as SignUpBody;
-
-  const [signUpBody, setSignUpBody] = useState<SignUpBody>(initialBody);
 
   const [email, setEmail] = useState<string>('');
   const [emailConfirmation, setEmailConfirmation] = useState<string>('');
@@ -98,6 +93,7 @@ export default function SignUp() {
   const [startYear, setStartYear] = useState<string>('');
   const [conclusionYear, setConclusionYear] = useState<string | null>();
 
+  //TODO complete email and password confirmation (or send to api)
   const [isEmailConfirmed, setIsEmailConfirmed] = useState<boolean>(true);
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState<boolean>(true);
 
@@ -168,7 +164,7 @@ export default function SignUp() {
       },
     };
 
-    setSignUpBody(body);
+    dispatch(setSignUpBody(body));
 
     setOpenConfirmSignUp(true);
   };
@@ -288,13 +284,13 @@ export default function SignUp() {
         onClose={handleCloseConfirmSignUp}
         onConfirm={() => {
           handleCloseConfirmSignUp();
+          //TODO fix account ok
+          // navigate('/confirmacao');
         }}
-        signUpBody={signUpBody}
+        // signUpBody={signUpBody}
       />
       {!isLoading && accountInfo ? (
-        <Container maxWidth="xl">
-          <SignUpCompleted />
-        </Container>
+        <SignUpCompleted />
       ) : (
         <Container maxWidth="xl">
           <Grid my={5} />

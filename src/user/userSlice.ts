@@ -1,10 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../app/store";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../app/store';
 
 export interface BasicUserInfo {
   id: number;
   email: string;
-  role: "usuario" | "aluno" | "monitor" | "professor" | "admin";
+  role: 'usuario' | 'estudante' | 'monitor' | 'professor' | 'admin';
 }
 
 export interface UserState extends BasicUserInfo {
@@ -13,13 +13,13 @@ export interface UserState extends BasicUserInfo {
 
 const initialState: UserState = {
   id: 0,
-  email: "",
-  role: "usuario",
+  email: '',
+  role: 'usuario',
   loggedIn: false,
 };
 
 export const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
     login: (state, action: PayloadAction<BasicUserInfo>) => {

@@ -1,15 +1,15 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
 import { registerNewUser } from '../../api/sign-up/signup';
+import { RootState } from '../../app/store';
 import { SignUpBody } from '../../utils/options/types/sign-up-body';
 import { AccountInfo } from './types/account-info';
-import axios, { AxiosError } from 'axios';
 
 export interface SignUpState {
   status: 'idle' | 'loading' | 'failed';
   isLoading: boolean;
   accountInfo: AccountInfo | null;
   error?: any;
+  signUpBody: SignUpBody;
 }
 
 const initialState: SignUpState = {
@@ -17,6 +17,7 @@ const initialState: SignUpState = {
   isLoading: false,
   accountInfo: null,
   error: null,
+  signUpBody: {} as SignUpBody,
 };
 
 export const signUpSlice = createSlice({
@@ -28,9 +29,13 @@ export const signUpSlice = createSlice({
       state.isLoading = initialState.isLoading;
       state.accountInfo = initialState.accountInfo;
       state.error = initialState.error;
+      state.signUpBody = initialState.signUpBody;
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
+    },
+    setSignUpBody: (state, action: PayloadAction<SignUpBody>) => {
+      state.signUpBody = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -42,7 +47,6 @@ export const signUpSlice = createSlice({
       .addCase(performSignUp.rejected, (state, action) => {
         state.status = 'failed';
         state.isLoading = false;
-        //TODO get Error message
         state.error = action.payload;
       })
       .addCase(
@@ -83,7 +87,7 @@ export const performSignUp = createAsyncThunk(
   }
 );
 
-export const { resetSignUp } = signUpSlice.actions;
+export const { resetSignUp, setSignUpBody } = signUpSlice.actions;
 
 export const selectSignUp = (state: RootState) => state.signUp;
 
