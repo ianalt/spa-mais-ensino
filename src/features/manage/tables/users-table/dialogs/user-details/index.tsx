@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import List from '@mui/material/List';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { format } from 'date-fns';
+import dayjs, { Dayjs } from 'dayjs';
 import { Dispatch, Fragment, SetStateAction, forwardRef } from 'react';
 import { useAppSelector } from '../../../../../../app/hooks';
 import { selectUsersTable, setSelected } from '../../usersTableSlice';
@@ -50,17 +50,10 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
     )}.${selected?.cpf.substring(6, 9)}-${selected?.cpf.substring(9, 11)}`;
   };
 
-  // não usando date-fns porque n tá funcionando
   const formatBirthDate = () => {
     if (!selected) return '—';
 
-    const date = format(selected.birthDate, 'DD/MM/YYYY');
-
-    // const year = selected.birthDate.getFullYear();
-    // const month = selected.birthDate.getMonth() + 1;
-    // const day = selected.birthDate.getDate();
-
-    // return `${day}/${month}/${year}`;
+    const date = dayjs(selected.birthDate).format('DD/MM/YYYY');
 
     return date;
   };
@@ -120,7 +113,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Grid>
                 <Grid item xs={12}>
                   {/* <Typography>{formatBirthDate()}</Typography> */}
-                  <Typography>{selected?.birthDate}</Typography>
+                  <Typography>{formatBirthDate()}</Typography>
                 </Grid>
               </Grid>
 

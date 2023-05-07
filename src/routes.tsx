@@ -6,7 +6,6 @@ import {
   Route,
   Routes,
   useLocation,
-  useSearchParams,
 } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import HomePage from './features/home';
@@ -19,10 +18,7 @@ import { DefaultLayout } from './layout/default.layout';
 import { WelcomeLayout } from './layout/welcome.layout';
 import { login as reduxLogin, selectUser } from './user/userSlice';
 
-//TODO fix nav errors
 export const AppRoutes = () => {
-  const user = useAppSelector(selectUser);
-
   return (
     <Routes>
       <Route
@@ -89,14 +85,7 @@ const RequireRole = ({
   let location = useLocation();
 
   if (user.role !== role) {
-    return (
-      <Navigate
-        // to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
-        to="/mais-ensino"
-        state={{ from: location }}
-        replace
-      />
-    );
+    return <Navigate to="/mais-ensino" state={{ from: location }} replace />;
   }
 
   return children;
@@ -107,7 +96,6 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
 
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
-  let [searchParams] = useSearchParams();
 
   if (user.loggedIn)
     return <Navigate to={`/mais-ensino`} state={{ from: location }} replace />;
@@ -156,14 +144,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   let location = useLocation();
 
   if (!user.loggedIn || user.role === 'usuario') {
-    return (
-      <Navigate
-        // to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
-        to="/"
-        state={{ from: location }}
-        replace
-      />
-    );
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return children;
