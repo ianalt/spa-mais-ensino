@@ -39,9 +39,6 @@ export default function ConfirmSignUp({
 
   const { isLoading, signUpBody } = signUp;
 
-  const { user, address, financialInfo, phoneNumbers, educationInfo } =
-    signUpBody;
-
   const handleSignUp = () => {
     dispatch(performSignUp(signUpBody));
   };
@@ -53,20 +50,6 @@ export default function ConfirmSignUp({
   const handleConfirm = () => {
     handleSignUp();
     onConfirm();
-  };
-
-  const formatCpf = () => {
-    return `${user.cpf.substring(0, 3)}.${user.cpf.substring(
-      3,
-      6
-    )}.${user.cpf.substring(6, 9)}-${user.cpf.substring(9, 11)}`;
-  };
-
-  // não usando date-fns porque n tá funcionando
-  const formatBirthDate = () => {
-    const date = dayjs(user.birthDate).format('DD/MM/YYYY');
-
-    return date;
   };
 
   return (

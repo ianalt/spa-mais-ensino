@@ -8,3 +8,12 @@ export const schoolingLevelOptions: SchoolingLevelOption[] = [
   { label: 'Ensino Médio Completo', value: SchoolingLevel.EMC },
   { label: 'Supletivo', value: SchoolingLevel.S },
 ];
+
+//TODO var for monitors and teachers
+export const schoolingLevelOptionsForNonStudents: SchoolingLevelOption[] = [
+  { label: 'Ensino Técnico Incompleto', value: SchoolingLevel.ETI },
+  { label: 'Ensino Técnico Completo', value: SchoolingLevel.ETC },
+  { label: 'Ensino Médio Incompleto', value: SchoolingLevel.EMI },
+  { label: 'Ensino Médio Completo', value: SchoolingLevel.EMC },
+  { label: 'Supletivo', value: SchoolingLevel.S },
+];

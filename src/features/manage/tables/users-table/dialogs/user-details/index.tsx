@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import List from '@mui/material/List';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { Dispatch, Fragment, SetStateAction, forwardRef } from 'react';
 import { useAppSelector } from '../../../../../../app/hooks';
 import { selectUsersTable, setSelected } from '../../usersTableSlice';

@@ -1,11 +1,18 @@
+import AddIcon from '@mui/icons-material/Add';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { LoadingButton } from '@mui/lab';
 import {
+  Alert,
   Autocomplete,
+  Box,
   Chip,
   Divider,
+  Fab,
   Grid,
   Input,
   InputLabel,
+  Paper,
   TextField,
   Tooltip,
   Typography,
@@ -16,36 +23,39 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import List from '@mui/material/List';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import dayjs, { Dayjs } from 'dayjs';
 import {
   Dispatch,
-  Fragment,
   SetStateAction,
   forwardRef,
+  useEffect,
   useState,
 } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
-import { selectUsersTable, setSelected } from '../../usersTableSlice';
-import EducationInfoDetails from '../components/education-info-details';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import { useNavigate } from 'react-router-dom';
-import { CpfMaskCustom } from '../../../../../../utils/masks/cpf-mask';
-import { BirthDateCustom } from '../../../../../../utils/masks/birth-date-mask';
-import { PhoneNumberMaskCustom } from '../../../../../../utils/masks/phone-number-mask';
-import { NumericFormatCustom } from '../../../../../../utils/masks/numeric-mask';
-import { CepMaskCustom } from '../../../../../../utils/masks/cep-mask';
-import { UfOption } from '../../../../../../utils/options/types/uf-option';
-import { ufOptions } from '../../../../../../utils/options/uf-options';
 import { viacep } from '../../../../../../api/cep/cep.req';
-import { EthnicityOption } from '../../../../../../utils/options/types/ethnicity-option';
-import { GenderOption } from '../../../../../../utils/options/types/gender-option';
+import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
+import { BirthDateCustom } from '../../../../../../utils/masks/birth-date-mask';
+import { CepMaskCustom } from '../../../../../../utils/masks/cep-mask';
+import { CpfMaskCustom } from '../../../../../../utils/masks/cpf-mask';
+import { NumericFormatCustom } from '../../../../../../utils/masks/numeric-mask';
+import { PhoneNumberMaskCustom } from '../../../../../../utils/masks/phone-number-mask';
+import { YearMaskCustom } from '../../../../../../utils/masks/year-mask';
 import { ethnicityOptions } from '../../../../../../utils/options/ethnicity-options';
 import { genderOptions } from '../../../../../../utils/options/gender-options';
 import { roleOptions } from '../../../../../../utils/options/role-options';
+import { schoolingLevelOptions } from '../../../../../../utils/options/schooling-level-options';
+import { EthnicityOption } from '../../../../../../utils/options/types/ethnicity-option';
+import { GenderOption } from '../../../../../../utils/options/types/gender-option';
 import { RoleOption } from '../../../../../../utils/options/types/role-option';
+import { SchoolingLevelOption } from '../../../../../../utils/options/types/schooling-level-option';
+import { UfOption } from '../../../../../../utils/options/types/uf-option';
+import { ufOptions } from '../../../../../../utils/options/uf-options';
+import { selectUsersTable, setSelected } from '../../usersTableSlice';
+import { EducationInfo } from './types/education-info';
+import ConfirmCreateUser from './ConfirmCreateUser';
+import { CreateUserBody } from './types/create-user-body';
+import { convertBirthDate } from '../../../../../../utils/conversions/convert-birth-date';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -73,7 +83,12 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
   const navigate = useNavigate();
   const usersTable = useAppSelector(selectUsersTable);
 
+  const { status } = usersTable;
+
   const [step, setStep] = useState<number>(0);
+
+  const [openConfirmCreateUser, setOpenConfirmCreateUser] =
+    useState<boolean>(false);
 
   const [cepError, setCepError] = useState<boolean>(false);
   const [cepErrorMessage, setCepErrorMessage] = useState<string>('');
@@ -87,7 +102,6 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
   const [lastName, setLastName] = useState<string>('');
   const [cpf, setCpf] = useState<string>('');
   const [birthDate, setBirthDate] = useState<string>('');
-  //TODO gender and ethnicity
   const [ethnicity, setEthnicity] = useState<EthnicityOption | null>();
   const [gender, setGender] = useState<GenderOption | null>();
   const [generalIncome, setGeneralIncome] = useState<number>(0);
@@ -103,9 +117,163 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
   const [city, setCity] = useState<string>('');
   const [uf, setUf] = useState<UfOption | null>();
 
+  const [educationInfoList, setEducationInfoList] = useState<EducationInfo[]>([
+    {
+      institutionName: '',
+      courseName: '',
+      schoolingLevel: null,
+      startYear: '',
+      conclusionYear: '',
+    },
+  ]);
+
   const handleClose = () => {
     onClose(true);
     setSelected(undefined);
+  };
+
+  const handleOpenConfirmCreateUser = () => {
+    setOpenConfirmCreateUser(true);
+  };
+
+  const handleCloseConfirmCreateUser = () => {
+    setOpenConfirmCreateUser(false);
+  };
+
+  const handleRemoveEducationInfo = (index: number) => {
+    const updatedList = educationInfoList.filter(
+      (educationInfo, i) => i !== index
+    );
+
+    setEducationInfoList(updatedList);
+  };
+
+  const handleEditCourseName = (value: string, index: number) => {
+    const newList = educationInfoList.map((educationInfo, i) => {
+      return index === i
+        ? {
+            ...educationInfo,
+            courseName: value,
+          }
+        : educationInfo;
+    });
+
+    setEducationInfoList(newList);
+  };
+
+  const handleEditInstitutionName = (value: string, index: number) => {
+    const newList = educationInfoList.map((educationInfo, i) => {
+      return index === i
+        ? {
+            ...educationInfo,
+            institutionName: value,
+          }
+        : educationInfo;
+    });
+
+    setEducationInfoList(newList);
+  };
+
+  const handleEditSchoolingLevel = (
+    value: SchoolingLevelOption | null,
+    index: number
+  ) => {
+    const newList = educationInfoList.map((educationInfo, i) => {
+      return index === i
+        ? {
+            ...educationInfo,
+            schoolingLevel: value,
+          }
+        : educationInfo;
+    });
+
+    setEducationInfoList(newList);
+  };
+
+  const handleEditStartYear = (value: string, index: number) => {
+    const newList = educationInfoList.map((educationInfo, i) => {
+      return index === i
+        ? {
+            ...educationInfo,
+            startYear: value,
+          }
+        : educationInfo;
+    });
+
+    setEducationInfoList(newList);
+  };
+
+  const handleEditConclusionYear = (value: string, index: number) => {
+    const newList = educationInfoList.map((educationInfo, i) => {
+      return index === i
+        ? {
+            ...educationInfo,
+            conclusionYear: value,
+          }
+        : educationInfo;
+    });
+
+    setEducationInfoList(newList);
+  };
+
+  const handleAddNewEducationInfo = () => {
+    setEducationInfoList([
+      ...educationInfoList,
+      {
+        institutionName: '',
+        courseName: '',
+        schoolingLevel: null,
+        startYear: '',
+        conclusionYear: '',
+      },
+    ]);
+  };
+
+  const handleCreateUser = () => {
+    const phoneNumbers = !phoneNumber2
+      ? [phoneNumber1].map((phone) => {
+          return {
+            phoneNumber: phone,
+          };
+        })
+      : [phoneNumber1, phoneNumber2].map((phone) => {
+          return {
+            phoneNumber: phone,
+          };
+        });
+
+    const body: CreateUserBody = {
+      user: {
+        email,
+        password,
+        role: role?.value,
+        firstName,
+        lastName,
+        cpf,
+        birthDate: convertBirthDate(birthDate),
+        ethnicity: ethnicity?.value,
+        gender: gender?.value,
+      },
+
+      address: {
+        cep,
+        street,
+        streetNumber,
+        neighborhood,
+        complement,
+        city,
+        uf: uf?.value,
+      },
+      phoneNumbers,
+      educationInfoList,
+
+      financialInfo: {
+        generalIncome,
+        totalHouseHoldMembers,
+      },
+    };
+
+    console.log(body);
   };
 
   const convertCpf = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,8 +364,59 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
     setUf(null);
   };
 
+  const resetFields = () => {
+    setStreet('');
+    setStreetNumber('');
+    setNeighborhood('');
+    setComplement('');
+    setCity('');
+    setUf(null);
+    setCepError(false);
+    setCepErrorMessage('');
+    setIsCepLoading(false);
+    setEmail('');
+    setPassword('');
+    setRole(null);
+    setFirstName('');
+    setLastName('');
+    setCpf('');
+    setBirthDate('');
+    setEthnicity(null);
+    setGender(null);
+    setGeneralIncome(0);
+    setTotalHouseHoldMembers(0);
+    setPhoneNumber1('');
+    setPhoneNumber2('');
+    setCep('');
+    setStreet('');
+    setStreetNumber('');
+    setNeighborhood('');
+    setComplement('');
+    setCity('');
+    setUf(null);
+    setEducationInfoList([
+      {
+        institutionName: '',
+        courseName: '',
+        schoolingLevel: null,
+        startYear: '',
+        conclusionYear: '',
+      },
+    ]);
+  };
+
+  useEffect(() => {
+    if (!open) resetFields();
+  }, [open]);
+
   return (
     <div>
+      <ConfirmCreateUser
+        open={openConfirmCreateUser}
+        onClose={handleCloseConfirmCreateUser}
+        onConfirm={handleCreateUser}
+      />
+
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -212,6 +431,25 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
           <DialogContentText id="create-user-dialog-slide-description">
             {'Preencha as informações abaixo para criar o novo usuário: '}
           </DialogContentText>
+          {/* 
+          {status === 'failed' ? (
+                  <Grid item xs={12} container m={1}>
+                    <Alert severity="error">
+                      <Typography variant="body1">
+                        <strong>Erro ao cadastrar. </strong>
+                      </Typography>
+                      {error.map((e: string) => {
+                        return (
+                          <Typography key={e} variant="body2">
+                            &gt; {e}.
+                          </Typography>
+                        );
+                      })}
+                    </Alert>
+                  </Grid>
+                ) : (
+                  <></>
+                )} */}
 
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
@@ -265,7 +503,6 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                   container
                   alignItems="flex-start"
                   justifyContent="center"
-                  sx={{ border: '1px solid blue' }}
                 >
                   <Tooltip
                     title="A senha precisa conter entre 8 e 16 caracteres, com 1 letra minúscula, 1 maiúscula, 1 número e 1 caracter especial"
@@ -276,13 +513,8 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                 </Grid>
               </Grid>
 
-              <Grid
-                item
-                xs={4}
-                container
-                p={1}
-                sx={{ border: '1px solid red' }}
-              >
+              {/* //TODO change input fields depending on role selected */}
+              <Grid item xs={4} container p={1}>
                 <Grid item xs={9}>
                   <Autocomplete
                     id="role-options"
@@ -311,7 +543,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
               <Divider>
-                <Chip label="Dados de pessoais" />
+                <Chip label="Dados pessoais" />
               </Divider>
             </Grid>
 
@@ -525,6 +757,21 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
               </Grid>
 
               <Grid item xs={12} container my={1} px={1}>
+                {cepError ? (
+                  <Grid item xs={12} container m={1}>
+                    <Alert severity="error">
+                      <Typography variant="body1">
+                        <strong>CEP inválido. </strong>
+                      </Typography>
+                      <Typography variant="body2">
+                        &gt; {cepErrorMessage}
+                      </Typography>
+                    </Alert>
+                  </Grid>
+                ) : (
+                  <></>
+                )}
+
                 <Grid item xs={2} mr={2} py={2}>
                   <InputLabel htmlFor="formatted-cep-mask-input">
                     CEP *
@@ -546,13 +793,13 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                     variant="contained"
                     onClick={handleCepSearch}
                     loading={isCepLoading}
-                    disabled={isCepLoading}
+                    disabled={isCepLoading || !cep}
                   >
                     Buscar
                   </LoadingButton>
                 </Grid>
 
-                <Grid item xs={12} container sx={{ border: '1px solid red' }}>
+                <Grid item xs={12} container>
                   <Grid item xs={6} container p={1}>
                     <Grid item xs={12}>
                       <TextField
@@ -662,13 +909,185 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                   </Grid>
                 </Grid>
               </Grid>
+
+              <Grid item xs={12} my={2}>
+                <Divider>
+                  <Chip label="Formação acadêmica" />
+                </Divider>
+              </Grid>
+
+              <Grid item xs={12} container justifyContent="center" my={1}>
+                {educationInfoList.map((educationInfo, index) => {
+                  const {
+                    institutionName,
+                    courseName,
+                    schoolingLevel,
+                    startYear,
+                    conclusionYear,
+                  } = educationInfo;
+
+                  return (
+                    <Box key={index + 1} my={2}>
+                      <Paper>
+                        <Grid item xs={12} container p={1}>
+                          <Grid item xs={12} p={1}>
+                            <TextField
+                              id="course-name"
+                              autoFocus
+                              margin="normal"
+                              fullWidth
+                              required
+                              name="course-name"
+                              label="Nome do curso"
+                              variant="outlined"
+                              placeholder="Digite o nome do curso..."
+                              value={courseName}
+                              onChange={(event: any) => {
+                                const newValue: string = event.target.value;
+
+                                handleEditCourseName(newValue, index);
+                              }}
+                            />
+                          </Grid>
+
+                          <Grid item xs={5} p={1}>
+                            <TextField
+                              id="instituition-name"
+                              autoFocus
+                              margin="normal"
+                              fullWidth
+                              required
+                              name="instituition-name"
+                              label="Nome da instituição"
+                              variant="outlined"
+                              placeholder="Digite o nome da instituição..."
+                              value={institutionName}
+                              onChange={(event: any) => {
+                                const newValue: string = event.target.value;
+
+                                handleEditInstitutionName(newValue, index);
+                              }}
+                            />
+                          </Grid>
+
+                          <Grid item xs={5} p={1}>
+                            <Autocomplete
+                              id="schooling-level-options"
+                              value={schoolingLevel}
+                              defaultValue={schoolingLevel}
+                              onChange={(
+                                event: any,
+                                newValue: SchoolingLevelOption | null
+                              ) => {
+                                handleEditSchoolingLevel(newValue, index);
+                              }}
+                              options={schoolingLevelOptions}
+                              getOptionLabel={(option) => option.label}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  margin="normal"
+                                  required
+                                  fullWidth
+                                  label="Nível de formação"
+                                />
+                              )}
+                            />
+                          </Grid>
+
+                          <Grid item xs={3} container p={1}>
+                            <Grid item xs={12}>
+                              <InputLabel htmlFor="formatted-start-year-mask-input">
+                                Ano de início *
+                              </InputLabel>
+                              <Input
+                                required
+                                value={startYear}
+                                onChange={(event: any) => {
+                                  const newValue: string = event.target.value;
+
+                                  handleEditStartYear(newValue, index);
+                                }}
+                                name="start-year"
+                                id="formatted-start-year-mask-input"
+                                inputComponent={YearMaskCustom as any}
+                              />
+                            </Grid>
+                          </Grid>
+
+                          <Grid item xs={3} container p={1}>
+                            <Grid item xs={12}>
+                              <InputLabel htmlFor="formatted-conclusion-year-mask-input">
+                                Ano de conclusão
+                              </InputLabel>
+                              <Input
+                                value={conclusionYear}
+                                onChange={(event: any) => {
+                                  const newValue: string = event.target.value;
+
+                                  handleEditConclusionYear(newValue, index);
+                                }}
+                                name="conclusion-year"
+                                id="formatted-conclusion-year-mask-input"
+                                inputComponent={YearMaskCustom as any}
+                              />
+                            </Grid>
+                          </Grid>
+
+                          <Grid
+                            item
+                            xs={12}
+                            container
+                            justifyContent="flex-start"
+                            mt={2}
+                          >
+                            <Tooltip title="Remover formação" arrow>
+                              <Fab
+                                color="secondary"
+                                aria-label="create-user"
+                                onClick={() => handleRemoveEducationInfo(index)}
+                                size="small"
+                                disabled={
+                                  educationInfoList.length <= 1 && index === 0
+                                }
+                              >
+                                <RemoveIcon />
+                              </Fab>
+                            </Tooltip>
+                          </Grid>
+                        </Grid>
+                      </Paper>
+                    </Box>
+                  );
+                })}
+                <Grid item xs={12} container justifyContent="center" p={1}>
+                  <Tooltip title="Adicionar nova formação" arrow>
+                    <Fab
+                      color="primary"
+                      aria-label="create-user"
+                      onClick={handleAddNewEducationInfo}
+                      size="small"
+                    >
+                      <AddIcon />
+                    </Fab>
+                  </Tooltip>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleClose}>
+          <Button onClick={handleClose} size="large" color="secondary">
             Fechar
           </Button>
+
+          <LoadingButton
+            size="large"
+            variant="contained"
+            onClick={handleOpenConfirmCreateUser}
+          >
+            Criar
+          </LoadingButton>
         </DialogActions>
       </Dialog>
     </div>

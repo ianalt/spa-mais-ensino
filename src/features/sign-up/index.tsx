@@ -284,10 +284,7 @@ export default function SignUp() {
         onClose={handleCloseConfirmSignUp}
         onConfirm={() => {
           handleCloseConfirmSignUp();
-          //TODO fix account ok
-          // navigate('/confirmacao');
         }}
-        // signUpBody={signUpBody}
       />
       {!isLoading && accountInfo ? (
         <SignUpCompleted />
