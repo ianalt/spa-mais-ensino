@@ -45,7 +45,7 @@ export default function ConfirmCreateUser({
         TransitionComponent={Transition}
         keepMounted
         onClose={() => onClose()}
-        aria-describedby="sign-up-body-confirmation"
+        aria-describedby="create-user-confirmation"
         maxWidth="sm"
         fullWidth
       >
