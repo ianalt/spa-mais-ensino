@@ -62,6 +62,7 @@ import {
   createNewStudent,
   createNewTeacher,
   getIsLoading,
+  resetErrors,
   selectUsersTable,
   setSelected,
 } from '../../usersTableSlice';
@@ -70,6 +71,7 @@ import { CreateMonitorBody } from './types/create-monitor-body';
 import { CreateStudentBody } from './types/create-student-body';
 import { CreateTeacherBody } from './types/create-teacher-body';
 import { EducationInfo } from './types/education-info';
+import { EducationInfoOption } from './types/education-info-option';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -82,7 +84,8 @@ const Transition = forwardRef(function Transition(
 
 interface CreateUserProps {
   open: boolean;
-  onClose: Dispatch<SetStateAction<boolean>>;
+  onClose: any;
+  onCreate: any;
 }
 
 const steps = [
@@ -92,12 +95,16 @@ const steps = [
   'Dados educacionais',
 ];
 
-export default function CreateUser({ open, onClose }: CreateUserProps) {
+export default function CreateUser({
+  open,
+  onClose,
+  onCreate,
+}: CreateUserProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const usersTable = useAppSelector(selectUsersTable);
 
-  const { status, isCreating } = usersTable;
+  const { status, isCreating, error } = usersTable;
 
   const isLoading = useAppSelector(getIsLoading);
 
@@ -130,19 +137,22 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
   const [city, setCity] = useState<string>('');
   const [uf, setUf] = useState<UfOption | null>();
 
-  const [educationInfoList, setEducationInfoList] = useState<EducationInfo[]>([
+  const [educationInfoList, setEducationInfoList] = useState<
+    EducationInfoOption[]
+  >([
     {
       institutionName: '',
       courseName: '',
       schoolingLevel: null,
       startYear: '',
-      conclusionYear: '',
+      conclusionYear: null,
     },
   ]);
 
   const handleClose = () => {
-    onClose(true);
+    onClose();
     setSelected(undefined);
+    resetFields();
   };
 
   const handleRemoveEducationInfo = (index: number) => {
@@ -179,6 +189,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
     setEducationInfoList(newList);
   };
 
+  //TODO create a type for the body and a type for the options
   const handleEditSchoolingLevel = (
     value: SchoolingLevelOption | null,
     index: number
@@ -208,7 +219,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
     setEducationInfoList(newList);
   };
 
-  const handleEditConclusionYear = (value: string, index: number) => {
+  const handleEditConclusionYear = (value: string | null, index: number) => {
     const newList = educationInfoList.map((educationInfo, i) => {
       return index === i
         ? {
@@ -229,13 +240,12 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
         courseName: '',
         schoolingLevel: null,
         startYear: '',
-        conclusionYear: '',
+        conclusionYear: null,
       },
     ]);
   };
 
   const handleCreateUser = () => {
-    //TODO IF STUDENT: full user info, single education item (?)
     if (role?.value === Role.ESTUDANTE) {
       const phoneNumbers = !phoneNumber2
         ? [phoneNumber1].map((phone) => {
@@ -271,8 +281,17 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
           city,
           uf: uf?.value,
         },
+
         phoneNumbers,
-        educationInfoList,
+
+        educationInfoList: educationInfoList.map((educationInfo) => {
+          return {
+            ...educationInfo,
+            schoolingLevel: educationInfo.schoolingLevel
+              ? educationInfo.schoolingLevel.value
+              : null,
+          };
+        }),
 
         financialInfo: {
           generalIncome,
@@ -281,9 +300,14 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
       };
 
       dispatch(createNewStudent(body));
+
+      if (status === 'idle') {
+        onCreate();
+
+        handleClose();
+      }
     }
 
-    //TODO IF MONITOR: address, phone, education
     if (role?.value === Role.MONITOR) {
       const phoneNumbers = !phoneNumber2
         ? [phoneNumber1].map((phone) => {
@@ -320,13 +344,26 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
           uf: uf?.value,
         },
         phoneNumbers,
-        educationInfoList,
+
+        educationInfoList: educationInfoList.map((educationInfo) => {
+          return {
+            ...educationInfo,
+            schoolingLevel: educationInfo.schoolingLevel
+              ? educationInfo.schoolingLevel.value
+              : null,
+          };
+        }),
       };
 
       dispatch(createNewMonitor(body));
+
+      if (status === 'idle') {
+        onCreate();
+
+        handleClose();
+      }
     }
 
-    //TODO IF TEACHER: address, phone, education
     if (role?.value === Role.PROFESSOR) {
       const phoneNumbers = !phoneNumber2
         ? [phoneNumber1].map((phone) => {
@@ -363,13 +400,25 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
           uf: uf?.value,
         },
         phoneNumbers,
-        educationInfoList,
+        educationInfoList: educationInfoList.map((educationInfo) => {
+          return {
+            ...educationInfo,
+            schoolingLevel: educationInfo.schoolingLevel
+              ? educationInfo.schoolingLevel.value
+              : null,
+          };
+        }),
       };
 
       dispatch(createNewTeacher(body));
+
+      if (status === 'idle') {
+        onCreate();
+
+        handleClose();
+      }
     }
 
-    //TODO IF ADMIN: address, phone
     if (role?.value === Role.ADMIN) {
       const phoneNumbers = !phoneNumber2
         ? [phoneNumber1].map((phone) => {
@@ -409,6 +458,12 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
       };
 
       dispatch(createNewAdmin(body));
+
+      if (status === 'idle') {
+        onCreate();
+
+        handleClose();
+      }
     }
   };
 
@@ -534,7 +589,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
         courseName: '',
         schoolingLevel: null,
         startYear: '',
-        conclusionYear: '',
+        conclusionYear: null,
       },
     ]);
   };
@@ -553,7 +608,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
           courseName: '',
           schoolingLevel: null,
           startYear: '',
-          conclusionYear: '',
+          conclusionYear: null,
         },
       ]);
     }
@@ -561,6 +616,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
 
   useEffect(() => {
     resetFields();
+    dispatch(resetErrors());
   }, [open]);
 
   return (
@@ -569,7 +625,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
         open={open || isCreating}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => onClose(true)}
+        onClose={() => onClose()}
         aria-describedby="create-user-dialog-slide-description"
         maxWidth="xl"
         fullWidth
@@ -581,25 +637,6 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
             <strong>Confirme</strong> os dados antes de clicar no botão{' '}
             <strong>Criar</strong>.
           </DialogContentText>
-          {/* 
-          {status === 'failed' ? (
-                  <Grid item xs={12} container m={1}>
-                    <Alert severity="error">
-                      <Typography variant="body1">
-                        <strong>Erro ao cadastrar. </strong>
-                      </Typography>
-                      {error.map((e: string) => {
-                        return (
-                          <Typography key={e} variant="body2">
-                            &gt; {e}.
-                          </Typography>
-                        );
-                      })}
-                    </Alert>
-                  </Grid>
-                ) : (
-                  <></>
-                )} */}
 
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
@@ -883,7 +920,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                     Número de celular *
                   </InputLabel>
                   <Input
-                    id="formatted-phone-number-mask-input"
+                    id="formatted-phone-number-1-mask-input"
                     name="phone-number-1"
                     required
                     value={phoneNumber1}
@@ -904,7 +941,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                     value={phoneNumber2}
                     onChange={convertPhoneNumber2}
                     name="phone-number-2"
-                    id="formatted-phone-number-mask-input"
+                    id="formatted-phone-number-2-mask-input"
                     placeholder="(XX) X XXXX-XXXX"
                     inputComponent={PhoneNumberMaskCustom as any}
                   />
@@ -1200,7 +1237,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                                   <Input
                                     value={conclusionYear}
                                     onChange={(event: any) => {
-                                      const newValue: string =
+                                      const newValue: string | null =
                                         event.target.value;
 
                                       handleEditConclusionYear(newValue, index);
@@ -1220,20 +1257,22 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                                 mt={2}
                               >
                                 <Tooltip title="Remover formação" arrow>
-                                  <Fab
-                                    color="secondary"
-                                    aria-label="create-user"
-                                    onClick={() =>
-                                      handleRemoveEducationInfo(index)
-                                    }
-                                    size="small"
-                                    disabled={
-                                      educationInfoList.length <= 1 &&
-                                      index === 0
-                                    }
-                                  >
-                                    <RemoveIcon />
-                                  </Fab>
+                                  <span>
+                                    <Fab
+                                      color="secondary"
+                                      aria-label="create-user"
+                                      onClick={() =>
+                                        handleRemoveEducationInfo(index)
+                                      }
+                                      size="small"
+                                      disabled={
+                                        educationInfoList.length <= 1 &&
+                                        index === 0
+                                      }
+                                    >
+                                      <RemoveIcon />
+                                    </Fab>
+                                  </span>
                                 </Tooltip>
                               </Grid>
                             </Grid>
@@ -1243,20 +1282,43 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
                     })}
                     <Grid item xs={12} container justifyContent="center" p={1}>
                       <Tooltip title="Adicionar nova formação" arrow>
-                        <Fab
-                          color="primary"
-                          aria-label="create-user"
-                          onClick={handleAddNewEducationInfo}
-                          size="small"
-                        >
-                          <AddIcon />
-                        </Fab>
+                        <span>
+                          <Fab
+                            color="primary"
+                            aria-label="create-user"
+                            onClick={handleAddNewEducationInfo}
+                            size="small"
+                          >
+                            <AddIcon />
+                          </Fab>
+                        </span>
                       </Tooltip>
                     </Grid>
                   </Grid>
                 </>
               )}
             </Grid>
+          </Grid>
+
+          <Grid container justifyContent="flex-start">
+            {status === 'failed' ? (
+              <Grid item xs={12} container m={1}>
+                <Alert severity="error">
+                  <Typography variant="body1">
+                    <strong>Erro ao cadastrar. </strong>
+                  </Typography>
+                  {error.map((e: string) => {
+                    return (
+                      <Typography key={e} variant="body2">
+                        &gt; {e}.
+                      </Typography>
+                    );
+                  })}
+                </Alert>
+              </Grid>
+            ) : (
+              <></>
+            )}
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -1269,7 +1331,7 @@ export default function CreateUser({ open, onClose }: CreateUserProps) {
             variant="contained"
             onClick={handleCreateUser}
             loading={isLoading}
-            disabled={isLoading}
+            disabled={isLoading || !role}
           >
             Criar
           </LoadingButton>

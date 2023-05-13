@@ -18,6 +18,7 @@ export interface UsersTableState {
   list: User[];
   selected?: User;
   isCreating: boolean;
+  error?: any;
 }
 
 const initialState: UsersTableState = {
@@ -25,12 +26,16 @@ const initialState: UsersTableState = {
   list: [],
   selected: undefined,
   isCreating: false,
+  error: null,
 };
 
 export const usersTableSlice = createSlice({
   name: 'usersTable',
   initialState,
   reducers: {
+    resetErrors: (state) => {
+      state.error = initialState.error;
+    },
     setSelected: (state, action: PayloadAction<User | undefined>) => {
       state.selected = action.payload;
     },
@@ -59,9 +64,10 @@ export const usersTableSlice = createSlice({
         state.status = 'loading';
         state.isCreating = true;
       })
-      .addCase(createNewStudent.rejected, (state) => {
+      .addCase(createNewStudent.rejected, (state, action) => {
         state.status = 'failed';
         state.isCreating = false;
+        state.error = action.payload;
       })
       .addCase(
         createNewStudent.fulfilled,
@@ -157,11 +163,28 @@ export const getUsersList = createAsyncThunk(
 //TODO integrate API
 export const createNewStudent = createAsyncThunk(
   'usersTable/createNewStudent',
-  async (body: CreateStudentBody) => {
-    const response = await addNewStudent(body);
-    const newStudent: User = response.data;
+  async (body: CreateStudentBody, thunkAPI) => {
+    try {
+      const response = await addNewStudent(body);
 
-    return newStudent;
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
   }
 );
 
@@ -195,7 +218,7 @@ export const createNewAdmin = createAsyncThunk(
   }
 );
 
-export const { setSelected, setList } = usersTableSlice.actions;
+export const { resetErrors, setSelected, setList } = usersTableSlice.actions;
 
 export const selectUsersTable = (state: RootState) => state.usersTable;
 
@@ -206,3 +229,19 @@ export const getIsLoading = (state: RootState) => {
 };
 
 export default usersTableSlice.reducer;
+
+// if (e.isAxiosError) {
+//   if (typeof e.response.data.message === 'string') {
+//     const error = [e.response.data.message];
+
+//     return thunkAPI.rejectWithValue(error);
+//   }
+
+//   const errors = [...e.response.data.message].map((error: string) => {
+//     const afterDot = error.indexOf('.') + 1;
+
+//     return error.substring(afterDot);
+//   });
+
+//   return thunkAPI.rejectWithValue(errors);
+// }

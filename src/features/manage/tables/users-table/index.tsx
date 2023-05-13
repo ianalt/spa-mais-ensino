@@ -7,15 +7,19 @@ import UserDetails from './dialogs/user-details';
 import { Box, Fab, Grid, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CreateUser from './dialogs/create-user';
+import NotificationAlert from '../../../notification-alert';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
   const usersTable = useAppSelector(selectUsersTable);
 
+  const { isCreating } = usersTable;
+
   const [openDetails, setOpenDetails] = useState<boolean>(false);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [openCreate, setOpenCreate] = useState<boolean>(false);
+  const [openCreationAlert, setOpenCreationAlert] = useState<boolean>(false);
 
   const handleCloseDetails = () => {
     setOpenDetails(false);
@@ -37,11 +41,42 @@ export default function UsersTable() {
     setOpenCreate(false);
   };
 
+  const handleOpenCreationAlert = () => {
+    setOpenCreationAlert(true);
+  };
+
+  const handleCloseCreationAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenCreationAlert(false);
+  };
+
   return (
     <>
       <UserDetails open={openDetails} onClose={handleCloseDetails} />
 
-      <CreateUser open={openCreate} onClose={handleCloseCreate} />
+      <CreateUser
+        open={openCreate}
+        onClose={handleCloseCreate}
+        onCreate={handleOpenCreationAlert}
+      />
+
+      {isCreating ? (
+        <></>
+      ) : (
+        <NotificationAlert
+          open={openCreationAlert}
+          onClose={handleCloseCreationAlert}
+          severity="success"
+          status="Sucesso"
+          message="Usuário cadastrado com sucesso"
+        />
+      )}
 
       <Grid container>
         <Grid item xs={12}>

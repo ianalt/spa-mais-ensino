@@ -1,9 +1,9 @@
-import { SchoolingLevelOption } from '../../../../../../../utils/options/types/schooling-level-option';
+import { SchoolingLevel } from '../../../../../../../utils/enums/schooling-level.enum';
 
 export interface EducationInfo {
   courseName?: string;
   institutionName: string;
-  schoolingLevel: SchoolingLevelOption | null;
+  schoolingLevel: SchoolingLevel | null;
   startYear: string;
-  conclusionYear?: string;
+  conclusionYear?: string | null;
 }
