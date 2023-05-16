@@ -25,14 +25,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import {
-  Dispatch,
-  SetStateAction,
-  forwardRef,
-  useEffect,
-  useState,
-} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { forwardRef, useEffect, useState } from 'react';
 import { viacep } from '../../../../../../api/cep/cep.req';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
 import { convertBirthDate } from '../../../../../../utils/conversions/convert-birth-date';
@@ -56,21 +49,19 @@ import { RoleOption } from '../../../../../../utils/options/types/role-option';
 import { SchoolingLevelOption } from '../../../../../../utils/options/types/schooling-level-option';
 import { UfOption } from '../../../../../../utils/options/types/uf-option';
 import { ufOptions } from '../../../../../../utils/options/uf-options';
+import NotificationAlert from '../../../../../notification-alert';
 import {
   createNewAdmin,
   createNewMonitor,
   createNewStudent,
   createNewTeacher,
-  getIsLoading,
   resetErrors,
   selectUsersTable,
-  setSelected,
 } from '../../usersTableSlice';
 import { CreateAdminBody } from './types/create-admin-body';
 import { CreateMonitorBody } from './types/create-monitor-body';
 import { CreateStudentBody } from './types/create-student-body';
 import { CreateTeacherBody } from './types/create-teacher-body';
-import { EducationInfo } from './types/education-info';
 import { EducationInfoOption } from './types/education-info-option';
 
 const Transition = forwardRef(function Transition(
@@ -88,27 +79,17 @@ interface CreateUserProps {
   onCreate: any;
 }
 
-const steps = [
-  'Dados para criação da conta',
-  'Dados pessoais',
-  'Dados de moradia',
-  'Dados educacionais',
-];
-
 export default function CreateUser({
   open,
   onClose,
   onCreate,
 }: CreateUserProps) {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const usersTable = useAppSelector(selectUsersTable);
-
   const { status, isCreating, error } = usersTable;
 
-  const isLoading = useAppSelector(getIsLoading);
-
-  const [step, setStep] = useState<number>(0);
+  const [openCreateFailedAlert, setOpenCreateFailedAlert] =
+    useState<boolean>(false);
 
   const [cepError, setCepError] = useState<boolean>(false);
   const [cepErrorMessage, setCepErrorMessage] = useState<string>('');
@@ -116,14 +97,14 @@ export default function CreateUser({
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [role, setRole] = useState<RoleOption | null>();
+  const [role, setRole] = useState<RoleOption | null>(null);
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [cpf, setCpf] = useState<string>('');
   const [birthDate, setBirthDate] = useState<string>('');
-  const [ethnicity, setEthnicity] = useState<EthnicityOption | null>();
-  const [gender, setGender] = useState<GenderOption | null>();
+  const [ethnicity, setEthnicity] = useState<EthnicityOption | null>(null);
+  const [gender, setGender] = useState<GenderOption | null>(null);
   const [generalIncome, setGeneralIncome] = useState<number>(0);
   const [totalHouseHoldMembers, setTotalHouseHoldMembers] = useState<number>(0);
   const [phoneNumber1, setPhoneNumber1] = useState<string>('');
@@ -135,7 +116,7 @@ export default function CreateUser({
   const [neighborhood, setNeighborhood] = useState<string>('');
   const [complement, setComplement] = useState<string>('');
   const [city, setCity] = useState<string>('');
-  const [uf, setUf] = useState<UfOption | null>();
+  const [uf, setUf] = useState<UfOption | null>(null);
 
   const [educationInfoList, setEducationInfoList] = useState<
     EducationInfoOption[]
@@ -149,10 +130,56 @@ export default function CreateUser({
     },
   ]);
 
-  const handleClose = () => {
-    onClose();
-    setSelected(undefined);
-    resetFields();
+  const convertCpf = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+
+    const convertedCpf = input
+      .split('')
+      .filter((char) => {
+        return char !== '.' && char !== '-';
+      })
+      .join('');
+
+    setCpf(convertedCpf);
+  };
+
+  const convertPhoneNumber1 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+
+    const convertedPhoneNumber = input
+      .split('')
+      .filter((char) => {
+        return char !== ' ' && char !== '(' && char !== ')' && char !== '-';
+      })
+      .join('');
+
+    setPhoneNumber1(convertedPhoneNumber);
+  };
+
+  const convertPhoneNumber2 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+
+    const convertedPhoneNumber = input
+      .split('')
+      .filter((char) => {
+        return char !== ' ' && char !== '(' && char !== ')' && char !== '-';
+      })
+      .join('');
+
+    setPhoneNumber2(convertedPhoneNumber);
+  };
+
+  const convertCep = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+
+    const convertedCep = input
+      .split('')
+      .filter((char) => {
+        return char !== '-';
+      })
+      .join('');
+
+    setCep(convertedCep);
   };
 
   const handleRemoveEducationInfo = (index: number) => {
@@ -189,7 +216,6 @@ export default function CreateUser({
     setEducationInfoList(newList);
   };
 
-  //TODO create a type for the body and a type for the options
   const handleEditSchoolingLevel = (
     value: SchoolingLevelOption | null,
     index: number
@@ -245,7 +271,104 @@ export default function CreateUser({
     ]);
   };
 
-  const handleCreateUser = () => {
+  const handleCepSearch = async () => {
+    try {
+      setCepError(false);
+      setIsCepLoading(true);
+
+      const data = await viacep.cep(cep);
+
+      const { logradouro, complemento, bairro, localidade } = data;
+
+      const selectedUf = ufOptions.find((option) => option.value === data.uf);
+
+      setStreet(logradouro);
+      setStreetNumber('');
+      setNeighborhood(bairro);
+      setComplement(complemento);
+      setCity(localidade);
+      setUf(!selectedUf ? null : selectedUf);
+
+      setIsCepLoading(false);
+    } catch (error: any) {
+      setCepError(error.status === 404);
+      setCepErrorMessage(error.statusText);
+
+      resetAddressFields();
+
+      setIsCepLoading(false);
+    }
+  };
+
+  const filterFieldsByRole = () => {
+    if (
+      role?.value === Role.MONITOR ||
+      role?.value === Role.PROFESSOR ||
+      role?.value === Role.ADMIN
+    ) {
+      setGeneralIncome(0);
+      setTotalHouseHoldMembers(0);
+      setEducationInfoList([
+        {
+          institutionName: '',
+          courseName: '',
+          schoolingLevel: null,
+          startYear: '',
+          conclusionYear: null,
+        },
+      ]);
+    }
+  };
+
+  const resetAddressFields = () => {
+    setStreet('');
+    setStreetNumber('');
+    setNeighborhood('');
+    setComplement('');
+    setCity('');
+    setUf(null);
+  };
+
+  const resetFields = () => {
+    setCepError(false);
+    setCepErrorMessage('');
+    setIsCepLoading(false);
+    setEmail('');
+    setPassword('');
+    setRole(null);
+    setFirstName('');
+    setLastName('');
+    setCpf('');
+    setBirthDate('');
+    setEthnicity(null);
+    setGender(null);
+
+    setGeneralIncome(0);
+    setTotalHouseHoldMembers(0);
+
+    setPhoneNumber1('');
+    setPhoneNumber2('');
+
+    setCep('');
+    setStreet('');
+    setStreetNumber('');
+    setNeighborhood('');
+    setComplement('');
+    setCity('');
+    setUf(null);
+
+    setEducationInfoList([
+      {
+        institutionName: '',
+        courseName: '',
+        schoolingLevel: null,
+        startYear: '',
+        conclusionYear: null,
+      },
+    ]);
+  };
+
+  const handleCreateUser = async () => {
     if (role?.value === Role.ESTUDANTE) {
       const phoneNumbers = !phoneNumber2
         ? [phoneNumber1].map((phone) => {
@@ -299,12 +422,13 @@ export default function CreateUser({
         },
       };
 
-      dispatch(createNewStudent(body));
+      try {
+        await dispatch(createNewStudent(body)).unwrap();
 
-      if (status === 'idle') {
         onCreate();
-
         handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenCreateFailedAlert();
       }
     }
 
@@ -355,12 +479,13 @@ export default function CreateUser({
         }),
       };
 
-      dispatch(createNewMonitor(body));
+      try {
+        await dispatch(createNewMonitor(body)).unwrap();
 
-      if (status === 'idle') {
         onCreate();
-
         handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenCreateFailedAlert();
       }
     }
 
@@ -410,12 +535,13 @@ export default function CreateUser({
         }),
       };
 
-      dispatch(createNewTeacher(body));
+      try {
+        await dispatch(createNewTeacher(body)).unwrap();
 
-      if (status === 'idle') {
         onCreate();
-
         handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenCreateFailedAlert();
       }
     }
 
@@ -457,166 +583,41 @@ export default function CreateUser({
         phoneNumbers,
       };
 
-      dispatch(createNewAdmin(body));
+      try {
+        await dispatch(createNewAdmin(body)).unwrap();
 
-      if (status === 'idle') {
         onCreate();
-
         handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenCreateFailedAlert();
       }
     }
   };
 
-  const convertCpf = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
-
-    const convertedCpf = input
-      .split('')
-      .filter((char) => {
-        return char !== '.' && char !== '-';
-      })
-      .join('');
-
-    setCpf(convertedCpf);
+  const handleClose = () => {
+    onClose();
   };
 
-  const convertPhoneNumber1 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
-
-    const convertedPhoneNumber = input
-      .split('')
-      .filter((char) => {
-        return char !== ' ' && char !== '(' && char !== ')' && char !== '-';
-      })
-      .join('');
-
-    setPhoneNumber1(convertedPhoneNumber);
+  const handleOpenCreateFailedAlert = () => {
+    setOpenCreateFailedAlert(true);
   };
 
-  const convertPhoneNumber2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
-
-    const convertedPhoneNumber = input
-      .split('')
-      .filter((char) => {
-        return char !== ' ' && char !== '(' && char !== ')' && char !== '-';
-      })
-      .join('');
-
-    setPhoneNumber2(convertedPhoneNumber);
-  };
-
-  const convertCep = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
-
-    const convertedCep = input
-      .split('')
-      .filter((char) => {
-        return char !== '-';
-      })
-      .join('');
-
-    setCep(convertedCep);
-  };
-
-  const handleCepSearch = async () => {
-    try {
-      setCepError(false);
-      setIsCepLoading(true);
-
-      const data = await viacep.cep(cep);
-
-      const { logradouro, complemento, bairro, localidade } = data;
-
-      setStreet(logradouro);
-      setStreetNumber('');
-      setNeighborhood(bairro);
-      setComplement(complemento);
-      setCity(localidade);
-      setUf(ufOptions.find((option) => option.value === data.uf));
-
-      setIsCepLoading(false);
-    } catch (error: any) {
-      setCepError(error.status === 404);
-      setCepErrorMessage(error.statusText);
-
-      resetAddressFields();
-
-      setIsCepLoading(false);
+  const handleCloseCreateFailedAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
     }
-  };
 
-  const resetAddressFields = () => {
-    setStreet('');
-    setStreetNumber('');
-    setNeighborhood('');
-    setComplement('');
-    setCity('');
-    setUf(null);
-  };
-
-  const resetFields = () => {
-    setCepError(false);
-    setCepErrorMessage('');
-    setIsCepLoading(false);
-    setEmail('');
-    setPassword('');
-    setRole(null);
-    setFirstName('');
-    setLastName('');
-    setCpf('');
-    setBirthDate('');
-    setEthnicity(null);
-    setGender(null);
-
-    setGeneralIncome(0);
-    setTotalHouseHoldMembers(0);
-
-    setPhoneNumber1('');
-    setPhoneNumber2('');
-
-    setCep('');
-    setStreet('');
-    setStreetNumber('');
-    setNeighborhood('');
-    setComplement('');
-    setCity('');
-    setUf(null);
-
-    setEducationInfoList([
-      {
-        institutionName: '',
-        courseName: '',
-        schoolingLevel: null,
-        startYear: '',
-        conclusionYear: null,
-      },
-    ]);
-  };
-
-  const filterFieldsByRole = () => {
-    if (
-      role?.value === Role.MONITOR ||
-      role?.value === Role.PROFESSOR ||
-      role?.value === Role.ADMIN
-    ) {
-      setGeneralIncome(0);
-      setTotalHouseHoldMembers(0);
-      setEducationInfoList([
-        {
-          institutionName: '',
-          courseName: '',
-          schoolingLevel: null,
-          startYear: '',
-          conclusionYear: null,
-        },
-      ]);
-    }
+    setOpenCreateFailedAlert(false);
   };
 
   useEffect(() => {
-    resetFields();
-    dispatch(resetErrors());
+    if (open) {
+      resetFields();
+      dispatch(resetErrors());
+    }
   }, [open]);
 
   return (
@@ -625,7 +626,7 @@ export default function CreateUser({
         open={open || isCreating}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => onClose()}
+        onClose={handleClose}
         aria-describedby="create-user-dialog-slide-description"
         maxWidth="xl"
         fullWidth
@@ -637,6 +638,37 @@ export default function CreateUser({
             <strong>Confirme</strong> os dados antes de clicar no botão{' '}
             <strong>Criar</strong>.
           </DialogContentText>
+
+          <Grid container justifyContent="flex-start">
+            <Grid item xs={12}>
+              <NotificationAlert
+                open={status === 'failed' && openCreateFailedAlert}
+                onClose={handleCloseCreateFailedAlert}
+                severity="error"
+                status="Erro"
+                message="Erro(s) detectado(s) durante registro de novo usuário"
+              />
+            </Grid>
+            {status === 'failed' ? (
+              <Grid item xs={12} container m={1}>
+                <Alert severity="error">
+                  <Typography variant="body1">
+                    <strong>Erro ao cadastrar. </strong>
+                  </Typography>
+
+                  {error.map((e: string, index: number) => {
+                    return (
+                      <Typography key={index} variant="body2">
+                        &gt; {e}.
+                      </Typography>
+                    );
+                  })}
+                </Alert>
+              </Grid>
+            ) : (
+              <></>
+            )}
+          </Grid>
 
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
@@ -700,7 +732,6 @@ export default function CreateUser({
                 </Grid>
               </Grid>
 
-              {/* //TODO change input fields depending on role selected */}
               <Grid item xs={4} container p={1}>
                 <Grid item xs={9}>
                   <Autocomplete
@@ -744,7 +775,6 @@ export default function CreateUser({
                   fullWidth
                   label="Nome"
                   name="first-name"
-                  autoFocus
                   value={firstName}
                   variant="outlined"
                   placeholder="Digite seu nome..."
@@ -978,7 +1008,6 @@ export default function CreateUser({
                   </InputLabel>
                   <Input
                     required
-                    autoFocus
                     value={cep}
                     onChange={convertCep}
                     name="cep"
@@ -1140,7 +1169,6 @@ export default function CreateUser({
                                 <Grid item xs={12} p={1}>
                                   <TextField
                                     id="course-name"
-                                    autoFocus
                                     margin="normal"
                                     fullWidth
                                     required
@@ -1162,7 +1190,6 @@ export default function CreateUser({
                               <Grid item xs={5} p={1}>
                                 <TextField
                                   id="instituition-name"
-                                  autoFocus
                                   margin="normal"
                                   fullWidth
                                   required
@@ -1299,27 +1326,6 @@ export default function CreateUser({
               )}
             </Grid>
           </Grid>
-
-          <Grid container justifyContent="flex-start">
-            {status === 'failed' ? (
-              <Grid item xs={12} container m={1}>
-                <Alert severity="error">
-                  <Typography variant="body1">
-                    <strong>Erro ao cadastrar. </strong>
-                  </Typography>
-                  {error.map((e: string) => {
-                    return (
-                      <Typography key={e} variant="body2">
-                        &gt; {e}.
-                      </Typography>
-                    );
-                  })}
-                </Alert>
-              </Grid>
-            ) : (
-              <></>
-            )}
-          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} size="large" color="secondary">
@@ -1330,8 +1336,8 @@ export default function CreateUser({
             size="large"
             variant="contained"
             onClick={handleCreateUser}
-            loading={isLoading}
-            disabled={isLoading || !role}
+            loading={isCreating}
+            disabled={isCreating || !role}
           >
             Criar
           </LoadingButton>

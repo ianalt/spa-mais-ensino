@@ -139,6 +139,7 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
+//TODO edit so when it reloads, keeps at the same page
 function RequireAuth({ children }: { children: JSX.Element }) {
   const user = useAppSelector(selectUser);
   let location = useLocation();

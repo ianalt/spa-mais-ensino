@@ -6,5 +6,5 @@ export interface Address {
   neighborhood: string;
   complement: string;
   city: string;
-  state: string;
+  uf: string;
 }

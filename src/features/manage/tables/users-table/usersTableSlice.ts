@@ -16,15 +16,15 @@ import { User } from './types/user';
 export interface UsersTableState {
   status: 'idle' | 'loading' | 'failed';
   list: User[];
-  selected?: User;
+  selected: User | null;
   isCreating: boolean;
-  error?: any;
+  error: any;
 }
 
 const initialState: UsersTableState = {
   status: 'idle',
   list: [],
-  selected: undefined,
+  selected: null,
   isCreating: false,
   error: null,
 };
@@ -34,9 +34,14 @@ export const usersTableSlice = createSlice({
   initialState,
   reducers: {
     resetErrors: (state) => {
+      state.status = 'idle';
       state.error = initialState.error;
     },
-    setSelected: (state, action: PayloadAction<User | undefined>) => {
+    resetSelected: (state) => {
+      state.selected = initialState.selected;
+      state.status = initialState.status;
+    },
+    setSelected: (state, action: PayloadAction<User | null>) => {
       state.selected = action.payload;
     },
     setList: (state, action: PayloadAction<User[]>) => {
@@ -65,20 +70,21 @@ export const usersTableSlice = createSlice({
         state.isCreating = true;
       })
       .addCase(createNewStudent.rejected, (state, action) => {
+        state.error = action.payload;
         state.status = 'failed';
         state.isCreating = false;
-        state.error = action.payload;
       })
       .addCase(
         createNewStudent.fulfilled,
         (state, action: PayloadAction<User>) => {
-          state.status = 'idle';
-
           const { list } = state;
 
           const newStudent = action.payload;
 
           state.list = [newStudent, ...list];
+
+          state.status = 'idle';
+          state.isCreating = false;
         }
       );
 
@@ -87,20 +93,22 @@ export const usersTableSlice = createSlice({
         state.status = 'loading';
         state.isCreating = true;
       })
-      .addCase(createNewMonitor.rejected, (state) => {
+      .addCase(createNewMonitor.rejected, (state, action) => {
+        state.error = action.payload;
         state.status = 'failed';
         state.isCreating = false;
       })
       .addCase(
         createNewMonitor.fulfilled,
         (state, action: PayloadAction<User>) => {
-          state.status = 'idle';
-
           const { list } = state;
 
           const newMonitor = action.payload;
 
           state.list = [newMonitor, ...list];
+
+          state.status = 'idle';
+          state.isCreating = false;
         }
       );
 
@@ -109,20 +117,22 @@ export const usersTableSlice = createSlice({
         state.status = 'loading';
         state.isCreating = true;
       })
-      .addCase(createNewTeacher.rejected, (state) => {
+      .addCase(createNewTeacher.rejected, (state, action) => {
+        state.error = action.payload;
         state.status = 'failed';
         state.isCreating = false;
       })
       .addCase(
         createNewTeacher.fulfilled,
         (state, action: PayloadAction<User>) => {
-          state.status = 'idle';
-
           const { list } = state;
 
           const newTeacher = action.payload;
 
           state.list = [newTeacher, ...list];
+
+          state.status = 'idle';
+          state.isCreating = false;
         }
       );
 
@@ -131,20 +141,22 @@ export const usersTableSlice = createSlice({
         state.status = 'loading';
         state.isCreating = true;
       })
-      .addCase(createNewAdmin.rejected, (state) => {
+      .addCase(createNewAdmin.rejected, (state, action) => {
+        state.error = action.payload;
         state.status = 'failed';
         state.isCreating = false;
       })
       .addCase(
         createNewAdmin.fulfilled,
         (state, action: PayloadAction<User>) => {
-          state.status = 'idle';
-
           const { list } = state;
 
           const newAdmin = action.payload;
 
           state.list = [newAdmin, ...list];
+
+          state.status = 'idle';
+          state.isCreating = false;
         }
       );
   },
@@ -190,35 +202,85 @@ export const createNewStudent = createAsyncThunk(
 
 export const createNewMonitor = createAsyncThunk(
   'usersTable/createNewMonitor',
-  async (body: CreateMonitorBody) => {
-    const response = await addNewMonitor(body);
-    const newMonitor: User = response.data;
+  async (body: CreateMonitorBody, thunkAPI) => {
+    try {
+      const response = await addNewMonitor(body);
 
-    return newMonitor;
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
   }
 );
 
 export const createNewTeacher = createAsyncThunk(
   'usersTable/createNewTeacher',
-  async (body: CreateTeacherBody) => {
-    const response = await addNewTeacher(body);
-    const newTeacher: User = response.data;
+  async (body: CreateTeacherBody, thunkAPI) => {
+    try {
+      const response = await addNewTeacher(body);
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
 
-    return newTeacher;
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
   }
 );
 
 export const createNewAdmin = createAsyncThunk(
   'usersTable/createNewAdmin',
-  async (body: CreateAdminBody) => {
-    const response = await addNewAdmin(body);
-    const newAdmin: User = response.data;
+  async (body: CreateAdminBody, thunkAPI) => {
+    try {
+      const response = await addNewAdmin(body);
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
 
-    return newAdmin;
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
   }
 );
 
-export const { resetErrors, setSelected, setList } = usersTableSlice.actions;
+export const { resetSelected, resetErrors, setSelected, setList } =
+  usersTableSlice.actions;
 
 export const selectUsersTable = (state: RootState) => state.usersTable;
 
@@ -228,20 +290,10 @@ export const getIsLoading = (state: RootState) => {
   return status === 'loading' || isCreating;
 };
 
+export const getIsMonitorOrTeacher = (state: RootState) => {
+  const { selected } = state.usersTable;
+
+  return selected?.role === 'monitor' || selected?.role === 'professor';
+};
+
 export default usersTableSlice.reducer;
-
-// if (e.isAxiosError) {
-//   if (typeof e.response.data.message === 'string') {
-//     const error = [e.response.data.message];
-
-//     return thunkAPI.rejectWithValue(error);
-//   }
-
-//   const errors = [...e.response.data.message].map((error: string) => {
-//     const afterDot = error.indexOf('.') + 1;
-
-//     return error.substring(afterDot);
-//   });
-
-//   return thunkAPI.rejectWithValue(errors);
-// }
