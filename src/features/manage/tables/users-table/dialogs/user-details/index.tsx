@@ -1,4 +1,12 @@
-import { Box, Chip, Divider, Grid, Paper, Typography } from '@mui/material';
+import {
+  Box,
+  Chip,
+  Divider,
+  Grid,
+  Link,
+  Paper,
+  Typography,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -34,6 +42,7 @@ interface UserDetailsProps {
 export default function UserDetails({ open, onClose }: UserDetailsProps) {
   const usersTable = useAppSelector(selectUsersTable);
   const { selected } = usersTable;
+  const isMonitorOrTeacher = useAppSelector(getIsMonitorOrTeacher);
 
   const handleClose = () => {
     onClose(true);
@@ -61,7 +70,12 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
     return date;
   };
 
-  const isMonitorOrTeacher = useAppSelector(getIsMonitorOrTeacher);
+  const formatPhoneNumber = (phone: string) => {
+    return `(${phone.substring(0, 2)}) ${phone.substring(
+      2,
+      3
+    )} ${phone.substring(3, 7)}-${phone.substring(7, 11)}`;
+  };
 
   return (
     <div>
@@ -93,7 +107,11 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                   <Typography fontWeight={700}>{'E-mail:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography>{selected?.email}</Typography>
+                  <Typography>
+                    <Link href={`mailto:${selected?.email}`}>
+                      {selected?.email}
+                    </Link>
+                  </Typography>
                 </Grid>
               </Grid>
 
@@ -159,95 +177,106 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                   <Typography>{selected?.lastName}</Typography>
                 </Grid>
               </Grid>
-            </Grid>
 
-            <Grid item xs={2} container p={1}>
-              <Grid item xs={12}>
-                <Typography fontWeight={700}>{'CPF:'} </Typography>
+              <Grid item xs={2} container p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'CPF:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{formatCpf()}</Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <Typography>{formatCpf()}</Typography>
+
+              <Grid item xs={4} container p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>
+                    {'Data de nascimento:'}{' '}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{formatBirthDate()}</Typography>
+                </Grid>
               </Grid>
+
+              <Grid item xs={3} container p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Etnia:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{selected?.ethnicity}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item xs={3} container p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Gênero:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{selected?.gender}</Typography>
+                </Grid>
+              </Grid>
+
+              {selected?.role === Role.MONITOR ||
+              selected?.role === Role.PROFESSOR ||
+              selected?.role === Role.ADMIN ? (
+                <></>
+              ) : (
+                <Grid item xs={2} container p={1}>
+                  <Grid item xs={12}>
+                    <Typography fontWeight={700}>
+                      {'Renda familiar total:'}{' '}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      R${selected?.financialInfo.generalIncome}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+
+              {selected?.role === Role.MONITOR ||
+              selected?.role === Role.PROFESSOR ||
+              selected?.role === Role.ADMIN ? (
+                <></>
+              ) : (
+                <Grid item xs={3} container p={1}>
+                  <Grid item xs={12}>
+                    <Typography fontWeight={700}>
+                      {'Total de membros da moradia:'}{' '}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      {selected?.financialInfo.totalHouseHoldMembers}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
             </Grid>
 
             <Grid item xs={4} container p={1}>
-              <Grid item xs={12}>
-                <Typography fontWeight={700}>
-                  {'Data de nascimento:'}{' '}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>{formatBirthDate()}</Typography>
-              </Grid>
-            </Grid>
-
-            <Grid item xs={3} container p={1}>
-              <Grid item xs={12}>
-                <Typography fontWeight={700}>{'Etnia:'} </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>{selected?.ethnicity}</Typography>
-              </Grid>
-            </Grid>
-
-            <Grid item xs={4} container p={1}>
-              <Grid item xs={12}>
-                <Typography fontWeight={700}>{'Gênero:'} </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>{selected?.gender}</Typography>
-              </Grid>
-            </Grid>
-
-            {selected?.role === Role.MONITOR ||
-            selected?.role === Role.PROFESSOR ||
-            selected?.role === Role.ADMIN ? (
-              <></>
-            ) : (
-              <Grid item xs={2} container p={1}>
-                <Grid item xs={12}>
-                  <Typography fontWeight={700}>
-                    {'Renda familiar total:'}{' '}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>
-                    R${selected?.financialInfo.generalIncome}
-                  </Typography>
-                </Grid>
-              </Grid>
-            )}
-
-            {selected?.role === Role.MONITOR ||
-            selected?.role === Role.PROFESSOR ||
-            selected?.role === Role.ADMIN ? (
-              <></>
-            ) : (
-              <Grid item xs={2} container p={1}>
-                <Grid item xs={12}>
-                  <Typography fontWeight={700}>
-                    {'Total de membros da moradia:'}{' '}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>
-                    {selected?.financialInfo.totalHouseHoldMembers}
-                  </Typography>
-                </Grid>
-              </Grid>
-            )}
-
-            {/* //TODO add phone phoneNumbers */}
-            {/* <Grid item xs={2} container p={1}>
               <Grid item xs={12}>
                 <Typography fontWeight={700}>
                   {'Números de telefone:'}{' '}
                 </Typography>
               </Grid>
-              <Grid item xs={12}>
-                <Typography>{selected?.phoneNumbers}</Typography>
+              <Grid item xs={12} container justifyContent="flex-start">
+                {selected ? (
+                  selected.phoneNumbers.map((item) => {
+                    return (
+                      <Grid item xs={5} mx={1}>
+                        <Link href={`tel:+${item.phoneNumber}`}>
+                          {formatPhoneNumber(item.phoneNumber)}
+                        </Link>
+                      </Grid>
+                    );
+                  })
+                ) : (
+                  <></>
+                )}
               </Grid>
-            </Grid> */}
+            </Grid>
           </Grid>
 
           <Grid container justifyContent={'flex-start'}>
@@ -258,7 +287,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
             </Grid>
 
             <Grid item xs={12} container my={1} px={1}>
-              <Grid item xs={2} mr={2} py={2}>
+              <Grid item xs={2} mr={2} p={1}>
                 <Grid item xs={12}>
                   <Typography fontWeight={700}>{'CEP:'} </Typography>
                 </Grid>
@@ -268,7 +297,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
               </Grid>
 
               <Grid item xs={12} container>
-                <Grid item xs={6} container p={1}>
+                <Grid item xs={5} container p={1}>
                   <Grid item xs={12}>
                     <Typography fontWeight={700}>{'Endereço:'} </Typography>
                   </Grid>
@@ -288,7 +317,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={3} container p={1}>
+                <Grid item xs={2} container p={1}>
                   <Grid item xs={12}>
                     <Typography fontWeight={700}>{'Bairro:'} </Typography>
                   </Grid>
@@ -297,7 +326,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={9} container p={1}>
+                <Grid item xs={5} container p={1}>
                   <Grid item xs={6}>
                     <Grid item xs={12}>
                       <Typography fontWeight={700}>
@@ -341,7 +370,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Divider>
               </Grid>
 
-              <Grid item xs={12} container justifyContent="center" my={1}>
+              <Grid item xs={12} container justifyContent="space-evenly" my={1}>
                 {selected?.educationInfoList.map((educationInfo, index) => {
                   const {
                     institutionName,
@@ -352,7 +381,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                   } = educationInfo;
 
                   return (
-                    <Box key={index + 1} my={2}>
+                    <Box key={index + 1} my={2} maxWidth="40%">
                       <Paper>
                         <Grid item xs={12} container p={1}>
                           {selected?.role === Role.ESTUDANTE ? (
@@ -370,7 +399,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                             </Grid>
                           )}
 
-                          <Grid item xs={5} p={1}>
+                          <Grid item xs={12} p={1}>
                             <Grid item xs={12}>
                               <Typography fontWeight={700}>
                                 {'Nome da instituição:'}{' '}
@@ -381,7 +410,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                             </Grid>
                           </Grid>
 
-                          <Grid item xs={5} p={1}>
+                          <Grid item xs={12} p={1}>
                             <Grid item xs={12}>
                               <Typography fontWeight={700}>
                                 {'Nível de formação:'}{' '}
@@ -392,7 +421,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                             </Grid>
                           </Grid>
 
-                          <Grid item xs={3} container p={1}>
+                          <Grid item xs={6} container p={1}>
                             <Grid item xs={12}>
                               <Typography fontWeight={700}>
                                 {'Ano de início:'}{' '}
@@ -403,7 +432,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                             </Grid>
                           </Grid>
 
-                          <Grid item xs={3} container p={1}>
+                          <Grid item xs={6} container p={1}>
                             <Grid item xs={12}>
                               <Typography fontWeight={700}>
                                 {'Ano de conclusão:'}{' '}
@@ -421,6 +450,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
               </Grid>
             </>
           )}
+          {/* //TODO comentários */}
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={handleClose}>
