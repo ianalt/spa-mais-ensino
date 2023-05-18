@@ -41,7 +41,6 @@ export default function ManageTabs() {
   };
 
   useEffect(() => {
-    dispatch(getUsersList());
     dispatch(getKnowledgeAreasList());
     dispatch(getSubjectsList());
     dispatch(getCategoriesList());

@@ -36,14 +36,6 @@ export default function ManagePage() {
     setValue(newValue);
   };
 
-  React.useEffect(() => {
-    dispatch(getUsersList());
-    dispatch(getKnowledgeAreasList());
-    dispatch(getSubjectsList());
-    dispatch(getCategoriesList());
-    dispatch(getTopicsList());
-  }, []);
-
   return (
     <Grid container>
       <Grid item xs={12} container>

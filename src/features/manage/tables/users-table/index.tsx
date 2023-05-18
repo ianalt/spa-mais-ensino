@@ -135,6 +135,8 @@ export default function UsersTable() {
                   onClick: () => {
                     dispatch(setSelected(rowData));
                     setOpenDetails(true);
+                    console.log('USUÁRIO = ');
+                    console.log(rowData);
                   },
                 }),
                 (rowData) => ({
