@@ -17,7 +17,7 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, forwardRef } from 'react';
-import { useAppSelector } from '../../../../../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
 import { Role } from '../../../../../../utils/enums/role.enum';
 import {
   getIsMonitorOrTeacher,
@@ -40,13 +40,14 @@ interface UserDetailsProps {
 }
 
 export default function UserDetails({ open, onClose }: UserDetailsProps) {
+  const dispatch = useAppDispatch();
   const usersTable = useAppSelector(selectUsersTable);
   const { selected } = usersTable;
   const isMonitorOrTeacher = useAppSelector(getIsMonitorOrTeacher);
 
   const handleClose = () => {
     onClose(true);
-    setSelected(null);
+    dispatch(setSelected(null));
   };
 
   const formatRole = () => {

@@ -22,7 +22,7 @@ export default function NotificationAlert({
         severity={severity}
         sx={{ width: '100%' }}
       >
-        <strong>{status}.</strong> {message}.
+        <strong>{status}.</strong> {message}.{' '}
         {status === 'Erro' ? (
           <strong>Por favor, tente novamente.</strong>
         ) : null}

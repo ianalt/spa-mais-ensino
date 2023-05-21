@@ -15,6 +15,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CreateUser from './dialogs/create-user';
 import NotificationAlert from '../../../notification-alert';
 import { selectUser } from '../../../../user/userSlice';
+import RemoveUser from './dialogs/remove-user';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -23,15 +24,16 @@ export default function UsersTable() {
   const { id } = currentUser;
 
   const usersTable = useAppSelector(selectUsersTable);
-  const { list, selected, status, isCreating } = usersTable;
+  const { list, selected, status, isCreating, isRemoving } = usersTable;
   const isLoading = useAppSelector(getIsLoading);
 
   const [openDetails, setOpenDetails] = useState<boolean>(false);
   const [openCreate, setOpenCreate] = useState<boolean>(false);
-  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [openRemove, setOpenRemove] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
 
   const [openCreateAlert, setOpenCreateAlert] = useState<boolean>(false);
+  const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
 
   const handleOpenDetails = () => {
     setOpenDetails(true);
@@ -41,12 +43,12 @@ export default function UsersTable() {
     setOpenDetails(false);
   };
 
-  const handleOpenDelete = () => {
-    setOpenDelete(true);
+  const handleOpenRemove = () => {
+    setOpenRemove(true);
   };
 
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
+  const handleCloseRemove = () => {
+    setOpenRemove(false);
   };
 
   const handleOpenEdit = () => {
@@ -68,6 +70,9 @@ export default function UsersTable() {
   const handleOpenCreateAlert = () => {
     setOpenCreateAlert(true);
   };
+  const handleOpenRemoveAlert = () => {
+    setOpenRemoveAlert(true);
+  };
 
   const handleCloseCreateAlert = (
     event: React.SyntheticEvent | Event,
@@ -80,11 +85,22 @@ export default function UsersTable() {
     setOpenCreateAlert(false);
   };
 
+  const handleCloseRemoveAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenRemoveAlert(false);
+  };
+
   useEffect(() => {
     handleCloseDetails();
     handleCloseCreate();
     handleCloseEdit();
-    handleCloseDelete();
+    handleCloseRemove();
 
     dispatch(resetSelected());
     dispatch(getUsersList());
@@ -100,12 +116,34 @@ export default function UsersTable() {
         onCreate={handleOpenCreateAlert}
       />
 
+      <RemoveUser
+        open={openRemove}
+        onClose={handleCloseRemove}
+        onRemove={handleOpenRemoveAlert}
+      />
+
       <NotificationAlert
         open={openCreateAlert && status === 'idle' && !isCreating}
         onClose={handleCloseCreateAlert}
         severity="success"
         status="Sucesso"
         message="Usuário criado com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'idle' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="success"
+        status="Sucesso"
+        message="Usuário removido com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'failed' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível remover o usuário selecionado"
       />
 
       {isLoading ? (
@@ -127,6 +165,7 @@ export default function UsersTable() {
                   disabled: rowData.role === 'admin' && id !== rowData.id,
                   onClick: () => {
                     dispatch(setSelected(rowData));
+                    setOpenRemove(true);
                   },
                 }),
                 (rowData) => ({
@@ -164,6 +203,14 @@ export default function UsersTable() {
           </Grid>
         </Grid>
       )}
+      <Grid
+        container
+        justifyContent="flex-end"
+        mt={5}
+        sx={{ border: '1px solid red' }}
+      >
+        {JSON.stringify(selected)}
+      </Grid>
       <Grid container justifyContent="flex-end" mt={2}>
         <Tooltip title="Criar novo usuário">
           <span>

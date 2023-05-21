@@ -12,12 +12,15 @@ import { CreateMonitorBody } from './dialogs/create-user/types/create-monitor-bo
 import { CreateStudentBody } from './dialogs/create-user/types/create-student-body';
 import { CreateTeacherBody } from './dialogs/create-user/types/create-teacher-body';
 import { User } from './types/user';
+import { removeUser } from '../../../../api/users/remove-user.req';
 
 export interface UsersTableState {
   status: 'idle' | 'loading' | 'failed';
   list: User[];
   selected: User | null;
   isCreating: boolean;
+  isRemoving: boolean;
+  isUpdating: boolean;
   error: any;
 }
 
@@ -26,6 +29,8 @@ const initialState: UsersTableState = {
   list: [],
   selected: null,
   isCreating: false,
+  isRemoving: false,
+  isUpdating: false,
   error: null,
 };
 
@@ -159,6 +164,22 @@ export const usersTableSlice = createSlice({
           state.isCreating = false;
         }
       );
+
+    builder
+      .addCase(deleteUser.pending, (state) => {
+        state.status = 'loading';
+        state.isRemoving = true;
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isRemoving = false;
+      })
+      .addCase(deleteUser.fulfilled, (state, action: PayloadAction<User[]>) => {
+        state.list = action.payload;
+        state.status = 'idle';
+        state.isRemoving = false;
+      });
   },
 });
 
@@ -172,7 +193,6 @@ export const getUsersList = createAsyncThunk(
   }
 );
 
-//TODO integrate API
 export const createNewStudent = createAsyncThunk(
   'usersTable/createNewStudent',
   async (body: CreateStudentBody, thunkAPI) => {
@@ -258,6 +278,35 @@ export const createNewAdmin = createAsyncThunk(
   async (body: CreateAdminBody, thunkAPI) => {
     try {
       const response = await addNewAdmin(body);
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  'usersTable/deleteUser',
+  async (userId: number, thunkAPI) => {
+    try {
+      await removeUser(userId);
+
+      const response = await fetchUsers();
+
       return response.data;
     } catch (e: any) {
       if (e.isAxiosError) {
