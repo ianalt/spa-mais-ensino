@@ -81,10 +81,11 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
   return (
     <div>
       <Dialog
+        id="user-details"
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => onClose(true)}
+        onClose={handleClose}
         aria-describedby="user-details-dialog-slide-description"
         maxWidth="lg"
         fullWidth

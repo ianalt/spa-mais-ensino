@@ -16,6 +16,7 @@ import CreateUser from './dialogs/create-user';
 import NotificationAlert from '../../../notification-alert';
 import { selectUser } from '../../../../user/userSlice';
 import RemoveUser from './dialogs/remove-user';
+import EditUser from './dialogs/edit-user';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -108,44 +109,6 @@ export default function UsersTable() {
 
   return (
     <>
-      <UserDetails open={openDetails} onClose={handleCloseDetails} />
-
-      <CreateUser
-        open={openCreate}
-        onClose={handleCloseCreate}
-        onCreate={handleOpenCreateAlert}
-      />
-
-      <RemoveUser
-        open={openRemove}
-        onClose={handleCloseRemove}
-        onRemove={handleOpenRemoveAlert}
-      />
-
-      <NotificationAlert
-        open={openCreateAlert && status === 'idle' && !isCreating}
-        onClose={handleCloseCreateAlert}
-        severity="success"
-        status="Sucesso"
-        message="Usuário criado com sucesso"
-      />
-
-      <NotificationAlert
-        open={openRemoveAlert && status === 'idle' && !isRemoving}
-        onClose={handleCloseRemoveAlert}
-        severity="success"
-        status="Sucesso"
-        message="Usuário removido com sucesso"
-      />
-
-      <NotificationAlert
-        open={openRemoveAlert && status === 'failed' && !isRemoving}
-        onClose={handleCloseRemoveAlert}
-        severity="error"
-        status="Erro"
-        message="Não foi possível remover o usuário selecionado"
-      />
-
       {isLoading ? (
         <Box mt={3}>
           <LinearProgress />
@@ -165,7 +128,7 @@ export default function UsersTable() {
                   disabled: rowData.role === 'admin' && id !== rowData.id,
                   onClick: () => {
                     dispatch(setSelected(rowData));
-                    setOpenRemove(true);
+                    handleOpenRemove();
                   },
                 }),
                 (rowData) => ({
@@ -173,9 +136,7 @@ export default function UsersTable() {
                   tooltip: 'Detalhes',
                   onClick: () => {
                     dispatch(setSelected(rowData));
-                    setOpenDetails(true);
-                    console.log('USUÁRIO = ');
-                    console.log(rowData);
+                    handleOpenDetails();
                   },
                 }),
                 (rowData) => ({
@@ -187,6 +148,7 @@ export default function UsersTable() {
                   disabled: rowData.role === 'admin' && id !== rowData.id,
                   onClick: () => {
                     dispatch(setSelected(rowData));
+                    handleOpenEdit();
                   },
                 }),
               ]}
@@ -225,6 +187,46 @@ export default function UsersTable() {
           </span>
         </Tooltip>
       </Grid>
+
+      <UserDetails open={openDetails} onClose={handleCloseDetails} />
+
+      <CreateUser
+        open={openCreate}
+        onClose={handleCloseCreate}
+        onCreate={handleOpenCreateAlert}
+      />
+
+      <RemoveUser
+        open={openRemove}
+        onClose={handleCloseRemove}
+        onRemove={handleOpenRemoveAlert}
+      />
+
+      <EditUser open={openEdit} onClose={handleCloseEdit} onEdit={() => {}} />
+
+      <NotificationAlert
+        open={openCreateAlert && status === 'idle' && !isCreating}
+        onClose={handleCloseCreateAlert}
+        severity="success"
+        status="Sucesso"
+        message="Usuário criado com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'idle' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="success"
+        status="Sucesso"
+        message="Usuário removido com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'failed' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível remover o usuário selecionado"
+      />
     </>
   );
 }

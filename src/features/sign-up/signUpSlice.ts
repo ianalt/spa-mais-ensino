@@ -76,7 +76,7 @@ export const performSignUp = createAsyncThunk(
         }
 
         const errors = [...e.response.data.message].map((error: string) => {
-          const afterDot = error.indexOf('.') + 1;
+          const afterDot = error.lastIndexOf('.') + 1;
 
           return error.substring(afterDot);
         });

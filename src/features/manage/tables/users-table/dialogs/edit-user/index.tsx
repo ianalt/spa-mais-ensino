@@ -57,12 +57,14 @@ import {
   createNewTeacher,
   resetErrors,
   selectUsersTable,
+  setSelected,
 } from '../../usersTableSlice';
 import { CreateAdminBody } from '../create-user/types/create-admin-body';
 import { CreateMonitorBody } from '../create-user/types/create-monitor-body';
 import { CreateStudentBody } from '../create-user/types/create-student-body';
 import { CreateTeacherBody } from '../create-user/types/create-teacher-body';
 import { EducationInfoOption } from '../create-user/types/education-info-option';
+import dayjs from 'dayjs';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -76,15 +78,15 @@ const Transition = forwardRef(function Transition(
 interface CreateUserProps {
   open: boolean;
   onClose: any;
-  onCreate: any;
+  onEdit: any;
 }
 
-export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
+export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
   const dispatch = useAppDispatch();
   const usersTable = useAppSelector(selectUsersTable);
-  const { status, isUpdating, error } = usersTable;
+  const { status, isUpdating, error, selected } = usersTable;
 
-  const [openCreateFailedAlert, setOpenCreateFailedAlert] =
+  const [openUpdateFailedAlert, setOpenUpdateFailedAlert] =
     useState<boolean>(false);
 
   const [cepError, setCepError] = useState<boolean>(false);
@@ -92,26 +94,39 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
   const [isCepLoading, setIsCepLoading] = useState<boolean>(false);
 
   const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [role, setRole] = useState<RoleOption | null>(null);
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [cpf, setCpf] = useState<string>('');
+
   const [birthDate, setBirthDate] = useState<string>('');
+
   const [ethnicity, setEthnicity] = useState<EthnicityOption | null>(null);
   const [gender, setGender] = useState<GenderOption | null>(null);
-  const [generalIncome, setGeneralIncome] = useState<number>(0);
-  const [totalHouseHoldMembers, setTotalHouseHoldMembers] = useState<number>(0);
+  const [generalIncome, setGeneralIncome] = useState<number>(
+    selected?.financialInfo?.generalIncome || 0
+  );
+  const [totalHouseHoldMembers, setTotalHouseHoldMembers] = useState<number>(
+    selected?.financialInfo?.totalHouseHoldMembers || 0
+  );
+
+  //TODO solve phoneNumbers
+  //TODO solve phoneNumbers
   const [phoneNumber1, setPhoneNumber1] = useState<string>('');
   const [phoneNumber2, setPhoneNumber2] = useState<string>('');
 
-  const [cep, setCep] = useState<string>('');
-  const [street, setStreet] = useState<string>('');
-  const [streetNumber, setStreetNumber] = useState<string>('');
-  const [neighborhood, setNeighborhood] = useState<string>('');
-  const [complement, setComplement] = useState<string>('');
-  const [city, setCity] = useState<string>('');
+  const [cep, setCep] = useState<string>(selected?.address?.cep || '');
+  const [street, setStreet] = useState<string>(selected?.address?.street || '');
+  const [streetNumber, setStreetNumber] = useState<string>(
+    selected?.address?.streetNumber || ''
+  );
+  const [neighborhood, setNeighborhood] = useState<string>(
+    selected?.address?.neighborhood || ''
+  );
+  const [complement, setComplement] = useState<string>(
+    selected?.address?.complement || ''
+  );
+  const [city, setCity] = useState<string>(selected?.address?.city || '');
   const [uf, setUf] = useState<UfOption | null>(null);
 
   const [educationInfoList, setEducationInfoList] = useState<
@@ -296,26 +311,6 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
     }
   };
 
-  const filterFieldsByRole = () => {
-    if (
-      role?.value === Role.MONITOR ||
-      role?.value === Role.PROFESSOR ||
-      role?.value === Role.ADMIN
-    ) {
-      setGeneralIncome(0);
-      setTotalHouseHoldMembers(0);
-      setEducationInfoList([
-        {
-          institutionName: '',
-          courseName: '',
-          schoolingLevel: null,
-          startYear: '',
-          conclusionYear: null,
-        },
-      ]);
-    }
-  };
-
   const resetAddressFields = () => {
     setStreet('');
     setStreetNumber('');
@@ -325,13 +320,86 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
     setUf(null);
   };
 
+  const setFields = () => {
+    if (selected) {
+      setEmail(selected.email);
+      setFirstName(selected.firstName);
+      setLastName(selected.lastName);
+      setCpf(selected.cpf);
+
+      setBirthDate(dayjs(selected.birthDate).format('DDMMYYYY'));
+
+      const initialEthnicity = ethnicityOptions.find(
+        (option) => option.value === selected.ethnicity
+      );
+      setEthnicity(initialEthnicity ? initialEthnicity : null);
+
+      const initialGender = genderOptions.find(
+        (option) => option.value === selected.gender
+      );
+      setGender(initialGender ? initialGender : null);
+
+      if (selected.financialInfo) {
+        setGeneralIncome(selected.financialInfo.generalIncome);
+        setTotalHouseHoldMembers(selected.financialInfo.totalHouseHoldMembers);
+      } else {
+        setGeneralIncome(0);
+        setTotalHouseHoldMembers(0);
+      }
+
+      setCep(selected.address.cep);
+      setStreet(selected.address.street);
+      setStreetNumber(selected.address.streetNumber);
+      setNeighborhood(selected.address.neighborhood);
+      setComplement(selected.address.complement);
+      setCity(selected.address.city);
+
+      const initialUf = ufOptions.find(
+        (option) => option.value === selected.address.uf
+      );
+      setUf(initialUf ? initialUf : null);
+
+      if (selected.educationInfoList.length > 0) {
+        const eduInfoList = selected.educationInfoList.map((item) => {
+          const schooling = schoolingLevelOptions.find(
+            (option) => option.value === item.schoolingLevel
+          );
+
+          const { id, ...attrs } = item;
+
+          return {
+            ...attrs,
+            courseName: !attrs.courseName ? '' : attrs.courseName,
+            schoolingLevel: schooling ? schooling : schoolingLevelOptions[0],
+            startYear: attrs.startYear.toString(),
+            conclusionYear: attrs.conclusionYear
+              ? attrs.conclusionYear.toString()
+              : null,
+          };
+        });
+
+        setEducationInfoList(
+          eduInfoList
+            ? eduInfoList
+            : [
+                {
+                  institutionName: '',
+                  courseName: '',
+                  schoolingLevel: null,
+                  startYear: '',
+                  conclusionYear: null,
+                },
+              ]
+        );
+      }
+    }
+  };
+
   const resetFields = () => {
     setCepError(false);
     setCepErrorMessage('');
     setIsCepLoading(false);
     setEmail('');
-    setPassword('');
-    setRole(null);
     setFirstName('');
     setLastName('');
     setCpf('');
@@ -364,241 +432,16 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
     ]);
   };
 
-  const handleCreateUser = async () => {
-    if (role?.value === Role.ESTUDANTE) {
-      const phoneNumbers = !phoneNumber2
-        ? [phoneNumber1].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          })
-        : [phoneNumber1, phoneNumber2].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          });
-
-      const body: CreateStudentBody = {
-        user: {
-          email,
-          password,
-          role: role?.value,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-        },
-
-        address: {
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-
-        phoneNumbers,
-
-        educationInfoList: educationInfoList.map((educationInfo) => {
-          return {
-            ...educationInfo,
-            schoolingLevel: educationInfo.schoolingLevel
-              ? educationInfo.schoolingLevel.value
-              : null,
-          };
-        }),
-
-        financialInfo: {
-          generalIncome,
-          totalHouseHoldMembers,
-        },
-      };
-
-      try {
-        await dispatch(createNewStudent(body)).unwrap();
-
-        onCreate();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenCreateFailedAlert();
-      }
-    }
-
-    if (role?.value === Role.MONITOR) {
-      const phoneNumbers = !phoneNumber2
-        ? [phoneNumber1].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          })
-        : [phoneNumber1, phoneNumber2].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          });
-
-      const body: CreateMonitorBody = {
-        user: {
-          email,
-          password,
-          role: role?.value,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-        },
-
-        address: {
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-        phoneNumbers,
-
-        educationInfoList: educationInfoList.map((educationInfo) => {
-          return {
-            ...educationInfo,
-            schoolingLevel: educationInfo.schoolingLevel
-              ? educationInfo.schoolingLevel.value
-              : null,
-          };
-        }),
-      };
-
-      try {
-        await dispatch(createNewMonitor(body)).unwrap();
-
-        onCreate();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenCreateFailedAlert();
-      }
-    }
-
-    if (role?.value === Role.PROFESSOR) {
-      const phoneNumbers = !phoneNumber2
-        ? [phoneNumber1].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          })
-        : [phoneNumber1, phoneNumber2].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          });
-
-      const body: CreateTeacherBody = {
-        user: {
-          email,
-          password,
-          role: role?.value,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-        },
-
-        address: {
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-        phoneNumbers,
-        educationInfoList: educationInfoList.map((educationInfo) => {
-          return {
-            ...educationInfo,
-            schoolingLevel: educationInfo.schoolingLevel
-              ? educationInfo.schoolingLevel.value
-              : null,
-          };
-        }),
-      };
-
-      try {
-        await dispatch(createNewTeacher(body)).unwrap();
-
-        onCreate();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenCreateFailedAlert();
-      }
-    }
-
-    if (role?.value === Role.ADMIN) {
-      const phoneNumbers = !phoneNumber2
-        ? [phoneNumber1].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          })
-        : [phoneNumber1, phoneNumber2].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          });
-
-      const body: CreateAdminBody = {
-        user: {
-          email,
-          password,
-          role: role?.value,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-        },
-
-        address: {
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-        phoneNumbers,
-      };
-
-      try {
-        await dispatch(createNewAdmin(body)).unwrap();
-
-        onCreate();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenCreateFailedAlert();
-      }
-    }
-  };
-
   const handleClose = () => {
+    dispatch(setSelected(null));
     onClose();
   };
 
-  const handleOpenCreateFailedAlert = () => {
-    setOpenCreateFailedAlert(true);
+  const handleOpenUpdateFailedAlert = () => {
+    setOpenUpdateFailedAlert(true);
   };
 
-  const handleCloseCreateFailedAlert = (
+  const handleCloseUpdateFailedAlert = (
     event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
@@ -606,12 +449,13 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
       return;
     }
 
-    setOpenCreateFailedAlert(false);
+    setOpenUpdateFailedAlert(false);
   };
 
   useEffect(() => {
     if (open) {
-      resetFields();
+      // resetFields();
+      setFields();
       dispatch(resetErrors());
     }
   }, [open]);
@@ -619,30 +463,31 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
   return (
     <div>
       <Dialog
+        id="edit-user"
         open={open || isUpdating}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="create-user-dialog-slide-description"
+        aria-describedby="edit-user-dialog-slide-description"
         maxWidth="xl"
         fullWidth
       >
-        <DialogTitle>{'Adicionar novo usuário'}</DialogTitle>
+        <DialogTitle>{'Editar usuário'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="create-user-dialog-slide-description">
-            Preencha as informações abaixo para criar o novo usuário.{' '}
+          <DialogContentText id="edit-user-dialog-slide-description">
+            Faça as edições desejada para atualizar o usuário.{' '}
             <strong>Confirme</strong> os dados antes de clicar no botão{' '}
-            <strong>Criar</strong>.
+            <strong>Salvar mudanças</strong>.
           </DialogContentText>
 
-          <Grid container justifyContent="flex-start">
+          {/* <Grid container justifyContent="flex-start">
             <Grid item xs={12}>
               <NotificationAlert
-                open={status === 'failed' && openCreateFailedAlert}
-                onClose={handleCloseCreateFailedAlert}
+                open={status === 'failed' && openUpdateFailedAlert}
+                onClose={handleCloseUpdateFailedAlert}
                 severity="error"
                 status="Erro"
-                message="Erro(s) detectado(s) durante registro de novo usuário"
+                message="Erro(s) detectado(s) durante atualização de dados do usuário"
               />
             </Grid>
             {status === 'failed' ? (
@@ -664,7 +509,7 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
             ) : (
               <></>
             )}
-          </Grid>
+          </Grid> */}
 
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
@@ -690,67 +535,6 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                   }}
                   type="email"
                 />
-              </Grid>
-
-              <Grid item xs={4} container p={1}>
-                <Grid item xs={9}>
-                  <TextField
-                    id="password"
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Senha"
-                    variant="outlined"
-                    placeholder="Digite sua senha..."
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                    type="password"
-                  />
-                </Grid>
-
-                <Grid
-                  item
-                  xs={1}
-                  p={1}
-                  container
-                  alignItems="flex-start"
-                  justifyContent="center"
-                >
-                  <Tooltip
-                    title="A senha precisa conter entre 8 e 16 caracteres, com 1 letra minúscula, 1 maiúscula, 1 número e 1 caracter especial"
-                    arrow
-                  >
-                    <HelpOutlineOutlinedIcon fontSize="small" color="action" />
-                  </Tooltip>
-                </Grid>
-              </Grid>
-
-              <Grid item xs={4} container p={1}>
-                <Grid item xs={9}>
-                  <Autocomplete
-                    id="role-options"
-                    options={roleOptions}
-                    value={role}
-                    defaultValue={role}
-                    onChange={(event: any, newValue: RoleOption | null) => {
-                      setRole(newValue);
-                      filterFieldsByRole();
-                    }}
-                    getOptionLabel={(option) => option.label}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        margin="normal"
-                        required
-                        fullWidth
-                        label="Nível de acesso"
-                      />
-                    )}
-                  />
-                </Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -855,7 +639,7 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                         margin="normal"
                         required
                         fullWidth
-                        label="Qual sua etnia?"
+                        label="Qual a etnia?"
                       />
                     )}
                   />
@@ -879,16 +663,16 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                         margin="normal"
                         required
                         fullWidth
-                        label="Como você se identifica?"
+                        label="Como se identifica?"
                       />
                     )}
                   />
                 </Grid>
               </Grid>
 
-              {role?.value === Role.MONITOR ||
-              role?.value === Role.PROFESSOR ||
-              role?.value === Role.ADMIN ? (
+              {selected?.role === Role.MONITOR ||
+              selected?.role === Role.PROFESSOR ||
+              selected?.role === Role.ADMIN ? (
                 <></>
               ) : (
                 <Grid item xs={2} container p={1}>
@@ -914,9 +698,9 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                 </Grid>
               )}
 
-              {role?.value === Role.MONITOR ||
-              role?.value === Role.PROFESSOR ||
-              role?.value === Role.ADMIN ? (
+              {selected?.role === Role.MONITOR ||
+              selected?.role === Role.PROFESSOR ||
+              selected?.role === Role.ADMIN ? (
                 <></>
               ) : (
                 <Grid item xs={2} container p={1}>
@@ -940,7 +724,7 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                 </Grid>
               )}
 
-              <Grid item xs={2} container p={1}>
+              {/* <Grid item xs={2} container p={1}>
                 <Grid item xs={12} px={1} py={2}>
                   <InputLabel htmlFor="formatted-phone-number-1-mask-input">
                     Número de celular *
@@ -972,7 +756,7 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                     inputComponent={PhoneNumberMaskCustom as any}
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
 
             <Grid container justifyContent={'flex-start'}>
@@ -1135,7 +919,7 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                 </Grid>
               </Grid>
 
-              {role?.value === Role.ADMIN ? (
+              {selected?.role === Role.ADMIN ? (
                 <></>
               ) : (
                 <>
@@ -1159,7 +943,7 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                         <Box key={index + 1} my={2}>
                           <Paper>
                             <Grid item xs={12} container p={1}>
-                              {role?.value === Role.ESTUDANTE ? (
+                              {selected?.role === Role.ESTUDANTE ? (
                                 <></>
                               ) : (
                                 <Grid item xs={12} p={1}>
@@ -1214,7 +998,7 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
                                     handleEditSchoolingLevel(newValue, index);
                                   }}
                                   options={
-                                    role?.value === Role.ESTUDANTE
+                                    selected?.role === Role.ESTUDANTE
                                       ? schoolingLevelOptions
                                       : schoolingLevelOptionsForNonStudents
                                   }
@@ -1331,11 +1115,11 @@ export default function EditUser({ open, onClose, onCreate }: CreateUserProps) {
           <LoadingButton
             size="large"
             variant="contained"
-            onClick={handleCreateUser}
+            // onClick={handleUpdateUser}
             loading={isUpdating}
-            disabled={isUpdating || !role}
+            disabled={isUpdating}
           >
-            Criar
+            Salvar mudanças
           </LoadingButton>
         </DialogActions>
       </Dialog>

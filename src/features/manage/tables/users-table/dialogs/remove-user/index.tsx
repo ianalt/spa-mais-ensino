@@ -98,6 +98,7 @@ export default function RemoveUser({
   return (
     <div>
       <Dialog
+        id="remove-user"
         open={open}
         TransitionComponent={Transition}
         keepMounted
