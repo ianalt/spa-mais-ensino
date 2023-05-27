@@ -9,7 +9,6 @@ export const schoolingLevelOptions: SchoolingLevelOption[] = [
   { label: 'Supletivo', value: SchoolingLevel.S },
 ];
 
-//TODO var for monitors and teachers
 export const schoolingLevelOptionsForNonStudents: SchoolingLevelOption[] = [
   { label: 'Ensino Superior Incompleto', value: SchoolingLevel.ESI },
   { label: 'Ensino Superior Completo', value: SchoolingLevel.ESC },

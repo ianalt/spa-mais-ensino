@@ -25,7 +25,8 @@ export default function UsersTable() {
   const { id } = currentUser;
 
   const usersTable = useAppSelector(selectUsersTable);
-  const { list, selected, status, isCreating, isRemoving } = usersTable;
+  const { list, selected, status, isCreating, isRemoving, isUpdating } =
+    usersTable;
   const isLoading = useAppSelector(getIsLoading);
 
   const [openDetails, setOpenDetails] = useState<boolean>(false);
@@ -35,6 +36,7 @@ export default function UsersTable() {
 
   const [openCreateAlert, setOpenCreateAlert] = useState<boolean>(false);
   const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
+  const [openEditAlert, setOpenEditAlert] = useState<boolean>(false);
 
   const handleOpenDetails = () => {
     setOpenDetails(true);
@@ -95,6 +97,20 @@ export default function UsersTable() {
     }
 
     setOpenRemoveAlert(false);
+  };
+
+  const handleOpenEditAlert = () => {
+    setOpenEditAlert(true);
+  };
+  const handleCloseEditAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenEditAlert(false);
   };
 
   useEffect(() => {
@@ -202,7 +218,11 @@ export default function UsersTable() {
         onRemove={handleOpenRemoveAlert}
       />
 
-      <EditUser open={openEdit} onClose={handleCloseEdit} onEdit={() => {}} />
+      <EditUser
+        open={openEdit}
+        onClose={handleCloseEdit}
+        onEdit={handleOpenEditAlert}
+      />
 
       <NotificationAlert
         open={openCreateAlert && status === 'idle' && !isCreating}
@@ -210,6 +230,14 @@ export default function UsersTable() {
         severity="success"
         status="Sucesso"
         message="Usuário criado com sucesso"
+      />
+
+      <NotificationAlert
+        open={openEditAlert && status === 'idle' && !isUpdating}
+        onClose={handleCloseEditAlert}
+        severity="success"
+        status="Sucesso"
+        message="Usuário editado com sucesso"
       />
 
       <NotificationAlert

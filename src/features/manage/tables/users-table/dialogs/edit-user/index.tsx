@@ -1,5 +1,4 @@
 import AddIcon from '@mui/icons-material/Add';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -25,6 +24,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
+import dayjs from 'dayjs';
 import { forwardRef, useEffect, useState } from 'react';
 import { viacep } from '../../../../../../api/cep/cep.req';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
@@ -38,33 +38,33 @@ import { PhoneNumberMaskCustom } from '../../../../../../utils/masks/phone-numbe
 import { YearMaskCustom } from '../../../../../../utils/masks/year-mask';
 import { ethnicityOptions } from '../../../../../../utils/options/ethnicity-options';
 import { genderOptions } from '../../../../../../utils/options/gender-options';
-import { roleOptions } from '../../../../../../utils/options/role-options';
 import {
   schoolingLevelOptions,
   schoolingLevelOptionsForNonStudents,
 } from '../../../../../../utils/options/schooling-level-options';
 import { EthnicityOption } from '../../../../../../utils/options/types/ethnicity-option';
 import { GenderOption } from '../../../../../../utils/options/types/gender-option';
-import { RoleOption } from '../../../../../../utils/options/types/role-option';
 import { SchoolingLevelOption } from '../../../../../../utils/options/types/schooling-level-option';
 import { UfOption } from '../../../../../../utils/options/types/uf-option';
 import { ufOptions } from '../../../../../../utils/options/uf-options';
 import NotificationAlert from '../../../../../notification-alert';
 import {
-  createNewAdmin,
-  createNewMonitor,
-  createNewStudent,
-  createNewTeacher,
+  editAdmin,
+  editMonitor,
+  editStudent,
+  editTeacher,
   resetErrors,
   selectUsersTable,
   setSelected,
 } from '../../usersTableSlice';
-import { CreateAdminBody } from '../create-user/types/create-admin-body';
-import { CreateMonitorBody } from '../create-user/types/create-monitor-body';
-import { CreateStudentBody } from '../create-user/types/create-student-body';
-import { CreateTeacherBody } from '../create-user/types/create-teacher-body';
 import { EducationInfoOption } from '../create-user/types/education-info-option';
-import dayjs from 'dayjs';
+
+import { ActiveOption } from '../../../../../../utils/options/types/active-option';
+import { activeOptions } from '../../../../../../utils/options/types/active-options';
+import { UpdateAdminBody } from './types/update-admin-body';
+import { UpdateMonitorBody } from './types/update-monitor-body';
+import { UpdateStudentBody } from './types/update-student-body';
+import { UpdateTeacherBody } from './types/update-teacher-body';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -94,6 +94,7 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
   const [isCepLoading, setIsCepLoading] = useState<boolean>(false);
 
   const [email, setEmail] = useState<string>('');
+  const [active, setActive] = useState<ActiveOption | null>(null);
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -110,9 +111,7 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
     selected?.financialInfo?.totalHouseHoldMembers || 0
   );
 
-  //TODO solve phoneNumbers
-  //TODO solve phoneNumbers
-  const [phoneNumber1, setPhoneNumber1] = useState<string>('');
+  const [phoneNumber1, setPhoneNumber1] = useState<string>();
   const [phoneNumber2, setPhoneNumber2] = useState<string>('');
 
   const [cep, setCep] = useState<string>(selected?.address?.cep || '');
@@ -323,11 +322,23 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
   const setFields = () => {
     if (selected) {
       setEmail(selected.email);
+
+      const initialActive = activeOptions.find(
+        (option) => option.value === selected.active
+      );
+      setActive(initialActive ? initialActive : null);
+
       setFirstName(selected.firstName);
       setLastName(selected.lastName);
       setCpf(selected.cpf);
 
-      setBirthDate(dayjs(selected.birthDate).format('DDMMYYYY'));
+      const dateString = () => {
+        const dateParts = selected.birthDate.toString().split('-');
+
+        return `${dateParts[2]}${dateParts[1]}${dateParts[0]}`;
+      };
+
+      setBirthDate(dateString());
 
       const initialEthnicity = ethnicityOptions.find(
         (option) => option.value === selected.ethnicity
@@ -347,6 +358,19 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
         setTotalHouseHoldMembers(0);
       }
 
+      if (selected.phoneNumbers.length === 1) {
+        const [phone1] = selected.phoneNumbers;
+
+        setPhoneNumber1(phone1.phoneNumber);
+      }
+
+      if (selected.phoneNumbers.length === 2) {
+        const [phone1, phone2] = selected.phoneNumbers;
+
+        setPhoneNumber1(phone1.phoneNumber);
+        setPhoneNumber2(phone2.phoneNumber);
+      }
+
       setCep(selected.address.cep);
       setStreet(selected.address.street);
       setStreetNumber(selected.address.streetNumber);
@@ -361,9 +385,13 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
 
       if (selected.educationInfoList.length > 0) {
         const eduInfoList = selected.educationInfoList.map((item) => {
-          const schooling = schoolingLevelOptions.find(
-            (option) => option.value === item.schoolingLevel
-          );
+          const schooling = (
+            selected.role === Role.ESTUDANTE
+              ? schoolingLevelOptions
+              : schoolingLevelOptionsForNonStudents
+          ).find((option) => {
+            return option.value === item.schoolingLevel;
+          });
 
           const { id, ...attrs } = item;
 
@@ -396,6 +424,8 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
   };
 
   const resetFields = () => {
+    setSelected(null);
+
     setCepError(false);
     setCepErrorMessage('');
     setIsCepLoading(false);
@@ -434,6 +464,7 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
 
   const handleClose = () => {
     dispatch(setSelected(null));
+    resetFields();
     onClose();
   };
 
@@ -454,11 +485,266 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
 
   useEffect(() => {
     if (open) {
-      // resetFields();
       setFields();
       dispatch(resetErrors());
     }
   }, [open]);
+
+  //TODO UPDATE REQUEST
+  const handleEditUser = async () => {
+    if (selected?.role === Role.ESTUDANTE) {
+      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
+        !phoneNumber2
+          ? [phoneNumber1].map((phone) => {
+              return {
+                phoneNumber: phone,
+              };
+            })
+          : [phoneNumber1, phoneNumber2].map((phone, i) => {
+              return {
+                phoneNumber: phone,
+              };
+            });
+
+      const body: UpdateStudentBody = {
+        userId: selected.id,
+
+        user: {
+          email,
+          firstName,
+          lastName,
+          cpf,
+          birthDate: convertBirthDate(birthDate),
+          ethnicity: ethnicity?.value,
+          gender: gender?.value,
+          active: active?.value,
+        },
+
+        address: {
+          id: selected.address.id,
+          cep,
+          street,
+          streetNumber,
+          neighborhood,
+          complement,
+          city,
+          uf: uf?.value,
+        },
+
+        financialInfo: {
+          id: selected.financialInfo.id,
+          generalIncome,
+          totalHouseHoldMembers,
+        },
+
+        phoneNumbers,
+
+        educationInfoList: educationInfoList.map((educationInfo) => {
+          return {
+            ...educationInfo,
+            conclusionYear:
+              educationInfo.conclusionYear === ''
+                ? null
+                : educationInfo.conclusionYear,
+            schoolingLevel: educationInfo.schoolingLevel
+              ? educationInfo.schoolingLevel.value
+              : null,
+          };
+        }),
+      };
+
+      try {
+        await dispatch(editStudent(body)).unwrap();
+
+        onEdit();
+        handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenUpdateFailedAlert();
+      }
+    }
+
+    if (selected?.role === Role.MONITOR) {
+      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
+        !phoneNumber2
+          ? [phoneNumber1].map((phone) => {
+              return {
+                phoneNumber: phone,
+              };
+            })
+          : [phoneNumber1, phoneNumber2].map((phone, i) => {
+              return {
+                phoneNumber: phone,
+              };
+            });
+
+      const body: UpdateMonitorBody = {
+        userId: selected.id,
+
+        user: {
+          email,
+          firstName,
+          lastName,
+          cpf,
+          birthDate: convertBirthDate(birthDate),
+          ethnicity: ethnicity?.value,
+          gender: gender?.value,
+          active: active?.value,
+        },
+
+        address: {
+          id: selected.address.id,
+          cep,
+          street,
+          streetNumber,
+          neighborhood,
+          complement,
+          city,
+          uf: uf?.value,
+        },
+
+        phoneNumbers,
+
+        educationInfoList: educationInfoList.map((educationInfo) => {
+          return {
+            ...educationInfo,
+            conclusionYear:
+              educationInfo.conclusionYear === ''
+                ? null
+                : educationInfo.conclusionYear,
+            schoolingLevel: educationInfo.schoolingLevel
+              ? educationInfo.schoolingLevel.value
+              : null,
+          };
+        }),
+      };
+
+      try {
+        await dispatch(editMonitor(body)).unwrap();
+
+        onEdit();
+        handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenUpdateFailedAlert();
+      }
+    }
+
+    if (selected?.role === Role.PROFESSOR) {
+      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
+        !phoneNumber2
+          ? [phoneNumber1].map((phone) => {
+              return {
+                phoneNumber: phone,
+              };
+            })
+          : [phoneNumber1, phoneNumber2].map((phone, i) => {
+              return {
+                phoneNumber: phone,
+              };
+            });
+
+      const body: UpdateTeacherBody = {
+        userId: selected.id,
+
+        user: {
+          email,
+          firstName,
+          lastName,
+          cpf,
+          birthDate: convertBirthDate(birthDate),
+          ethnicity: ethnicity?.value,
+          gender: gender?.value,
+          active: active?.value,
+        },
+
+        address: {
+          id: selected.address.id,
+          cep,
+          street,
+          streetNumber,
+          neighborhood,
+          complement,
+          city,
+          uf: uf?.value,
+        },
+
+        phoneNumbers,
+
+        educationInfoList: educationInfoList.map((educationInfo) => {
+          return {
+            ...educationInfo,
+            conclusionYear:
+              educationInfo.conclusionYear === ''
+                ? null
+                : educationInfo.conclusionYear,
+            schoolingLevel: educationInfo.schoolingLevel
+              ? educationInfo.schoolingLevel.value
+              : null,
+          };
+        }),
+      };
+
+      try {
+        await dispatch(editTeacher(body)).unwrap();
+
+        onEdit();
+        handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenUpdateFailedAlert();
+      }
+    }
+
+    if (selected?.role === Role.ADMIN) {
+      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
+        !phoneNumber2
+          ? [phoneNumber1].map((phone) => {
+              return {
+                phoneNumber: phone,
+              };
+            })
+          : [phoneNumber1, phoneNumber2].map((phone, i) => {
+              return {
+                phoneNumber: phone,
+              };
+            });
+
+      const body: UpdateAdminBody = {
+        userId: selected.id,
+
+        user: {
+          email,
+          firstName,
+          lastName,
+          cpf,
+          birthDate: convertBirthDate(birthDate),
+          ethnicity: ethnicity?.value,
+          gender: gender?.value,
+          active: active?.value,
+        },
+
+        address: {
+          id: selected.address.id,
+          cep,
+          street,
+          streetNumber,
+          neighborhood,
+          complement,
+          city,
+          uf: uf?.value,
+        },
+
+        phoneNumbers,
+      };
+
+      try {
+        await dispatch(editAdmin(body)).unwrap();
+
+        onEdit();
+        handleClose();
+      } catch (rejectedValueOrSerializedError) {
+        handleOpenUpdateFailedAlert();
+      }
+    }
+  };
 
   return (
     <div>
@@ -475,26 +761,25 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
         <DialogTitle>{'Editar usuário'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="edit-user-dialog-slide-description">
-            Faça as edições desejada para atualizar o usuário.{' '}
-            <strong>Confirme</strong> os dados antes de clicar no botão{' '}
-            <strong>Salvar mudanças</strong>.
+            Faça as edições desejadas para o usuário. <strong>Confirme</strong>{' '}
+            os dados antes de clicar no botão <strong>Salvar mudanças</strong>.
           </DialogContentText>
 
-          {/* <Grid container justifyContent="flex-start">
+          <Grid container justifyContent="flex-start">
             <Grid item xs={12}>
               <NotificationAlert
                 open={status === 'failed' && openUpdateFailedAlert}
                 onClose={handleCloseUpdateFailedAlert}
                 severity="error"
                 status="Erro"
-                message="Erro(s) detectado(s) durante atualização de dados do usuário"
+                message="Erro(s) detectado(s) durante edição de dados do usuário"
               />
             </Grid>
             {status === 'failed' ? (
               <Grid item xs={12} container m={1}>
                 <Alert severity="error">
                   <Typography variant="body1">
-                    <strong>Erro ao cadastrar. </strong>
+                    <strong>Erro ao editar. </strong>
                   </Typography>
 
                   {error.map((e: string, index: number) => {
@@ -509,7 +794,7 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
             ) : (
               <></>
             )}
-          </Grid> */}
+          </Grid>
 
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
@@ -534,6 +819,28 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
                     setEmail(e.target.value);
                   }}
                   type="email"
+                />
+              </Grid>
+
+              <Grid item xs={4} p={1}>
+                <Autocomplete
+                  id="active-options"
+                  value={active}
+                  defaultValue={active}
+                  onChange={(event: any, newValue: ActiveOption | null) => {
+                    setActive(newValue);
+                  }}
+                  options={activeOptions}
+                  getOptionLabel={(option) => option.label}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      margin="normal"
+                      required
+                      fullWidth
+                      label="Conta ativa?"
+                    />
+                  )}
                 />
               </Grid>
             </Grid>
@@ -724,7 +1031,7 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
                 </Grid>
               )}
 
-              {/* <Grid item xs={2} container p={1}>
+              <Grid item xs={2} container p={1}>
                 <Grid item xs={12} px={1} py={2}>
                   <InputLabel htmlFor="formatted-phone-number-1-mask-input">
                     Número de celular *
@@ -756,7 +1063,7 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
                     inputComponent={PhoneNumberMaskCustom as any}
                   />
                 </Grid>
-              </Grid> */}
+              </Grid>
             </Grid>
 
             <Grid container justifyContent={'flex-start'}>
@@ -1115,7 +1422,7 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
           <LoadingButton
             size="large"
             variant="contained"
-            // onClick={handleUpdateUser}
+            onClick={handleEditUser}
             loading={isUpdating}
             disabled={isUpdating}
           >

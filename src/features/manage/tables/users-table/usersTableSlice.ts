@@ -13,6 +13,16 @@ import { CreateStudentBody } from './dialogs/create-user/types/create-student-bo
 import { CreateTeacherBody } from './dialogs/create-user/types/create-teacher-body';
 import { User } from './types/user';
 import { removeUser } from '../../../../api/users/remove-user.req';
+import { UpdateTeacherBody } from './dialogs/edit-user/types/update-teacher-body';
+import { UpdateMonitorBody } from './dialogs/edit-user/types/update-monitor-body';
+import { UpdateStudentBody } from './dialogs/edit-user/types/update-student-body';
+import {
+  updateAdmin,
+  updateMonitor,
+  updateStudent,
+  updateTeacher,
+} from '../../../../api/users/update-users.req';
+import { UpdateAdminBody } from './dialogs/edit-user/types/update-admin-body';
 
 export interface UsersTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -140,6 +150,98 @@ export const usersTableSlice = createSlice({
           state.isCreating = false;
         }
       );
+
+    builder
+      .addCase(editStudent.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editStudent.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(editStudent.fulfilled, (state, action: PayloadAction<User>) => {
+        const editedStudent = action.payload;
+
+        const currentList = state.list.filter(
+          (user) => user.id !== editedStudent.id
+        );
+
+        state.list = [editedStudent, ...currentList];
+
+        state.status = 'idle';
+        state.isUpdating = false;
+      });
+
+    builder
+      .addCase(editMonitor.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editMonitor.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(editMonitor.fulfilled, (state, action: PayloadAction<User>) => {
+        const editedMonitor = action.payload;
+
+        const currentList = state.list.filter(
+          (user) => user.id !== editedMonitor.id
+        );
+
+        state.list = [editedMonitor, ...currentList];
+
+        state.status = 'idle';
+        state.isUpdating = false;
+      });
+
+    builder
+      .addCase(editTeacher.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editTeacher.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(editTeacher.fulfilled, (state, action: PayloadAction<User>) => {
+        const editedTeacher = action.payload;
+
+        const currentList = state.list.filter(
+          (user) => user.id !== editedTeacher.id
+        );
+
+        state.list = [editedTeacher, ...currentList];
+
+        state.status = 'idle';
+        state.isUpdating = false;
+      });
+
+    builder
+      .addCase(editAdmin.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editAdmin.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(editAdmin.fulfilled, (state, action: PayloadAction<User>) => {
+        const editedAdmin = action.payload;
+
+        const currentList = state.list.filter(
+          (user) => user.id !== editedAdmin.id
+        );
+
+        state.list = [editedAdmin, ...currentList];
+
+        state.status = 'idle';
+        state.isUpdating = false;
+      });
 
     builder
       .addCase(createNewAdmin.pending, (state) => {
@@ -306,6 +408,114 @@ export const deleteUser = createAsyncThunk(
       await removeUser(userId);
 
       const response = await fetchUsers();
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editStudent = createAsyncThunk(
+  'usersTable/editStudent',
+  async (body: UpdateStudentBody, thunkAPI) => {
+    try {
+      const response = await updateStudent(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editMonitor = createAsyncThunk(
+  'usersTable/editMonitor',
+  async (body: UpdateMonitorBody, thunkAPI) => {
+    try {
+      const response = await updateMonitor(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editTeacher = createAsyncThunk(
+  'usersTable/editTeacher',
+  async (body: UpdateTeacherBody, thunkAPI) => {
+    try {
+      const response = await updateTeacher(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editAdmin = createAsyncThunk(
+  'usersTable/editAdmin',
+  async (body: UpdateAdminBody, thunkAPI) => {
+    try {
+      const response = await updateAdmin(body);
 
       return response.data;
     } catch (e: any) {
