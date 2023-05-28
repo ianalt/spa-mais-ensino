@@ -23,6 +23,7 @@ import {
   updateTeacher,
 } from '../../../../api/users/update-users.req';
 import { UpdateAdminBody } from './dialogs/edit-user/types/update-admin-body';
+import { fetchEthnicityStats } from '../../../../api/users/stats.req';
 
 export interface UsersTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -32,6 +33,10 @@ export interface UsersTableState {
   isRemoving: boolean;
   isUpdating: boolean;
   error: any;
+  ethnicityStats: {
+    name: string;
+    count: number;
+  }[];
 }
 
 const initialState: UsersTableState = {
@@ -42,6 +47,7 @@ const initialState: UsersTableState = {
   isRemoving: false,
   isUpdating: false,
   error: null,
+  ethnicityStats: [],
 };
 
 export const usersTableSlice = createSlice({
@@ -282,6 +288,24 @@ export const usersTableSlice = createSlice({
         state.status = 'idle';
         state.isRemoving = false;
       });
+
+    //TODO n me parece certo
+    builder
+      .addCase(getEthnicityStats.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getEthnicityStats.rejected, (state) => {
+        state.ethnicityStats = initialState.ethnicityStats;
+        state.status = 'idle';
+      })
+      .addCase(
+        getEthnicityStats.fulfilled,
+        (state, action: PayloadAction<{ name: string; count: number }[]>) => {
+          state.ethnicityStats = action.payload;
+          state.status = 'idle';
+          state.isRemoving = false;
+        }
+      );
   },
 });
 
@@ -538,21 +562,35 @@ export const editAdmin = createAsyncThunk(
   }
 );
 
+export const getEthnicityStats = createAsyncThunk(
+  'usersTable/getEthnicityStats',
+  async () => {
+    const response = await fetchEthnicityStats();
+    return response.data;
+  }
+);
+
 export const { resetSelected, resetErrors, setSelected, setList } =
   usersTableSlice.actions;
 
 export const selectUsersTable = (state: RootState) => state.usersTable;
 
 export const getIsLoading = (state: RootState) => {
-  const { status, isCreating } = state.usersTable;
+  const { status, isCreating, isRemoving, isUpdating } = state.usersTable;
 
-  return status === 'loading' || isCreating;
+  return status === 'loading' || isCreating || isRemoving || isUpdating;
 };
 
 export const getIsMonitorOrTeacher = (state: RootState) => {
   const { selected } = state.usersTable;
 
   return selected?.role === 'monitor' || selected?.role === 'professor';
+};
+
+export const getStudentsEthnicityStats = (state: RootState) => {
+  const { ethnicityStats } = state.usersTable;
+
+  return ethnicityStats;
 };
 
 export default usersTableSlice.reducer;

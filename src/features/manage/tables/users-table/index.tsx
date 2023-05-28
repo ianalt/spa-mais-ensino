@@ -1,66 +1,25 @@
-import * as _ from 'lodash';
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Fab, Grid, LinearProgress, Tooltip } from '@mui/material';
+import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
+import { selectUser } from '../../../../user/userSlice';
+import NotificationAlert from '../../../notification-alert';
+import EthnicityStatsChart from './charts/ethnicity-stats/EthnicityStatsChart';
+import CreateUser from './dialogs/create-user';
+import EditUser from './dialogs/edit-user';
+import RemoveUser from './dialogs/remove-user';
+import UserDetails from './dialogs/user-details';
 import {
+  getEthnicityStats,
   getIsLoading,
   getUsersList,
   resetSelected,
   selectUsersTable,
   setSelected,
 } from './usersTableSlice';
-import UserDetails from './dialogs/user-details';
-import { Box, Fab, Grid, LinearProgress, Tooltip } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import CreateUser from './dialogs/create-user';
-import NotificationAlert from '../../../notification-alert';
-import { selectUser } from '../../../../user/userSlice';
-import RemoveUser from './dialogs/remove-user';
-import EditUser from './dialogs/edit-user';
-import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as ChartToolTip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
-
-const testData = [
-  {
-    name: 'Amarela',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Branca',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Indígena',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Parda',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Preta',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-];
+import GenderStatsChart from './charts/gender-stats/GenderStatsChart';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -164,17 +123,27 @@ export default function UsersTable() {
     handleCloseRemove();
 
     dispatch(resetSelected());
+    dispatch(getEthnicityStats());
     dispatch(getUsersList());
   }, []);
 
   return (
     <>
-      {isLoading ? (
-        <Box mt={3}>
-          <LinearProgress />
-        </Box>
-      ) : (
-        <Grid container>
+      <Grid container>
+        <Grid item xs={12} container my={5}>
+          <Grid item xs={4} m={1}>
+            <EthnicityStatsChart />
+          </Grid>
+          <Grid item xs={4} m={1}>
+            <GenderStatsChart />
+          </Grid>
+        </Grid>
+
+        {isLoading ? (
+          <Box mt={3}>
+            <LinearProgress />
+          </Box>
+        ) : (
           <Grid item xs={12}>
             <MaterialTable
               options={{ search: true, filtering: true }}
@@ -216,15 +185,16 @@ export default function UsersTable() {
                 { title: 'Nome', field: 'firstName', defaultSort: 'asc' },
                 { title: 'Sobrenome(s)', field: 'lastName' },
                 { title: 'E-mail', field: 'email' },
-                { title: 'Acesso', field: 'role' },
-                { title: 'Ativo?', field: 'active', type: 'boolean' },
+                { title: 'Nível de acesso', field: 'role' },
+                { title: 'Conta ativa?', field: 'active', type: 'boolean' },
               ]}
-              data={_.cloneDeep(list)}
+              data={cloneDeep(list)}
               title="Lista de usuários"
             />
           </Grid>
-        </Grid>
-      )}
+        )}
+      </Grid>
+
       <Grid container justifyContent="flex-end" mt={2}>
         <Tooltip title="Criar novo usuário">
           <span>
@@ -242,54 +212,39 @@ export default function UsersTable() {
 
       {/* //TODO gráficos */}
       {/* //TODO etnia  */}
+
       {/* //TODO gênero */}
       {/* //TODO total de membros em residência */}
       {/* //TODO renda familiar */}
       {/* //TODO nível de escolaridade */}
-
-      <Grid container>
-        <Grid item xs={12}>
-          <BarChart
-            width={700}
-            height={300}
-            data={testData}
-            title="Total de usuários (etnia)"
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <ChartToolTip />
-            <Legend />
-            <Bar dataKey="pv" fill="#8884d8" />
-            <Bar dataKey="uv" fill="#82ca9d" />
-          </BarChart>
-        </Grid>
-      </Grid>
 
       <UserDetails open={openDetails} onClose={handleCloseDetails} />
 
       <CreateUser
         open={openCreate}
         onClose={handleCloseCreate}
-        onCreate={handleOpenCreateAlert}
+        onCreate={() => {
+          handleOpenCreateAlert();
+          dispatch(getEthnicityStats());
+        }}
       />
 
       <RemoveUser
         open={openRemove}
         onClose={handleCloseRemove}
-        onRemove={handleOpenRemoveAlert}
+        onRemove={() => {
+          handleOpenRemoveAlert();
+          dispatch(getEthnicityStats());
+        }}
       />
 
       <EditUser
         open={openEdit}
         onClose={handleCloseEdit}
-        onEdit={handleOpenEditAlert}
+        onEdit={() => {
+          handleOpenEditAlert();
+          dispatch(getEthnicityStats());
+        }}
       />
 
       <NotificationAlert

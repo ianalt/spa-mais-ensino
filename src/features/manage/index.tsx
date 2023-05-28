@@ -39,9 +39,6 @@ export default function ManagePage() {
   return (
     <Grid container>
       <Grid item xs={12} container>
-        GERENCIAMENTO
-      </Grid>
-      <Grid item xs={12} container>
         <ManageTabs />
       </Grid>
     </Grid>
