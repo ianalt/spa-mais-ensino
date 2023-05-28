@@ -413,6 +413,10 @@ export default function CreateUser({
             schoolingLevel: educationInfo.schoolingLevel
               ? educationInfo.schoolingLevel.value
               : null,
+            conclusionYear:
+              educationInfo.conclusionYear === ''
+                ? null
+                : educationInfo.conclusionYear,
           };
         }),
 
@@ -475,6 +479,10 @@ export default function CreateUser({
             schoolingLevel: educationInfo.schoolingLevel
               ? educationInfo.schoolingLevel.value
               : null,
+            conclusionYear:
+              educationInfo.conclusionYear === ''
+                ? null
+                : educationInfo.conclusionYear,
           };
         }),
       };
@@ -531,6 +539,10 @@ export default function CreateUser({
             schoolingLevel: educationInfo.schoolingLevel
               ? educationInfo.schoolingLevel.value
               : null,
+            conclusionYear:
+              educationInfo.conclusionYear === ''
+                ? null
+                : educationInfo.conclusionYear,
           };
         }),
       };
@@ -1257,6 +1269,7 @@ export default function CreateUser({
                               </Grid>
 
                               <Grid item xs={3} container p={1}>
+                                {JSON.stringify(conclusionYear)}
                                 <Grid item xs={12}>
                                   <InputLabel htmlFor="formatted-conclusion-year-mask-input">
                                     Ano de conclusão
