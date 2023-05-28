@@ -1,5 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Fab, Grid, LinearProgress, Tooltip } from '@mui/material';
+import {
+  Box,
+  Fab,
+  Grid,
+  LinearProgress,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
@@ -7,19 +14,20 @@ import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { selectUser } from '../../../../user/userSlice';
 import NotificationAlert from '../../../notification-alert';
 import EthnicityStatsChart from './charts/ethnicity-stats/EthnicityStatsChart';
+import GenderStatsChart from './charts/gender-stats/GenderStatsChart';
 import CreateUser from './dialogs/create-user';
 import EditUser from './dialogs/edit-user';
 import RemoveUser from './dialogs/remove-user';
 import UserDetails from './dialogs/user-details';
 import {
   getEthnicityStats,
+  getGenderStats,
   getIsLoading,
   getUsersList,
   resetSelected,
   selectUsersTable,
   setSelected,
 } from './usersTableSlice';
-import GenderStatsChart from './charts/gender-stats/GenderStatsChart';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -28,8 +36,7 @@ export default function UsersTable() {
   const { id } = currentUser;
 
   const usersTable = useAppSelector(selectUsersTable);
-  const { list, selected, status, isCreating, isRemoving, isUpdating } =
-    usersTable;
+  const { list, status, isCreating, isRemoving, isUpdating } = usersTable;
   const isLoading = useAppSelector(getIsLoading);
 
   const [openDetails, setOpenDetails] = useState<boolean>(false);
@@ -124,6 +131,7 @@ export default function UsersTable() {
 
     dispatch(resetSelected());
     dispatch(getEthnicityStats());
+    dispatch(getGenderStats());
     dispatch(getUsersList());
   }, []);
 
@@ -144,79 +152,108 @@ export default function UsersTable() {
             <LinearProgress />
           </Box>
         ) : (
-          <Grid item xs={12}>
-            <MaterialTable
-              options={{ search: true, filtering: true }}
-              actions={[
-                (rowData) => ({
-                  icon: 'delete',
-                  tooltip:
-                    rowData.role === 'admin' && id !== rowData.id
-                      ? 'Administradores não podem remover outros administradores'
-                      : 'Remover',
-                  disabled: rowData.role === 'admin' && id !== rowData.id,
-                  onClick: () => {
-                    dispatch(setSelected(rowData));
-                    handleOpenRemove();
+          <>
+            <Grid item xs={12} container>
+              <Grid item xs={12}>
+                <Typography variant="h4">Lista de usuários</Typography>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} container justifyContent="flex-end" my={1}>
+              <Tooltip title="Criar novo usuário">
+                <span>
+                  <Fab
+                    color="primary"
+                    aria-label="create-user"
+                    onClick={handleOpenCreate}
+                    disabled={isLoading}
+                  >
+                    <AddIcon />
+                  </Fab>
+                </span>
+              </Tooltip>
+            </Grid>
+
+            <Grid item xs={12}>
+              <MaterialTable
+                localization={{
+                  body: {
+                    emptyDataSourceMessage: 'Nenhum registro para exibir',
                   },
-                }),
-                (rowData) => ({
-                  icon: 'search',
-                  tooltip: 'Detalhes',
-                  onClick: () => {
-                    dispatch(setSelected(rowData));
-                    handleOpenDetails();
+                  header: {
+                    actions: 'Ações',
                   },
-                }),
-                (rowData) => ({
-                  icon: 'edit',
-                  tooltip:
-                    rowData.role === 'admin' && id !== rowData.id
-                      ? 'Administradores não podem editar informações de outros administradores'
-                      : 'Editar',
-                  disabled: rowData.role === 'admin' && id !== rowData.id,
-                  onClick: () => {
-                    dispatch(setSelected(rowData));
-                    handleOpenEdit();
+                  toolbar: {
+                    searchTooltip: 'Pesquisar',
+                    exportTitle: 'Baixar lista',
+                    exportAriaLabel: 'Baixar lista',
+                    exportPDFName: 'Baixar como PDF',
+                    exportCSVName: 'Baixar como CSV',
+                    searchPlaceholder: 'Pesquisar',
                   },
-                }),
-              ]}
-              columns={[
-                { title: 'Nome', field: 'firstName', defaultSort: 'asc' },
-                { title: 'Sobrenome(s)', field: 'lastName' },
-                { title: 'E-mail', field: 'email' },
-                { title: 'Nível de acesso', field: 'role' },
-                { title: 'Conta ativa?', field: 'active', type: 'boolean' },
-              ]}
-              data={cloneDeep(list)}
-              title="Lista de usuários"
-            />
-          </Grid>
+                  pagination: {
+                    labelRowsSelect: 'linhas',
+                    labelDisplayedRows: '{count} de {from}-{to}',
+                    firstTooltip: 'Primeira página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Próxima página',
+                    lastTooltip: 'Última página',
+                    labelRowsPerPage: 'Linhas por página',
+                  },
+                }}
+                options={{ search: true, filtering: true, exportButton: true }}
+                actions={[
+                  (rowData) => ({
+                    icon: 'delete',
+                    tooltip:
+                      rowData.role === 'admin' && id !== rowData.id
+                        ? 'Administradores não podem remover outros administradores'
+                        : 'Remover',
+                    disabled: rowData.role === 'admin' && id !== rowData.id,
+                    onClick: () => {
+                      dispatch(setSelected(rowData));
+                      handleOpenRemove();
+                    },
+                  }),
+                  (rowData) => ({
+                    icon: 'search',
+                    tooltip: 'Detalhes',
+                    onClick: () => {
+                      dispatch(setSelected(rowData));
+                      handleOpenDetails();
+                    },
+                  }),
+                  (rowData) => ({
+                    icon: 'edit',
+                    tooltip:
+                      rowData.role === 'admin' && id !== rowData.id
+                        ? 'Administradores não podem editar informações de outros administradores'
+                        : 'Editar',
+                    disabled: rowData.role === 'admin' && id !== rowData.id,
+                    onClick: () => {
+                      dispatch(setSelected(rowData));
+                      handleOpenEdit();
+                    },
+                  }),
+                ]}
+                columns={[
+                  { title: 'Nome', field: 'firstName', defaultSort: 'asc' },
+                  { title: 'Sobrenome(s)', field: 'lastName' },
+                  { title: 'E-mail', field: 'email' },
+                  { title: 'Nível de acesso', field: 'role' },
+                  { title: 'Conta ativa?', field: 'active', type: 'boolean' },
+                ]}
+                data={cloneDeep(list)}
+                title=""
+              />
+            </Grid>
+          </>
         )}
       </Grid>
 
-      <Grid container justifyContent="flex-end" mt={2}>
-        <Tooltip title="Criar novo usuário">
-          <span>
-            <Fab
-              color="primary"
-              aria-label="create-user"
-              onClick={handleOpenCreate}
-              disabled={isLoading}
-            >
-              <AddIcon />
-            </Fab>
-          </span>
-        </Tooltip>
-      </Grid>
-
-      {/* //TODO gráficos */}
-      {/* //TODO etnia  */}
-
-      {/* //TODO gênero */}
       {/* //TODO total de membros em residência */}
       {/* //TODO renda familiar */}
       {/* //TODO nível de escolaridade */}
+      {/* //TODO total de acessos  */}
 
       <UserDetails open={openDetails} onClose={handleCloseDetails} />
 
@@ -235,6 +272,7 @@ export default function UsersTable() {
         onRemove={() => {
           handleOpenRemoveAlert();
           dispatch(getEthnicityStats());
+          dispatch(getGenderStats());
         }}
       />
 
@@ -244,6 +282,7 @@ export default function UsersTable() {
         onEdit={() => {
           handleOpenEditAlert();
           dispatch(getEthnicityStats());
+          dispatch(getGenderStats());
         }}
       />
 

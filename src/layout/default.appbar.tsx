@@ -54,10 +54,6 @@ const navigation = [
     title: 'Minha Disciplina',
   },
   {
-    link: '/mais-ensino/relatorios',
-    title: 'Relatórios',
-  },
-  {
     link: '/mais-ensino/gerenciamento',
     title: 'Gerenciamento',
   },
@@ -68,7 +64,6 @@ const pages = [
   'Disciplinas',
   'Comentários',
   'Minha Disciplina',
-  'Relatórios',
   'Gerenciamento',
 ];
 
@@ -88,14 +83,13 @@ export const DefaultAppBar = () => {
         return (
           page !== 'Comentários' &&
           page !== 'Minha Disciplina' &&
-          page !== 'Relatórios' &&
           page !== 'Gerenciamento'
         );
       });
 
     if (user.role === 'monitor' || user.role === 'professor')
       return pages.filter((page) => {
-        return page !== 'Relatórios' && page !== 'Gerenciamento';
+        return page !== 'Gerenciamento';
       });
 
     return pages.filter((page) => {
@@ -109,14 +103,13 @@ export const DefaultAppBar = () => {
         return (
           nav.title !== 'Comentários' &&
           nav.title !== 'Minha Disciplina' &&
-          nav.title !== 'Relatórios' &&
           nav.title !== 'Gerenciamento'
         );
       });
 
     if (user.role === 'monitor' || user.role === 'professor')
       return navigation.filter((nav) => {
-        return nav.title !== 'Relatórios' && nav.title !== 'Gerenciamento';
+        return nav.title !== 'Gerenciamento';
       });
 
     return navigation.filter((nav) => {

@@ -29,11 +29,6 @@ import TabPanel from '@mui/lab/TabPanel';
 
 export default function ManageTabs() {
   const dispatch = useAppDispatch();
-  const usersTable = useAppSelector(selectUsersTable);
-  const knowledgeAreasTable = useAppSelector(selectKnowledgeAreasTable);
-  const subjectsTable = useAppSelector(selectSubjectsTable);
-  const categoriesTable = useAppSelector(selectCategoriesTable);
-  const topicsTable = useAppSelector(selectTopicsTable);
   const [value, setValue] = useState('1');
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {

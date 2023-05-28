@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography } from '@mui/material';
-import { Cell, Pie, PieChart, Tooltip } from 'recharts';
+import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
 import { useAppSelector } from '../../../../../../app/hooks';
 import { getStudentsEthnicityStats } from '../../usersTableSlice';
 
@@ -41,15 +41,6 @@ export default function EthnicityStatsChart() {
         >
           {`${(percent * 100).toFixed(0)}%`}
         </text>
-        <text
-          x={x}
-          y={y + 20}
-          fill="white"
-          textAnchor={x > cx ? 'start' : 'end'}
-          dominantBaseline="central"
-        >
-          {`${ethnicityStats[index].name}`}
-        </text>
       </>
     );
   };
@@ -59,7 +50,7 @@ export default function EthnicityStatsChart() {
       <Grid container>
         <Grid item xs={12} p={2}>
           <Typography variant="h6" textAlign="center">
-            Total de estudantes cadastrados (por etnia)
+            Proporção por etnia
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -81,6 +72,7 @@ export default function EthnicityStatsChart() {
               ))}
             </Pie>
             <Tooltip />
+            <Legend />
           </PieChart>
         </Grid>
       </Grid>

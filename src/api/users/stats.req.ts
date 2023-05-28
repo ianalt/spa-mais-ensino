@@ -6,3 +6,9 @@ export const fetchEthnicityStats = async (): Promise<AxiosResponse> => {
 
   return res;
 };
+
+export const fetchGenderStats = async (): Promise<AxiosResponse> => {
+  const res = await instance.get(`/users/gender-stats`);
+
+  return res;
+};

@@ -1269,7 +1269,6 @@ export default function CreateUser({
                               </Grid>
 
                               <Grid item xs={3} container p={1}>
-                                {JSON.stringify(conclusionYear)}
                                 <Grid item xs={12}>
                                   <InputLabel htmlFor="formatted-conclusion-year-mask-input">
                                     Ano de conclusão
