@@ -17,6 +17,50 @@ import NotificationAlert from '../../../notification-alert';
 import { selectUser } from '../../../../user/userSlice';
 import RemoveUser from './dialogs/remove-user';
 import EditUser from './dialogs/edit-user';
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as ChartToolTip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+
+const testData = [
+  {
+    name: 'Amarela',
+    uv: 4000,
+    pv: 2400,
+    amt: 2400,
+  },
+  {
+    name: 'Branca',
+    uv: 3000,
+    pv: 1398,
+    amt: 2210,
+  },
+  {
+    name: 'Indígena',
+    uv: 2000,
+    pv: 9800,
+    amt: 2290,
+  },
+  {
+    name: 'Parda',
+    uv: 2780,
+    pv: 3908,
+    amt: 2000,
+  },
+  {
+    name: 'Preta',
+    uv: 1890,
+    pv: 4800,
+    amt: 2181,
+  },
+];
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -181,14 +225,6 @@ export default function UsersTable() {
           </Grid>
         </Grid>
       )}
-      <Grid
-        container
-        justifyContent="flex-end"
-        mt={5}
-        sx={{ border: '1px solid red' }}
-      >
-        {JSON.stringify(selected)}
-      </Grid>
       <Grid container justifyContent="flex-end" mt={2}>
         <Tooltip title="Criar novo usuário">
           <span>
@@ -202,6 +238,38 @@ export default function UsersTable() {
             </Fab>
           </span>
         </Tooltip>
+      </Grid>
+
+      {/* //TODO gráficos */}
+      {/* //TODO etnia  */}
+      {/* //TODO gênero */}
+      {/* //TODO total de membros em residência */}
+      {/* //TODO renda familiar */}
+      {/* //TODO nível de escolaridade */}
+
+      <Grid container>
+        <Grid item xs={12}>
+          <BarChart
+            width={700}
+            height={300}
+            data={testData}
+            title="Total de usuários (etnia)"
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <ChartToolTip />
+            <Legend />
+            <Bar dataKey="pv" fill="#8884d8" />
+            <Bar dataKey="uv" fill="#82ca9d" />
+          </BarChart>
+        </Grid>
       </Grid>
 
       <UserDetails open={openDetails} onClose={handleCloseDetails} />
