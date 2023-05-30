@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
 import { useAppSelector } from '../../../../../../app/hooks';
 import { getStudentsEthnicityStats } from '../../usersTableSlice';
@@ -46,36 +46,34 @@ export default function EthnicityStatsChart() {
   };
 
   return (
-    <Paper>
-      <Grid container>
-        <Grid item xs={12} p={2}>
-          <Typography variant="h6" textAlign="center">
-            Proporção por etnia
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <PieChart width={500} height={500}>
-            <Pie
-              data={ethnicityStats}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={renderCustomizedLabel}
-              outerRadius={220}
-              dataKey="count"
-            >
-              {ethnicityStats.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </Grid>
+    <Grid container justifyContent="center">
+      <Grid item xs={12} p={1}>
+        <Typography variant="h6" textAlign="center">
+          Proporção estudantil por etnia
+        </Typography>
       </Grid>
-    </Paper>
+      <Grid item xs={12} container justifyContent="center">
+        <PieChart width={450} height={450}>
+          <Pie
+            data={ethnicityStats}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={renderCustomizedLabel}
+            outerRadius={180}
+            dataKey="count"
+          >
+            {ethnicityStats.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </Grid>
+    </Grid>
   );
 }

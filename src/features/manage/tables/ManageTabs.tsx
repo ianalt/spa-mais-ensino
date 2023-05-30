@@ -1,31 +1,18 @@
-import { Box, CircularProgress, Tab } from '@mui/material';
-import { useState, useEffect, SyntheticEvent } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import CategoriesTable from './categories-table';
-import {
-  selectCategoriesTable,
-  getCategoriesList,
-} from './categories-table/categoriesTableSlice';
-import KnowledgeAreasTable from './knowledge-areas-table';
-import {
-  selectKnowledgeAreasTable,
-  getKnowledgeAreasList,
-} from './knowledge-areas-table/knowledgeAreasTableSlice';
-import SubjectsTable from './subjects-table';
-import {
-  selectSubjectsTable,
-  getSubjectsList,
-} from './subjects-table/subjectsTableSlice';
-import TopicsTable from './topics-table';
-import {
-  selectTopicsTable,
-  getTopicsList,
-} from './topics-table/topicsTableSlice';
-import UsersTable from './users-table';
-import { selectUsersTable, getUsersList } from './users-table/usersTableSlice';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import { Box, Tab } from '@mui/material';
+import { SyntheticEvent, useEffect, useState } from 'react';
+import { useAppDispatch } from '../../../app/hooks';
+import CategoriesTable from './categories-table';
+import { getCategoriesList } from './categories-table/categoriesTableSlice';
+import KnowledgeAreasTable from './knowledge-areas-table';
+import { getKnowledgeAreasList } from './knowledge-areas-table/knowledgeAreasTableSlice';
+import SubjectsTable from './subjects-table';
+import { getSubjectsList } from './subjects-table/subjectsTableSlice';
+import TopicsTable from './topics-table';
+import { getTopicsList } from './topics-table/topicsTableSlice';
+import UsersTable from './users-table';
 
 export default function ManageTabs() {
   const dispatch = useAppDispatch();

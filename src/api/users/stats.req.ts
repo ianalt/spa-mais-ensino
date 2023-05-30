@@ -12,3 +12,9 @@ export const fetchGenderStats = async (): Promise<AxiosResponse> => {
 
   return res;
 };
+
+export const fetchUfStats = async (): Promise<AxiosResponse> => {
+  const res = await instance.get(`/users/uf-stats`);
+
+  return res;
+};

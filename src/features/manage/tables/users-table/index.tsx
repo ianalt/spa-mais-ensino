@@ -4,6 +4,7 @@ import {
   Fab,
   Grid,
   LinearProgress,
+  Paper,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -15,6 +16,7 @@ import { selectUser } from '../../../../user/userSlice';
 import NotificationAlert from '../../../notification-alert';
 import EthnicityStatsChart from './charts/ethnicity-stats/EthnicityStatsChart';
 import GenderStatsChart from './charts/gender-stats/GenderStatsChart';
+
 import CreateUser from './dialogs/create-user';
 import EditUser from './dialogs/edit-user';
 import RemoveUser from './dialogs/remove-user';
@@ -23,11 +25,13 @@ import {
   getEthnicityStats,
   getGenderStats,
   getIsLoading,
+  getUfStats,
   getUsersList,
   resetSelected,
   selectUsersTable,
   setSelected,
 } from './usersTableSlice';
+import UfStatsChart from './charts/uf-stats/UfStatsChart';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -123,28 +127,45 @@ export default function UsersTable() {
     setOpenEditAlert(false);
   };
 
+  const handleRefreshStats = () => {
+    dispatch(getEthnicityStats());
+    dispatch(getGenderStats());
+    dispatch(getUfStats());
+  };
+
   useEffect(() => {
     handleCloseDetails();
     handleCloseCreate();
     handleCloseEdit();
     handleCloseRemove();
 
+    handleRefreshStats();
     dispatch(resetSelected());
-    dispatch(getEthnicityStats());
-    dispatch(getGenderStats());
     dispatch(getUsersList());
   }, []);
 
   return (
     <>
+      {/* //TODO total de acessos  */}
+      {/* //TODO total de membros em residência */}
+      {/* //TODO renda familiar */}
+      {/* //TODO nível de escolaridade */}
+
       <Grid container>
-        <Grid item xs={12} container my={5}>
-          <Grid item xs={4} m={1}>
-            <EthnicityStatsChart />
-          </Grid>
-          <Grid item xs={4} m={1}>
-            <GenderStatsChart />
-          </Grid>
+        <Grid item xs={12} my={5}>
+          <Paper>
+            <Grid container justifyContent="space-evenly">
+              <Grid item xs={8} m={1}>
+                <UfStatsChart />
+              </Grid>
+              <Grid item xs={4} m={1}>
+                <EthnicityStatsChart />
+              </Grid>
+              <Grid item xs={4} m={1}>
+                <GenderStatsChart />
+              </Grid>
+            </Grid>
+          </Paper>
         </Grid>
 
         {isLoading ? (
@@ -250,11 +271,6 @@ export default function UsersTable() {
         )}
       </Grid>
 
-      {/* //TODO total de membros em residência */}
-      {/* //TODO renda familiar */}
-      {/* //TODO nível de escolaridade */}
-      {/* //TODO total de acessos  */}
-
       <UserDetails open={openDetails} onClose={handleCloseDetails} />
 
       <CreateUser
@@ -262,7 +278,7 @@ export default function UsersTable() {
         onClose={handleCloseCreate}
         onCreate={() => {
           handleOpenCreateAlert();
-          dispatch(getEthnicityStats());
+          handleRefreshStats();
         }}
       />
 
@@ -271,8 +287,7 @@ export default function UsersTable() {
         onClose={handleCloseRemove}
         onRemove={() => {
           handleOpenRemoveAlert();
-          dispatch(getEthnicityStats());
-          dispatch(getGenderStats());
+          handleRefreshStats();
         }}
       />
 
@@ -281,8 +296,7 @@ export default function UsersTable() {
         onClose={handleCloseEdit}
         onEdit={() => {
           handleOpenEditAlert();
-          dispatch(getEthnicityStats());
-          dispatch(getGenderStats());
+          handleRefreshStats();
         }}
       />
 

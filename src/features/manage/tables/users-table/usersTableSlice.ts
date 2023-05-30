@@ -26,6 +26,7 @@ import { UpdateAdminBody } from './dialogs/edit-user/types/update-admin-body';
 import {
   fetchEthnicityStats,
   fetchGenderStats,
+  fetchUfStats,
 } from '../../../../api/users/stats.req';
 
 export interface UsersTableState {
@@ -44,6 +45,10 @@ export interface UsersTableState {
     name: string;
     count: number;
   }[];
+  ufStats: {
+    name: string;
+    count: number;
+  }[];
 }
 
 const initialState: UsersTableState = {
@@ -56,6 +61,7 @@ const initialState: UsersTableState = {
   error: null,
   ethnicityStats: [],
   genderStats: [],
+  ufStats: [],
 };
 
 export const usersTableSlice = createSlice({
@@ -319,13 +325,29 @@ export const usersTableSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(getGenderStats.rejected, (state) => {
-        state.genderStats = initialState.ethnicityStats;
+        state.genderStats = initialState.genderStats;
         state.status = 'idle';
       })
       .addCase(
         getGenderStats.fulfilled,
         (state, action: PayloadAction<{ name: string; count: number }[]>) => {
           state.genderStats = action.payload;
+          state.status = 'idle';
+        }
+      );
+
+    builder
+      .addCase(getUfStats.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getUfStats.rejected, (state) => {
+        state.ufStats = initialState.ufStats;
+        state.status = 'idle';
+      })
+      .addCase(
+        getUfStats.fulfilled,
+        (state, action: PayloadAction<{ name: string; count: number }[]>) => {
+          state.ufStats = action.payload;
           state.status = 'idle';
         }
       );
@@ -601,6 +623,14 @@ export const getGenderStats = createAsyncThunk(
   }
 );
 
+export const getUfStats = createAsyncThunk(
+  'usersTable/getUfStats',
+  async () => {
+    const response = await fetchUfStats();
+    return response.data;
+  }
+);
+
 export const { resetSelected, resetErrors, setSelected, setList } =
   usersTableSlice.actions;
 
@@ -628,6 +658,12 @@ export const getStudentsGenderStats = (state: RootState) => {
   const { genderStats } = state.usersTable;
 
   return genderStats;
+};
+
+export const getStudentsUfStats = (state: RootState) => {
+  const { ufStats } = state.usersTable;
+
+  return ufStats;
 };
 
 export default usersTableSlice.reducer;
