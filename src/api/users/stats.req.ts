@@ -18,3 +18,15 @@ export const fetchUfStats = async (): Promise<AxiosResponse> => {
 
   return res;
 };
+
+export const fetchAccessCount = async (): Promise<AxiosResponse> => {
+  const res = await instance.get(`/users/access-count`);
+
+  return res;
+};
+
+export const fetchIncomeStats = async (): Promise<AxiosResponse> => {
+  const res = await instance.get(`/users/income-stats`);
+
+  return res;
+};

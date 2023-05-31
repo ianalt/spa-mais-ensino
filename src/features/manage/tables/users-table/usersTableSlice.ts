@@ -24,8 +24,10 @@ import {
 } from '../../../../api/users/update-users.req';
 import { UpdateAdminBody } from './dialogs/edit-user/types/update-admin-body';
 import {
+  fetchAccessCount,
   fetchEthnicityStats,
   fetchGenderStats,
+  fetchIncomeStats,
   fetchUfStats,
 } from '../../../../api/users/stats.req';
 
@@ -49,6 +51,8 @@ export interface UsersTableState {
     name: string;
     count: number;
   }[];
+  accessCount: { count: number };
+  incomeStats: { avg: number };
 }
 
 const initialState: UsersTableState = {
@@ -62,6 +66,8 @@ const initialState: UsersTableState = {
   ethnicityStats: [],
   genderStats: [],
   ufStats: [],
+  accessCount: { count: 0 },
+  incomeStats: { avg: 0 },
 };
 
 export const usersTableSlice = createSlice({
@@ -351,6 +357,38 @@ export const usersTableSlice = createSlice({
           state.status = 'idle';
         }
       );
+
+    builder
+      .addCase(getAccessCount.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getAccessCount.rejected, (state) => {
+        state.accessCount = initialState.accessCount;
+        state.status = 'idle';
+      })
+      .addCase(
+        getAccessCount.fulfilled,
+        (state, action: PayloadAction<{ count: number }>) => {
+          state.accessCount = action.payload;
+          state.status = 'idle';
+        }
+      );
+
+    builder
+      .addCase(getIncomeStats.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getIncomeStats.rejected, (state) => {
+        state.incomeStats = initialState.incomeStats;
+        state.status = 'idle';
+      })
+      .addCase(
+        getIncomeStats.fulfilled,
+        (state, action: PayloadAction<{ avg: number }>) => {
+          state.incomeStats = action.payload;
+          state.status = 'idle';
+        }
+      );
   },
 });
 
@@ -631,6 +669,22 @@ export const getUfStats = createAsyncThunk(
   }
 );
 
+export const getAccessCount = createAsyncThunk(
+  'usersTable/getAccessCount',
+  async () => {
+    const response = await fetchAccessCount();
+    return response.data;
+  }
+);
+
+export const getIncomeStats = createAsyncThunk(
+  'usersTable/getIncomeStats',
+  async () => {
+    const response = await fetchIncomeStats();
+    return response.data;
+  }
+);
+
 export const { resetSelected, resetErrors, setSelected, setList } =
   usersTableSlice.actions;
 
@@ -664,6 +718,18 @@ export const getStudentsUfStats = (state: RootState) => {
   const { ufStats } = state.usersTable;
 
   return ufStats;
+};
+
+export const getStudentsAccessCount = (state: RootState) => {
+  const { accessCount } = state.usersTable;
+
+  return accessCount.count;
+};
+
+export const getStudentsIncomeStats = (state: RootState) => {
+  const { incomeStats } = state.usersTable;
+
+  return incomeStats.avg;
 };
 
 export default usersTableSlice.reducer;

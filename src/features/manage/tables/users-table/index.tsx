@@ -1,10 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  CircularProgress,
   Fab,
   Grid,
   LinearProgress,
   Paper,
+  Skeleton,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -22,8 +24,10 @@ import EditUser from './dialogs/edit-user';
 import RemoveUser from './dialogs/remove-user';
 import UserDetails from './dialogs/user-details';
 import {
+  getAccessCount,
   getEthnicityStats,
   getGenderStats,
+  getIncomeStats,
   getIsLoading,
   getUfStats,
   getUsersList,
@@ -32,6 +36,8 @@ import {
   setSelected,
 } from './usersTableSlice';
 import UfStatsChart from './charts/uf-stats/UfStatsChart';
+import AccessCountStats from './charts/access-count/AccessCountStats';
+import AvgIncomeStats from './charts/avg-income/AvgIncomeStats';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -131,6 +137,8 @@ export default function UsersTable() {
     dispatch(getEthnicityStats());
     dispatch(getGenderStats());
     dispatch(getUfStats());
+    dispatch(getAccessCount());
+    dispatch(getIncomeStats());
   };
 
   useEffect(() => {
@@ -140,21 +148,29 @@ export default function UsersTable() {
     handleCloseRemove();
 
     handleRefreshStats();
+
     dispatch(resetSelected());
     dispatch(getUsersList());
   }, []);
 
   return (
     <>
-      {/* //TODO total de acessos  */}
-      {/* //TODO total de membros em residência */}
-      {/* //TODO renda familiar */}
-      {/* //TODO nível de escolaridade */}
-
       <Grid container>
-        <Grid item xs={12} my={5}>
+        <Grid item xs={12}>
+          <Typography variant="h4">Estatísticas</Typography>
+        </Grid>
+        <Grid item xs={12} mb={5}>
           <Paper>
             <Grid container justifyContent="space-evenly">
+              <Grid item xs={3} m={1} container>
+                <Grid item xs={12}>
+                  <AccessCountStats />
+                </Grid>
+                <Grid item xs={12}>
+                  <AvgIncomeStats />
+                </Grid>
+              </Grid>
+
               <Grid item xs={8} m={1}>
                 <UfStatsChart />
               </Grid>
