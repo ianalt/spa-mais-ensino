@@ -16,6 +16,10 @@ export default function KnowledgeAreasTable() {
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
+  const handleOpenDetails = () => setOpenDetails(true);
+
+  const handlCloseDetails = () => setOpenDetails(false);
+
   return (
     <Fragment>
       <MaterialTable
@@ -40,7 +44,7 @@ export default function KnowledgeAreasTable() {
             tooltip: 'Detalhes',
             onClick: (event) => {
               dispatch(setSelected(rowData));
-              setOpenDetails(true);
+              handleOpenDetails();
             },
           }),
         ]}
@@ -48,7 +52,7 @@ export default function KnowledgeAreasTable() {
           { title: 'Nome', field: 'name', defaultSort: 'asc' },
           { title: 'Descrição', field: 'description' },
           {
-            title: 'Ativa?',
+            title: 'Área ativa?',
             field: 'active',
             type: 'boolean',
           },
@@ -56,10 +60,7 @@ export default function KnowledgeAreasTable() {
         data={_.cloneDeep(knowledgeAreasTable.list)}
         title="Lista de áreas de conhecimento"
       />
-      <KnowledgeAreaDetails
-        open={openDetails}
-        onClose={() => setOpenDetails(false)}
-      />
+      <KnowledgeAreaDetails open={openDetails} onClose={handlCloseDetails} />
     </Fragment>
   );
 }

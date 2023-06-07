@@ -75,7 +75,7 @@ export default function KnowledgeAreaDetails({
 
               <Grid item container xs="auto" py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'Ativa?'} </Typography>
+                  <Typography fontWeight={700}>{'Área ativa?'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.active ? 'Sim' : 'Não'}</Typography>
@@ -88,8 +88,24 @@ export default function KnowledgeAreaDetails({
                 </Grid>
                 <Grid item xs={12}>
                   <Typography textAlign="justify">
-                    {selected?.description}
+                    {selected?.description || '—'}
                   </Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs={12} py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Disciplina(s):'} </Typography>
+                </Grid>
+                <Grid item xs={12} py={1}>
+                  {selected?.subjects.reduce((acc, val, i) => {
+                    const { name } = val;
+                    return `${acc}${
+                      i === selected.subjects.length - 1
+                        ? `${name}`
+                        : `${name}, `
+                    }`;
+                  }, '')}
                 </Grid>
               </Grid>
             </Grid>
