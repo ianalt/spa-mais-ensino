@@ -1,12 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
-  CircularProgress,
   Fab,
   Grid,
   LinearProgress,
   Paper,
-  Skeleton,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -16,9 +14,11 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { selectUser } from '../../../../user/userSlice';
 import NotificationAlert from '../../../notification-alert';
+import AccessCountStats from './charts/access-count/AccessCountStats';
+import AvgIncomeStats from './charts/avg-income/AvgIncomeStats';
 import EthnicityStatsChart from './charts/ethnicity-stats/EthnicityStatsChart';
 import GenderStatsChart from './charts/gender-stats/GenderStatsChart';
-
+import UfStatsChart from './charts/uf-stats/UfStatsChart';
 import CreateUser from './dialogs/create-user';
 import EditUser from './dialogs/edit-user';
 import RemoveUser from './dialogs/remove-user';
@@ -35,9 +35,6 @@ import {
   selectUsersTable,
   setSelected,
 } from './usersTableSlice';
-import UfStatsChart from './charts/uf-stats/UfStatsChart';
-import AccessCountStats from './charts/access-count/AccessCountStats';
-import AvgIncomeStats from './charts/avg-income/AvgIncomeStats';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -219,6 +216,9 @@ export default function UsersTable() {
                   header: {
                     actions: 'Ações',
                   },
+                  grouping: {
+                    placeholder: 'Arraste as colunas para agrupar',
+                  },
                   toolbar: {
                     searchTooltip: 'Pesquisar',
                     exportTitle: 'Baixar lista',
@@ -237,7 +237,12 @@ export default function UsersTable() {
                     labelRowsPerPage: 'Linhas por página',
                   },
                 }}
-                options={{ search: true, filtering: true, exportButton: true }}
+                options={{
+                  search: true,
+                  filtering: true,
+                  exportButton: true,
+                  grouping: true,
+                }}
                 actions={[
                   (rowData) => ({
                     icon: 'delete',

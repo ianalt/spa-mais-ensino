@@ -45,7 +45,7 @@ export default function KnowledgeAreaDetails({
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => onClose(true)}
+        onClose={handleClose}
         aria-describedby="knowledge-area-details-dialog-slide-description"
         maxWidth="md"
         fullWidth
