@@ -98,14 +98,16 @@ export default function KnowledgeAreaDetails({
                   <Typography fontWeight={700}>{'Disciplina(s):'} </Typography>
                 </Grid>
                 <Grid item xs={12} py={1}>
-                  {selected?.subjects.reduce((acc, val, i) => {
-                    const { name } = val;
-                    return `${acc}${
-                      i === selected.subjects.length - 1
-                        ? `${name}`
-                        : `${name}, `
-                    }`;
-                  }, '')}
+                  {(selected?.subjects &&
+                    selected.subjects.reduce((acc, val, i) => {
+                      const { name } = val;
+                      return `${acc}${
+                        i === selected.subjects.length - 1
+                          ? `${name}`
+                          : `${name}, `
+                      }`;
+                    }, '')) ||
+                    '—'}
                 </Grid>
               </Grid>
             </Grid>

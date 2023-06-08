@@ -1,18 +1,23 @@
 import AddIcon from '@mui/icons-material/Add';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import KnowledgeAreaDetails from './dialogs/knowledge-area-details';
 import {
+  getKnowledgeAreasList,
+  resetSelected,
   selectKnowledgeAreasTable,
   setSelected,
 } from './knowledgeAreasTableSlice';
 import { Fab, Grid, Tooltip, Typography } from '@mui/material';
+import CreateKnowledgeArea from './dialogs/create-knowledge-area';
+import NotificationAlert from '../../../notification-alert';
 
 export default function KnowledgeAreasTable() {
   const dispatch = useAppDispatch();
   const knowledgeAreasTable = useAppSelector(selectKnowledgeAreasTable);
+  const { status, isCreating } = knowledgeAreasTable;
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openCreate, setOpenCreate] = useState<boolean>(false);
@@ -22,10 +27,29 @@ export default function KnowledgeAreasTable() {
   const [openCreateAlert, setOpenCreateAlert] = useState<boolean>(false);
 
   const handleOpenDetails = () => setOpenDetails(true);
-  const handlCloseDetails = () => setOpenDetails(false);
+  const handleCloseDetails = () => setOpenDetails(false);
 
   const handleOpenCreate = () => setOpenCreate(true);
-  const handlCloseCreate = () => setOpenCreate(false);
+  const handleCloseCreate = () => setOpenCreate(false);
+  const handleOpenCreateAlert = () => setOpenCreateAlert(true);
+  const handleCloseCreateAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenCreateAlert(false);
+  };
+
+  useEffect(() => {
+    handleCloseDetails();
+    handleCloseCreate();
+
+    dispatch(resetSelected());
+    dispatch(getKnowledgeAreasList());
+  }, []);
 
   return (
     <>
@@ -120,15 +144,21 @@ export default function KnowledgeAreasTable() {
           data={cloneDeep(knowledgeAreasTable.list)}
           title=""
         />
-        <KnowledgeAreaDetails open={openDetails} onClose={handlCloseDetails} />
+        <KnowledgeAreaDetails open={openDetails} onClose={handleCloseDetails} />
 
-        {/* <CreateKnowledgeArea
+        <CreateKnowledgeArea
           open={openCreate}
           onClose={handleCloseCreate}
-          onCreate={() => {
-            handleOpenCreateAlert();
-          }}
-        /> */}
+          onCreate={handleOpenCreateAlert}
+        />
+
+        <NotificationAlert
+          open={openCreateAlert && status === 'idle' && !isCreating}
+          onClose={handleCloseCreateAlert}
+          severity="success"
+          status="Sucesso"
+          message="Área de conhecimento criada com sucesso"
+        />
       </Grid>
     </>
   );
