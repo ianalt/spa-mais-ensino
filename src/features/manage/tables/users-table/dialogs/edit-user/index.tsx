@@ -1415,12 +1415,11 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} size="large" color="secondary">
+          <Button onClick={handleClose} color="secondary">
             Fechar
           </Button>
 
           <LoadingButton
-            size="large"
             variant="contained"
             onClick={handleEditUser}
             loading={isUpdating}

@@ -1,4 +1,4 @@
-import { Chip, Divider, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -57,12 +57,6 @@ export default function KnowledgeAreaDetails({
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>
-            <Grid item xs={12} my={2}>
-              <Divider>
-                <Chip label="Dados Básicos" />
-              </Divider>
-            </Grid>
-
             <Grid item container xs={12} my={1}>
               <Grid item container xs="auto" py={1} pr={1}>
                 <Grid item xs={12}>

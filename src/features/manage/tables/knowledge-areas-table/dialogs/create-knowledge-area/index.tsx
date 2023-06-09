@@ -10,12 +10,12 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
+import NotificationAlert from '../../../../../notification-alert';
 import {
   createNewKnowledgeArea,
   resetErrors,
   selectKnowledgeAreasTable,
 } from '../../knowledgeAreasTableSlice';
-import NotificationAlert from '../../../../../notification-alert';
 import { CreateKnowledgeAreaBody } from './types/create-knowledge-area-body';
 
 const Transition = forwardRef(function Transition(

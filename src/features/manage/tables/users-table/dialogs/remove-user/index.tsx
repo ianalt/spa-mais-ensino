@@ -474,7 +474,6 @@ export default function RemoveUser({
           <Button onClick={handleClose}>Cancelar</Button>
 
           <LoadingButton
-            size="large"
             variant="contained"
             color="secondary"
             onClick={handleRemoveUser}

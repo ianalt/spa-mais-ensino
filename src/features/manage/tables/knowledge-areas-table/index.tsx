@@ -13,18 +13,20 @@ import {
 import { Fab, Grid, Tooltip, Typography } from '@mui/material';
 import CreateKnowledgeArea from './dialogs/create-knowledge-area';
 import NotificationAlert from '../../../notification-alert';
+import RemoveKnowledgeArea from './dialogs/remove-knowledge-area';
 
 export default function KnowledgeAreasTable() {
   const dispatch = useAppDispatch();
   const knowledgeAreasTable = useAppSelector(selectKnowledgeAreasTable);
-  const { status, isCreating } = knowledgeAreasTable;
+  const { status, isCreating, isRemoving } = knowledgeAreasTable;
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openCreate, setOpenCreate] = useState<boolean>(false);
-  const [openDelete, setOpenDelete] = useState(false);
+  const [openRemove, setOpenRemove] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
   const [openCreateAlert, setOpenCreateAlert] = useState<boolean>(false);
+  const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
 
   const handleOpenDetails = () => setOpenDetails(true);
   const handleCloseDetails = () => setOpenDetails(false);
@@ -41,6 +43,20 @@ export default function KnowledgeAreasTable() {
     }
 
     setOpenCreateAlert(false);
+  };
+
+  const handleOpenRemove = () => setOpenRemove(true);
+  const handleCloseRemove = () => setOpenRemove(false);
+  const handleOpenRemoveAlert = () => setOpenRemoveAlert(true);
+  const handleCloseRemoveAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenRemoveAlert(false);
   };
 
   useEffect(() => {
@@ -114,6 +130,7 @@ export default function KnowledgeAreasTable() {
               tooltip: 'Remover',
               onClick: (event) => {
                 dispatch(setSelected(rowData));
+                handleOpenRemove();
               },
             }),
             (rowData) => ({
@@ -152,12 +169,34 @@ export default function KnowledgeAreasTable() {
           onCreate={handleOpenCreateAlert}
         />
 
+        <RemoveKnowledgeArea
+          open={openRemove}
+          onClose={handleCloseRemove}
+          onRemove={handleOpenRemoveAlert}
+        />
+
         <NotificationAlert
           open={openCreateAlert && status === 'idle' && !isCreating}
           onClose={handleCloseCreateAlert}
           severity="success"
           status="Sucesso"
           message="Área de conhecimento criada com sucesso"
+        />
+
+        <NotificationAlert
+          open={openRemoveAlert && status === 'idle' && !isRemoving}
+          onClose={handleCloseRemoveAlert}
+          severity="success"
+          status="Sucesso"
+          message="Área de conhecimento removida com sucesso"
+        />
+
+        <NotificationAlert
+          open={openRemoveAlert && status === 'failed' && !isRemoving}
+          onClose={handleCloseRemoveAlert}
+          severity="error"
+          status="Erro"
+          message="Não foi possível remover a área de conhecimento selecionada"
         />
       </Grid>
     </>
