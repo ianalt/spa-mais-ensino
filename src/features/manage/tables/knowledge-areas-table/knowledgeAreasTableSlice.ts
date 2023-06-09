@@ -5,6 +5,8 @@ import { KnowledgeArea } from '../../../../slices/knowledgeAreasSlice';
 import { CreateKnowledgeAreaBody } from './dialogs/create-knowledge-area/types/create-knowledge-area-body';
 import { addNewKnowledgeArea } from '../../../../api/knowledge-areas/create-knowledge-area.req';
 import { removeKnowledgeArea } from '../../../../api/knowledge-areas/remove-knowledge-area.req';
+import { updateKnowledgeArea } from '../../../../api/knowledge-areas/update-knowledge-area.req';
+import { UpdateKnowledgeAreaBody } from './dialogs/edit-knowledge-area/types/update-knowledge-area-body';
 
 export interface KnowledgeAreasTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -103,6 +105,32 @@ export const knowledgeAreasTableSlice = createSlice({
           state.isRemoving = false;
         }
       );
+
+    builder
+      .addCase(editKnowledgeArea.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editKnowledgeArea.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(
+        editKnowledgeArea.fulfilled,
+        (state, action: PayloadAction<KnowledgeArea>) => {
+          const editedKnowledgeArea = action.payload;
+
+          const currentList = state.list.filter(
+            (knowledgeArea) => knowledgeArea.id !== editedKnowledgeArea.id
+          );
+
+          state.list = [editedKnowledgeArea, ...currentList];
+
+          state.status = 'idle';
+          state.isUpdating = false;
+        }
+      );
   },
 });
 
@@ -150,6 +178,33 @@ export const deleteKnowledgeArea = createAsyncThunk(
       await removeKnowledgeArea(userId);
 
       const response = await fetchKnowledgeAreas();
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editKnowledgeArea = createAsyncThunk(
+  'knowledgeAreasTable/editKnowledgeArea',
+  async (body: UpdateKnowledgeAreaBody, thunkAPI) => {
+    try {
+      const response = await updateKnowledgeArea(body);
 
       return response.data;
     } catch (e: any) {

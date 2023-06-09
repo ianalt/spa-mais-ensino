@@ -14,11 +14,12 @@ import { Fab, Grid, Tooltip, Typography } from '@mui/material';
 import CreateKnowledgeArea from './dialogs/create-knowledge-area';
 import NotificationAlert from '../../../notification-alert';
 import RemoveKnowledgeArea from './dialogs/remove-knowledge-area';
+import EditKnowledgeArea from './dialogs/edit-knowledge-area';
 
 export default function KnowledgeAreasTable() {
   const dispatch = useAppDispatch();
   const knowledgeAreasTable = useAppSelector(selectKnowledgeAreasTable);
-  const { status, isCreating, isRemoving } = knowledgeAreasTable;
+  const { status, isCreating, isRemoving, isUpdating } = knowledgeAreasTable;
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openCreate, setOpenCreate] = useState<boolean>(false);
@@ -27,6 +28,7 @@ export default function KnowledgeAreasTable() {
 
   const [openCreateAlert, setOpenCreateAlert] = useState<boolean>(false);
   const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
+  const [openEditAlert, setOpenEditAlert] = useState<boolean>(false);
 
   const handleOpenDetails = () => setOpenDetails(true);
   const handleCloseDetails = () => setOpenDetails(false);
@@ -57,6 +59,20 @@ export default function KnowledgeAreasTable() {
     }
 
     setOpenRemoveAlert(false);
+  };
+
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+  const handleOpenEditAlert = () => setOpenEditAlert(true);
+  const handleCloseEditAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenEditAlert(false);
   };
 
   useEffect(() => {
@@ -138,6 +154,7 @@ export default function KnowledgeAreasTable() {
               tooltip: 'Editar',
               onClick: (event) => {
                 dispatch(setSelected(rowData));
+                handleOpenEdit();
               },
             }),
             (rowData) => ({
@@ -175,6 +192,12 @@ export default function KnowledgeAreasTable() {
           onRemove={handleOpenRemoveAlert}
         />
 
+        <EditKnowledgeArea
+          open={openEdit}
+          onClose={handleCloseEdit}
+          onEdit={handleOpenEditAlert}
+        />
+
         <NotificationAlert
           open={openCreateAlert && status === 'idle' && !isCreating}
           onClose={handleCloseCreateAlert}
@@ -197,6 +220,14 @@ export default function KnowledgeAreasTable() {
           severity="error"
           status="Erro"
           message="Não foi possível remover a área de conhecimento selecionada"
+        />
+
+        <NotificationAlert
+          open={openEditAlert && status === 'idle' && !isUpdating}
+          onClose={handleCloseEditAlert}
+          severity="success"
+          status="Sucesso"
+          message="Área de conhecimento editada com sucesso"
         />
       </Grid>
     </>

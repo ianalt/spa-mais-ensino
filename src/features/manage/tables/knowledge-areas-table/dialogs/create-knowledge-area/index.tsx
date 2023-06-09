@@ -184,12 +184,11 @@ export default function CreateKnowledgeArea({
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} size="large" color="secondary">
+          <Button onClick={handleClose} color="secondary">
             Fechar
           </Button>
 
           <LoadingButton
-            size="large"
             variant="contained"
             onClick={handleCreateKnowledgeArea}
             loading={isCreating || status === 'loading'}
