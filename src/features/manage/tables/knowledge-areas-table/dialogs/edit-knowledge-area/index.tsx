@@ -24,6 +24,7 @@ import {
   editKnowledgeArea,
   resetErrors,
   selectKnowledgeAreasTable,
+  setSelected,
 } from '../../knowledgeAreasTableSlice';
 import { UpdateKnowledgeAreaBody } from './types/update-knowledge-area-body';
 import { ActiveOption } from '../../../../../../utils/options/types/active-option';
@@ -75,7 +76,7 @@ export default function EditKnowledgeArea({
 
   const resetFields = () => {
     setName('');
-    setDescription(null);
+    setDescription('');
     setActive(null);
   };
 
@@ -87,8 +88,6 @@ export default function EditKnowledgeArea({
         description: description ? description : '',
         active: active?.value || false,
       };
-
-      alert(body);
 
       try {
         await dispatch(editKnowledgeArea(body)).unwrap();
@@ -102,6 +101,7 @@ export default function EditKnowledgeArea({
   };
 
   const handleClose = () => {
+    dispatch(setSelected(null));
     resetFields();
     onClose();
   };
@@ -124,7 +124,6 @@ export default function EditKnowledgeArea({
   useEffect(() => {
     if (open) {
       setFields();
-
       dispatch(resetErrors());
     }
   }, [open]);
@@ -140,12 +139,12 @@ export default function EditKnowledgeArea({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{'Adicionar nova área de conhecimento'}</DialogTitle>
+        <DialogTitle>{'Editar nova área de conhecimento'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="edit-knowledge-area-dialog-slide-description">
-            Preencha as informações abaixo para criar uma nova área de
-            conhecimento. <strong>Confirme</strong> os dados antes de clicar no
-            botão <strong>Criar</strong>.
+            Preencha as informações abaixo para editar a área de conhecimento.{' '}
+            <strong>Confirme</strong> os dados antes de clicar no botão{' '}
+            <strong>Criar</strong>.
           </DialogContentText>
 
           <Grid container justifyContent="flex-start">
@@ -155,7 +154,7 @@ export default function EditKnowledgeArea({
                 onClose={handleCloseCreateFailedAlert}
                 severity="error"
                 status="Erro"
-                message="Erro(s) detectado(s) durante atualização de área de conhecimento"
+                message="Erro(s) detectado(s) durante edição de área de conhecimento"
               />
             </Grid>
             {status === 'failed' && (
@@ -222,14 +221,15 @@ export default function EditKnowledgeArea({
               <TextField
                 id="description"
                 margin="normal"
+                required
                 fullWidth
-                name="description"
                 label="Descrição"
-                variant="outlined"
                 placeholder="Digite uma descrição para a área de conhecimento..."
+                name="description"
                 value={description}
                 multiline
                 rows={6}
+                variant="outlined"
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}

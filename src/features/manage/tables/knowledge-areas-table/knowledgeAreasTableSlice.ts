@@ -11,7 +11,7 @@ import { UpdateKnowledgeAreaBody } from './dialogs/edit-knowledge-area/types/upd
 export interface KnowledgeAreasTableState {
   status: 'idle' | 'loading' | 'failed';
   list: KnowledgeArea[];
-  selected?: KnowledgeArea;
+  selected: KnowledgeArea | null;
   error: any;
   isCreating: boolean;
   isRemoving: boolean;
@@ -21,7 +21,7 @@ export interface KnowledgeAreasTableState {
 const initialState: KnowledgeAreasTableState = {
   status: 'idle',
   list: [],
-  selected: undefined,
+  selected: null,
   error: null,
   isCreating: false,
   isRemoving: false,
@@ -36,7 +36,7 @@ export const knowledgeAreasTableSlice = createSlice({
       state.status = 'idle';
       state.error = initialState.error;
     },
-    setSelected: (state, action: PayloadAction<KnowledgeArea | undefined>) => {
+    setSelected: (state, action: PayloadAction<KnowledgeArea | null>) => {
       state.selected = action.payload;
     },
     setList: (state, action: PayloadAction<KnowledgeArea[]>) => {

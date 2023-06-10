@@ -36,7 +36,7 @@ export default function KnowledgeAreaDetails({
 
   const handleClose = () => {
     onClose(true);
-    setSelected(undefined);
+    setSelected(null);
   };
 
   return (

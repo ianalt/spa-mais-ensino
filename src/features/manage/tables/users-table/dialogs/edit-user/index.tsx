@@ -490,7 +490,6 @@ export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
     }
   }, [open]);
 
-  //TODO UPDATE REQUEST
   const handleEditUser = async () => {
     if (selected?.role === Role.ESTUDANTE) {
       const phoneNumbers: { id?: number; phoneNumber?: string }[] =

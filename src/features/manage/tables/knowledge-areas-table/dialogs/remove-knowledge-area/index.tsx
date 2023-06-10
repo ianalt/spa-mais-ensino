@@ -53,7 +53,7 @@ export default function RemoveKnowledgeArea({
 
   const handleClose = () => {
     onClose();
-    setSelected(undefined);
+    setSelected(null);
   };
 
   return (
