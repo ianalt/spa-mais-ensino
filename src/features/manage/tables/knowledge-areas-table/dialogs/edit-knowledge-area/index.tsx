@@ -1,9 +1,8 @@
-import { LoadingButton } from '@mui/lab';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import { LoadingButton } from '@mui/lab';
 import {
   Alert,
   Autocomplete,
-  Box,
   Grid,
   TextField,
   Tooltip,
@@ -19,6 +18,8 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
+import { ActiveOption } from '../../../../../../utils/options/types/active-option';
+import { activeOptions } from '../../../../../../utils/options/types/active-options';
 import NotificationAlert from '../../../../../notification-alert';
 import {
   editKnowledgeArea,
@@ -27,8 +28,6 @@ import {
   setSelected,
 } from '../../knowledgeAreasTableSlice';
 import { UpdateKnowledgeAreaBody } from './types/update-knowledge-area-body';
-import { ActiveOption } from '../../../../../../utils/options/types/active-option';
-import { activeOptions } from '../../../../../../utils/options/types/active-options';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {

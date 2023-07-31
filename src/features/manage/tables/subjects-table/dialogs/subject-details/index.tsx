@@ -9,8 +9,8 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import { Dispatch, SetStateAction, forwardRef } from 'react';
 import { useAppSelector } from '../../../../../../app/hooks';
-
 import { selectSubjectsTable, setSelected } from '../../subjectsTableSlice';
+import { Role } from '../../../../../../utils/enums/role.enum';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -30,9 +30,51 @@ export default function SubjectDetails({ open, onClose }: SubjectDetailsProps) {
   const subjectsTable = useAppSelector(selectSubjectsTable);
   const { selected } = subjectsTable;
 
+  const formatCategories = () => {
+    if (!selected || selected.categories.length === 0) return '—';
+
+    const sortedCategories = selected.categories
+      .map((category) => category.name)
+      .sort();
+
+    return sortedCategories.reduce((acc, val, i) => {
+      return `${acc}${
+        i === selected.categories.length - 1 ? `${val}.` : `${val}, `
+      }`;
+    }, '');
+  };
+
+  const displayTeachersName = () => {
+    const teacher = selected?.users.find(
+      (user) => user.role === Role.PROFESSOR
+    );
+
+    if (!selected || !teacher) return '—';
+
+    const teachersName = `${teacher.firstName} ${teacher.lastName}`;
+
+    return teachersName;
+  };
+
+  const listMonitors = () => {
+    const monitors = selected?.users.filter(
+      (user) => user.role === Role.MONITOR
+    );
+
+    if (!selected || !monitors || monitors.length === 0) return '—';
+
+    return monitors.map((monitor) => {
+      return (
+        <Grid item xs={12} ml={1}>
+          <Typography>{`• ${monitor.firstName} ${monitor.lastName}`}</Typography>
+        </Grid>
+      );
+    });
+  };
+
   const handleClose = () => {
     onClose(true);
-    setSelected(undefined);
+    setSelected(null);
   };
 
   return (
@@ -55,7 +97,7 @@ export default function SubjectDetails({ open, onClose }: SubjectDetailsProps) {
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
               <Divider>
-                <Chip label="Dados Básicos" />
+                <Chip label="Detalhes" />
               </Divider>
             </Grid>
 
@@ -71,20 +113,69 @@ export default function SubjectDetails({ open, onClose }: SubjectDetailsProps) {
 
               <Grid item container xs="auto" py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'Ativa?'} </Typography>
+                  <Typography fontWeight={700}>
+                    {'Disciplina ativa?'}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.active ? 'Sim' : 'Não'}</Typography>
                 </Grid>
               </Grid>
 
+              {/* //linha de área de conhecimento e categorias */}
+              <Grid item container xs={12} py={1} pr={1}>
+                <Grid item container xs={5}>
+                  <Grid item xs={12}>
+                    <Typography fontWeight={700}>
+                      {'Área de conhecimento:'}{' '}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      {selected?.knowledgeArea.name || '—'}
+                    </Typography>
+                  </Grid>
+                </Grid>
+
+                <Grid item container xs={7}>
+                  <Grid item xs={12}>
+                    <Typography fontWeight={700}>{'Categorias:'}</Typography>
+                  </Grid>
+                  <Grid item container xs={12}>
+                    {formatCategories()}
+                  </Grid>
+                </Grid>
+              </Grid>
+              {/* //linha de professor e monitores */}
+              <Grid item container xs={12} py={1} pr={1}>
+                <Grid item container xs={4}>
+                  <Grid item xs={12}>
+                    <Typography fontWeight={700}>{'Professor(a):'} </Typography>
+                  </Grid>
+                  <Grid item xs={12} px={1}>
+                    <Typography>{displayTeachersName()}</Typography>
+                  </Grid>
+                </Grid>
+
+                <Grid item container xs={8}>
+                  <Grid item xs={12}>
+                    <Typography fontWeight={700}>{'Monitores(as):'}</Typography>
+                  </Grid>
+                  <Grid container item xs={12} px={1}>
+                    {listMonitors()}
+                  </Grid>
+                </Grid>
+              </Grid>
+
               <Grid item container xs={12} py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'Descrição:'} </Typography>
+                  <Typography fontWeight={700}>
+                    {'Descrição da disciplina:'}{' '}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography textAlign="justify">
-                    {selected?.description}
+                    {selected?.description || '—'}
                   </Typography>
                 </Grid>
               </Grid>
