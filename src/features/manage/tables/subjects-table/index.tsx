@@ -1,14 +1,16 @@
+import AddIcon from '@mui/icons-material/Add';
+import { Fab, Grid, Tooltip, Typography } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
+import SubjectDetails from './dialogs/subject-details';
 import {
   getSubjectsList,
   resetSelected,
   selectSubjectsTable,
   setSelected,
 } from './subjectsTableSlice';
-import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import SubjectDetails from './dialogs/subject-details';
 
 export default function SubjectsTable() {
   const dispatch = useAppDispatch();
@@ -77,78 +79,101 @@ export default function SubjectsTable() {
   }, []);
 
   return (
-    <Fragment>
-      <MaterialTable
-        localization={{
-          body: {
-            emptyDataSourceMessage: 'Nenhum registro para exibir',
-          },
-          header: {
-            actions: 'Ações',
-          },
-          grouping: {
-            placeholder: 'Arraste as colunas para agrupar',
-          },
-          toolbar: {
-            searchTooltip: 'Pesquisar',
-            exportTitle: 'Baixar lista',
-            exportAriaLabel: 'Baixar lista',
-            exportPDFName: 'Baixar como PDF',
-            exportCSVName: 'Baixar como CSV',
-            searchPlaceholder: 'Pesquisar',
-          },
-          pagination: {
-            labelRowsSelect: 'linhas',
-            labelDisplayedRows: '{count} de {from}-{to}',
-            firstTooltip: 'Primeira página',
-            previousTooltip: 'Página anterior',
-            nextTooltip: 'Próxima página',
-            lastTooltip: 'Última página',
-            labelRowsPerPage: 'Linhas por página',
-          },
-        }}
-        options={{
-          search: true,
-          filtering: true,
-          exportButton: true,
-        }}
-        actions={[
-          (rowData) => ({
-            icon: 'delete',
-            tooltip: 'Remover',
-            onClick: (event) => {
-              dispatch(setSelected(rowData));
+    <>
+      <Grid item xs={12} container>
+        <Grid item xs={12}>
+          <Typography variant="h4">Lista de disciplinas</Typography>
+        </Grid>
+      </Grid>
+      <Grid item xs={12} container justifyContent="flex-end" my={1}>
+        <Tooltip title="Criar nova disciplina">
+          <span>
+            <Fab
+              color="primary"
+              aria-label="create-subject"
+              onClick={handleOpenCreate}
+              // disabled={isLoading}
+            >
+              <AddIcon />
+            </Fab>
+          </span>
+        </Tooltip>
+      </Grid>
+      <Grid item xs={12}>
+        <MaterialTable
+          localization={{
+            body: {
+              emptyDataSourceMessage: 'Nenhum registro para exibir',
             },
-          }),
-          (rowData) => ({
-            icon: 'edit',
-            tooltip: 'Editar',
-            onClick: (event) => {
-              dispatch(setSelected(rowData));
-              handleOpenEdit();
+            header: {
+              actions: 'Ações',
             },
-          }),
-          (rowData) => ({
-            icon: 'search',
-            tooltip: 'Detalhes',
-            onClick: (event) => {
-              dispatch(setSelected(rowData));
-              handleOpenDetails();
+            grouping: {
+              placeholder: 'Arraste as colunas para agrupar',
             },
-          }),
-        ]}
-        columns={[
-          { title: 'Nome', field: 'name', defaultSort: 'asc' },
-          { title: 'Descrição', field: 'description' },
-          {
-            title: 'Ativa?',
-            field: 'active',
-            type: 'boolean',
-          },
-        ]}
-        data={cloneDeep(subjectsTable.list)}
-        title="Lista de disciplinas"
-      />
+            toolbar: {
+              searchTooltip: 'Pesquisar',
+              exportTitle: 'Baixar lista',
+              exportAriaLabel: 'Baixar lista',
+              exportPDFName: 'Baixar como PDF',
+              exportCSVName: 'Baixar como CSV',
+              searchPlaceholder: 'Pesquisar',
+            },
+            pagination: {
+              labelRowsSelect: 'linhas',
+              labelDisplayedRows: '{count} de {from}-{to}',
+              firstTooltip: 'Primeira página',
+              previousTooltip: 'Página anterior',
+              nextTooltip: 'Próxima página',
+              lastTooltip: 'Última página',
+              labelRowsPerPage: 'Linhas por página',
+            },
+          }}
+          options={{
+            search: true,
+            filtering: true,
+            exportButton: true,
+            grouping: true,
+          }}
+          actions={[
+            (rowData) => ({
+              icon: 'delete',
+              tooltip: 'Remover',
+              onClick: (event) => {
+                dispatch(setSelected(rowData));
+              },
+            }),
+            (rowData) => ({
+              icon: 'edit',
+              tooltip: 'Editar',
+              onClick: (event) => {
+                dispatch(setSelected(rowData));
+                handleOpenEdit();
+              },
+            }),
+            (rowData) => ({
+              icon: 'search',
+              tooltip: 'Detalhes',
+              onClick: (event) => {
+                dispatch(setSelected(rowData));
+                handleOpenDetails();
+              },
+            }),
+          ]}
+          columns={[
+            { title: 'Nome', field: 'name', defaultSort: 'asc' },
+            { title: 'Descrição', field: 'description' },
+            { title: 'Área de conhecimento', field: 'knowledgeArea.name' },
+            {
+              title: 'Ativa?',
+              field: 'active',
+              type: 'boolean',
+            },
+          ]}
+          data={cloneDeep(subjectsTable.list)}
+          title=""
+        />
+      </Grid>
 
       <SubjectDetails open={openDetails} onClose={handleCloseDetails} />
 
@@ -156,6 +181,6 @@ export default function SubjectsTable() {
         open={openEdit}
         onClose={handleCloseEdit}
       /> */}
-    </Fragment>
+    </>
   );
 }
