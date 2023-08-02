@@ -11,27 +11,28 @@ import {
   selectSubjectsTable,
   setSelected,
 } from './subjectsTableSlice';
+import AddSubject from './dialogs/add-subject';
 
 export default function SubjectsTable() {
   const dispatch = useAppDispatch();
   const subjectsTable = useAppSelector(selectSubjectsTable);
 
   const [openDetails, setOpenDetails] = useState(false);
-  const [openCreate, setOpenCreate] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
   const [openRemove, setOpenRemove] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
-  const [openCreateAlert, setOpenCreateAlert] = useState<boolean>(false);
+  const [openAddAlert, setOpenAddAlert] = useState<boolean>(false);
   const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
   const [openEditAlert, setOpenEditAlert] = useState<boolean>(false);
 
   const handleOpenDetails = () => setOpenDetails(true);
   const handleCloseDetails = () => setOpenDetails(false);
 
-  const handleOpenCreate = () => setOpenCreate(true);
-  const handleCloseCreate = () => setOpenCreate(false);
-  const handleOpenCreateAlert = () => setOpenCreateAlert(true);
-  const handleCloseCreateAlert = (
+  const handleOpenAdd = () => setOpenAdd(true);
+  const handleCloseAdd = () => setOpenAdd(false);
+  const handleOpenAddAlert = () => setOpenAddAlert(true);
+  const handleCloseAddAlert = (
     event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
@@ -39,7 +40,7 @@ export default function SubjectsTable() {
       return;
     }
 
-    setOpenCreateAlert(false);
+    setOpenAddAlert(false);
   };
 
   const handleOpenRemove = () => setOpenRemove(true);
@@ -72,7 +73,7 @@ export default function SubjectsTable() {
 
   useEffect(() => {
     handleCloseDetails();
-    handleCloseCreate();
+    handleCloseAdd();
 
     dispatch(resetSelected());
     dispatch(getSubjectsList());
@@ -91,8 +92,7 @@ export default function SubjectsTable() {
             <Fab
               color="primary"
               aria-label="create-subject"
-              onClick={handleOpenCreate}
-              // disabled={isLoading}
+              onClick={handleOpenAdd}
             >
               <AddIcon />
             </Fab>
@@ -177,10 +177,7 @@ export default function SubjectsTable() {
 
       <SubjectDetails open={openDetails} onClose={handleCloseDetails} />
 
-      {/* <EditSubject
-        open={openEdit}
-        onClose={handleCloseEdit}
-      /> */}
+      <AddSubject open={openAdd} onAdd={() => {}} onClose={handleCloseAdd} />
     </>
   );
 }

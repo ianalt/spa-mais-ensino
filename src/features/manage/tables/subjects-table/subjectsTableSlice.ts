@@ -1,6 +1,13 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchSubjects } from '../../../../api/subjects/subjects.req';
+import {
+  fetchCreateSubjectOptions,
+  fetchSubjects,
+} from '../../../../api/subjects/subjects.req';
 import { RootState } from '../../../../app/store';
+import { AddSubjectOptions } from './dialogs/add-subject/types/add-subject-options';
+import { KnowledgeAreaOption } from './dialogs/add-subject/types/knowledge-area-option';
+import { MonitorOption } from './dialogs/add-subject/types/monitor-option';
+import { TeacherOption } from './dialogs/add-subject/types/teacher-option';
 import { Subject } from './types/subject';
 
 export interface SubjectsTableState {
@@ -11,6 +18,9 @@ export interface SubjectsTableState {
   isCreating: boolean;
   isRemoving: boolean;
   isUpdating: boolean;
+  knowledgeAreasList: KnowledgeAreaOption[];
+  teachersList: TeacherOption[];
+  monitorsList: MonitorOption[];
 }
 
 const initialState: SubjectsTableState = {
@@ -21,6 +31,9 @@ const initialState: SubjectsTableState = {
   isCreating: false,
   isRemoving: false,
   isUpdating: false,
+  knowledgeAreasList: [],
+  teachersList: [],
+  monitorsList: [],
 };
 
 export const subjectsTableSlice = createSlice({
@@ -57,6 +70,26 @@ export const subjectsTableSlice = createSlice({
           state.list = action.payload;
         }
       );
+
+    builder
+      .addCase(getAddSubjectOptions.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getAddSubjectOptions.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(
+        getAddSubjectOptions.fulfilled,
+        (state, action: PayloadAction<AddSubjectOptions>) => {
+          const { knowledgeAreasList, teachersList, monitorsList } =
+            action.payload;
+
+          state.status = 'idle';
+          state.knowledgeAreasList = knowledgeAreasList;
+          state.teachersList = teachersList;
+          state.monitorsList = monitorsList;
+        }
+      );
   },
 });
 
@@ -67,6 +100,21 @@ export const getSubjectsList = createAsyncThunk(
     const subjects: Subject[] = response.data;
 
     return subjects;
+  }
+);
+
+export const getAddSubjectOptions = createAsyncThunk(
+  'subjectsTable/getAddSubjectOptions',
+  async () => {
+    const res = await fetchCreateSubjectOptions();
+
+    const options: AddSubjectOptions = {
+      knowledgeAreasList: res.data.knowledgeAreaOptions,
+      teachersList: res.data.teacherOptions,
+      monitorsList: res.data.monitorsOptions,
+    };
+
+    return options;
   }
 );
 
