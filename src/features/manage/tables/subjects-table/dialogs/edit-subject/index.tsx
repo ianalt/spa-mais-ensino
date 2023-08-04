@@ -1,8 +1,11 @@
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { LoadingButton } from '@mui/lab';
 import {
   Alert,
   Autocomplete,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -11,21 +14,28 @@ import {
   Grid,
   Slide,
   TextField,
-  Tooltip,
   Typography,
+  createFilterOptions,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
+import NotificationAlert from '../../../../../notification-alert';
 import {
+  editSubject,
+  getAddSubjectOptions,
   resetErrors,
   selectSubjectsTable,
-  setSelected,
 } from '../../subjectsTableSlice';
-import { ActiveOption } from '../../../../../../utils/options/types/active-option';
-import { activeOptions } from '../../../../../../utils/options/types/active-options';
-import NotificationAlert from '../../../../../notification-alert';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import { KnowledgeAreaOption } from '../add-subject/types/knowledge-area-option';
+import { TeacherOption } from '../add-subject/types/teacher-option';
+import { MonitorOption } from '../add-subject/types/monitor-option';
+import { EditSubjectBody } from './types/edit-subject-body';
+import { Role } from '../../../../../../utils/enums/role.enum';
+
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -39,243 +49,316 @@ const Transition = forwardRef(function Transition(
 interface EditSubjectProps {
   open: boolean;
   onClose: any;
-  onEdit: any;
+  onAdd: any;
 }
 
-export default function EditSubject({
-  open,
-  onClose,
-  onEdit,
-}: EditSubjectProps) {
-  return <div>Editar disciplina</div>;
-  //   const dispatch = useAppDispatch();
-  //   const subjectsTable = useAppSelector(selectSubjectsTable);
+export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) {
+  const dispatch = useAppDispatch();
+  const subjectsTable = useAppSelector(selectSubjectsTable);
 
-  //   const { status, isUpdating, error, selected } = subjectsTable;
 
-  //   const [openCreateFailedAlert, setOpenCreateFailedAlert] =
-  //     useState<boolean>(false);
+  const {
+    status,
+    isCreating,
+    error,
+    knowledgeAreasList,
+    teachersList,
+    monitorsList,
+    selected
+  } = subjectsTable;
 
-  //   const [name, setName] = useState<string>('');
-  //   const [description, setDescription] = useState<string | null>('');
-  //   const [active, setActive] = useState<ActiveOption | null>(null);
+  const [openAddFailedAlert, setOpenAddFailedAlert] = useState<boolean>(false);
 
-  //   const setFields = () => {
-  //     if (selected) {
-  //       setName(selected.name);
-  //       setDescription(selected.description);
 
-  //       const initialActive = activeOptions.find(
-  //         (option) => option.value === selected.active
-  //       );
-  //       setActive(initialActive ? initialActive : null);
-  //     }
-  //   };
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [chosenKnowledgeArea, setChosenKnowledgeArea] =
+    useState<KnowledgeAreaOption | null>(null);
+  const [chosenTeacher, setChosenTeacher] = useState<TeacherOption | null>(
+    null
+  );
+  const [chosenMonitors, setChosenMonitors] = useState<MonitorOption[]>([]);
 
-  //   const resetFields = () => {
-  //     setName('');
-  //     setDescription('');
-  //     setActive(null);
-  //   };
+  const setFields = () => {
+    const teacherFound = selected?.users.find(user => user.role === Role.PROFESSOR) || null
+    //TODO pending include teacjer and monitor
 
-  //   const handleEditSubject = async () => {
-  //     if (selected) {
-  //       const body: UpdateSubjectBody = {
-  //         subjectId: selected.id,
-  //         name,
-  //         description: description ? description : '',
-  //         active: active?.value || false,
-  //       };
+    const teacher = 
 
-  //       try {
-  //         await dispatch(editSubject(body)).unwrap();
+    const monitorsFound = selected?.users.filter(user => user.role === Role.MONITOR) || []
 
-  //         onEdit();
-  //         handleClose();
-  //       } catch (rejectedValueOrSerializedError) {
-  //         handleOpenCreateFailedAlert();
-  //       }
-  //     }
-  //   };
+    setName(selected?.name || '');
+    setDescription(selected?.description || '');
+    setChosenKnowledgeArea(selected?.knowledgeArea || null);
+    setChosenTeacher(teacherFound);
+    setChosenMonitors(monitorsFound);
+  }
 
-  //   const handleClose = () => {
-  //     dispatch(setSelected(null));
-  //     resetFields();
-  //     onClose();
-  //   };
 
-  //   const handleOpenCreateFailedAlert = () => {
-  //     setOpenCreateFailedAlert(true);
-  //   };
+  const handleEditSubject = async () => {
+    const knowledgeAreaId = chosenKnowledgeArea?.id || 0;
 
-  //   const handleCloseCreateFailedAlert = (
-  //     event: React.SyntheticEvent | Event,
-  //     reason?: string
-  //   ) => {
-  //     if (reason === 'clickaway') {
-  //       return;
-  //     }
+    const teacherId = chosenTeacher?.id || 0;
 
-  //     setOpenCreateFailedAlert(false);
-  //   };
+    const monitorsIds =
+      chosenMonitors.length > 0
+        ? chosenMonitors.map((monitor) => monitor.id)
+        : [];
 
-  //   useEffect(() => {
-  //     if (open) {
-  //       setFields();
-  //       dispatch(resetErrors());
-  //     }
-  //   }, [open]);
+    const body: EditSubjectBody = {
+      name: name.trim(),
+      description: description.trim(),
+      knowledgeAreaId,
+      teacherId,
+      monitorsIds,
+    };
 
-  //   return (
-  //     <div>
-  //       <Dialog
-  //         open={open}
-  //         TransitionComponent={Transition}
-  //         keepMounted
-  //         onClose={handleClose}
-  //         aria-describedby="edit-subject-dialog-slide-description"
-  //         maxWidth="md"
-  //         fullWidth
-  //       >
-  //         <DialogTitle>{'Editar nova área de conhecimento'}</DialogTitle>
-  //         <DialogContent dividers>
-  //           <DialogContentText id="edit-subject-dialog-slide-description">
-  //             Preencha as informações abaixo para editar a disciplina.{' '}
-  //             <strong>Confirme</strong> os dados antes de clicar no botão{' '}
-  //             <strong>Criar</strong>.
-  //           </DialogContentText>
+    try {
+      console.log(body)
+      // await dispatch(editSubject(body)).unwrap();
 
-  //           <Grid container justifyContent="flex-start">
-  //             <Grid item xs={12}>
-  //               <NotificationAlert
-  //                 open={status === 'failed' && openCreateFailedAlert}
-  //                 onClose={handleCloseCreateFailedAlert}
-  //                 severity="error"
-  //                 status="Erro"
-  //                 message="Erro(s) detectado(s) durante edição de disciplina"
-  //               />
-  //             </Grid>
-  //             {status === 'failed' && (
-  //               <Grid item xs={12} container m={1}>
-  //                 <Alert severity="error">
-  //                   <Typography variant="body1">
-  //                     <strong>Erro ao editar. </strong>
-  //                   </Typography>
+      // onEdit();
+      // handleClose();
+    } catch (rejectedValueOrSerializedError) {
+      handleOpenEditFailedAlert();
+    }
+  };
 
-  //                   {error.map((e: string, index: number) => {
-  //                     return (
-  //                       <Typography key={index} variant="body2">
-  //                         &gt; {e}.
-  //                       </Typography>
-  //                     );
-  //                   })}
-  //                 </Alert>
-  //               </Grid>
-  //             )}
-  //           </Grid>
+  const autoCompleteMonitorOptions = createFilterOptions<MonitorOption>({
+    matchFrom: 'start',
+    stringify: (option) => `${option.firstName} ${option.lastName}`,
+  });
 
-  //           <Grid container justifyContent={'flex-start'} py={2}>
-  //             <Grid item xs={4} mr={2}>
-  //               <TextField
-  //                 id="name"
-  //                 margin="normal"
-  //                 required
-  //                 autoFocus
-  //                 fullWidth
-  //                 label="Nome"
-  //                 placeholder="Digite o nome da disciplina..."
-  //                 name="name"
-  //                 value={name}
-  //                 variant="outlined"
-  //                 onChange={(e) => {
-  //                   setName(e.target.value);
-  //                 }}
-  //               />
-  //             </Grid>
+  const autoCompleteKnowledgeAreaOptions =
+    createFilterOptions<KnowledgeAreaOption>({
+      matchFrom: 'start',
+      stringify: (option) => option.name,
+    });
 
-  //             <Grid item xs={2}>
-  //               <Autocomplete
-  //                 id="active-options"
-  //                 value={active}
-  //                 defaultValue={active}
-  //                 onChange={(event: any, newValue: ActiveOption | null) => {
-  //                   setActive(newValue);
-  //                 }}
-  //                 options={activeOptions}
-  //                 getOptionLabel={(option) => option.label}
-  //                 renderInput={(params) => (
-  //                   <TextField
-  //                     {...params}
-  //                     margin="normal"
-  //                     required
-  //                     fullWidth
-  //                     label="Área ativa?"
-  //                   />
-  //                 )}
-  //               />
-  //             </Grid>
+  const handleClose = () => {
+    onClose();
+  };
 
-  //             <Grid item xs={12}>
-  //               <TextField
-  //                 id="description"
-  //                 margin="normal"
-  //                 required
-  //                 fullWidth
-  //                 label="Descrição"
-  //                 placeholder="Digite uma descrição para a disciplina..."
-  //                 name="description"
-  //                 value={description}
-  //                 multiline
-  //                 rows={6}
-  //                 variant="outlined"
-  //                 onChange={(e) => {
-  //                   setDescription(e.target.value);
-  //                 }}
-  //               />
-  //             </Grid>
+  const handleOpenEditFailedAlert = () => {
+    setOpenAddFailedAlert(true);
+  };
 
-  //             <Grid item container xs={12} py={1} pr={1}>
-  //               <Grid item xs={1.5}>
-  //                 <Typography fontWeight={700}>{'Disciplina(s):'} </Typography>
-  //               </Grid>
-  //               <Grid item xs={10}>
-  //                 <Tooltip
-  //                   title="Gerencie o pertecimento de cada disciplina à sua área de conhecimento correspondente individualmente através do menu de disciplinas"
-  //                   arrow
-  //                 >
-  //                   <HelpOutlineOutlinedIcon fontSize="small" color="action" />
-  //                 </Tooltip>
-  //               </Grid>
-  //               <Grid item xs={12} py={1}>
-  //                 {(selected?.subjects &&
-  //                   selected.subjects.reduce((acc, val, i) => {
-  //                     const { name } = val;
-  //                     return `${acc}${
-  //                       i === selected.subjects.length - 1
-  //                         ? `${name}`
-  //                         : `${name}, `
-  //                     }`;
-  //                   }, '')) ||
-  //                   '—'}
-  //               </Grid>
-  //             </Grid>
-  //           </Grid>
-  //         </DialogContent>
-  //         <DialogActions>
-  //           <Button onClick={handleClose} color="secondary">
-  //             Fechar
-  //           </Button>
+  const handleCloseAddFailedAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
-  //           <LoadingButton
-  //             variant="contained"
-  //             onClick={handleEditSubject}
-  //             loading={isUpdating || status === 'loading'}
-  //             disabled={!name || !active || isUpdating || status === 'loading'}
-  //           >
-  //             Salvar mudanças
-  //           </LoadingButton>
-  //         </DialogActions>
-  //       </Dialog>
-  //     </div>
-  //   );
+    setOpenAddFailedAlert(false);
+  };
+
+  useEffect(() => {
+    if (open) {
+      setFields();
+
+      dispatch(resetErrors());
+      dispatch(getAddSubjectOptions());
+    }
+  }, [open, dispatch]);
+
+  return (
+    <div>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="create-knowledge-area-dialog-slide-description"
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>{'Adicionar nova disciplina'}</DialogTitle>
+        <DialogContent dividers>
+          <DialogContentText id="create-knowledge-area-dialog-slide-description">
+            Preencha as informações abaixo para criar uma nova disciplina.{' '}
+            <strong>Confirme</strong> os dados antes de clicar no botão{' '}
+            <strong>Criar</strong>.
+          </DialogContentText>
+
+          <Grid container justifyContent="flex-start">
+            <Grid item xs={12}>
+              <NotificationAlert
+                open={status === 'failed' && openAddFailedAlert}
+                onClose={handleCloseAddFailedAlert}
+                severity="error"
+                status="Erro"
+                message="Erro(s) detectado(s) durante registro de nova disciplina"
+              />
+            </Grid>
+            {status === 'failed' && (
+              <Grid item xs={12} container m={1}>
+                <Alert severity="error">
+                  <Typography variant="body1">
+                    <strong>Erro ao cadastrar. </strong>
+                  </Typography>
+
+                  {error.map((e: string, index: number) => {
+                    return (
+                      <Typography key={index} variant="body2">
+                        &gt; {e}.
+                      </Typography>
+                    );
+                  })}
+                </Alert>
+              </Grid>
+            )}
+          </Grid>
+
+          <Grid container justifyContent={'flex-start'} py={2}>
+            <Grid item xs={4}>
+              <TextField
+                id="name"
+                margin="normal"
+                required
+                autoFocus
+                fullWidth
+                label="Nome"
+                placeholder="Digite o nome da disciplina..."
+                name="name"
+                value={name}
+                variant="outlined"
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={8} container>
+              <Grid item xs={12} pl={1}>
+                <Autocomplete
+                  id="edit-subject-knowledge-area-option"
+                  noOptionsText="Nenhuma opção encontrada"
+                  options={knowledgeAreasList}
+                  value={chosenKnowledgeArea}
+                  defaultValue={chosenKnowledgeArea}
+                  filterOptions={autoCompleteKnowledgeAreaOptions}
+                  onChange={(
+                    event: any,
+                    newValue: KnowledgeAreaOption | null
+                  ) => {
+                    setChosenKnowledgeArea(newValue);
+                  }}
+                  getOptionLabel={(option) => option.name}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      margin="normal"
+                      required
+                      fullWidth
+                      label="Área de connhecimento"
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                id="description"
+                margin="normal"
+                fullWidth
+                name="description"
+                label="Descrição"
+                variant="outlined"
+                placeholder="Digite uma descrição para a área de conhecimento..."
+                value={description}
+                multiline
+                rows={6}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6} container>
+              <Grid item xs={12}>
+                <Autocomplete
+                  id="edit-subject-teacher-option"
+                  noOptionsText="Nenhuma opção encontrada"
+                  options={teachersList}
+                  value={chosenTeacher}
+                  defaultValue={chosenTeacher}
+                  onChange={(event: any, newValue: TeacherOption | null) => {
+                    setChosenTeacher(newValue);
+                  }}
+                  getOptionLabel={(option) =>
+                    `${option.firstName} ${option.lastName}`
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      margin="normal"
+                      required
+                      fullWidth
+                      label="Professor(a)"
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid item xs={12} container mt={2} mb={5}>
+              <Grid item xs={12}>
+                <Autocomplete
+                  id="edit-subject-monitors-options"
+                  noOptionsText="Nenhuma opção encontrada"
+                  multiple
+                  options={monitorsList}
+                  value={chosenMonitors}
+                  defaultValue={chosenMonitors}
+                  filterOptions={autoCompleteMonitorOptions}
+                  disableCloseOnSelect
+                  onChange={(event: any, newValue: MonitorOption[]) => {
+                    setChosenMonitors(newValue);
+                  }}
+                  getOptionLabel={(option) =>
+                    `${option.firstName} ${option.lastName}`
+                  }
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {`${option.firstName} ${option.lastName}`}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Monitores(as)"
+                      placeholder="Selecione os(as) monitores(as) para esta disciplina"
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="secondary">
+            Fechar
+          </Button>
+
+          <LoadingButton
+            variant="contained"
+            onClick={handleEditSubject}
+            loading={isCreating || status === 'loading'}
+            disabled={!name || isCreating || status === 'loading'}
+          >
+            Criar
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 }
