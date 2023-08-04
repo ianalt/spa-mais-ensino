@@ -13,12 +13,13 @@ import {
 } from './subjectsTableSlice';
 import AddSubject from './dialogs/add-subject';
 import NotificationAlert from '../../../notification-alert';
+import RemoveSubject from './dialogs/remove-subject';
 
 export default function SubjectsTable() {
   const dispatch = useAppDispatch();
   const subjectsTable = useAppSelector(selectSubjectsTable);
 
-  const { status, isCreating } = subjectsTable;
+  const { status, isCreating, isRemoving } = subjectsTable;
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -146,6 +147,7 @@ export default function SubjectsTable() {
               tooltip: 'Remover',
               onClick: (event) => {
                 dispatch(setSelected(rowData));
+                handleOpenRemove();
               },
             }),
             (rowData) => ({
@@ -190,12 +192,34 @@ export default function SubjectsTable() {
         onClose={handleCloseAdd}
       />
 
+      <RemoveSubject
+        open={openRemove}
+        onClose={handleCloseRemove}
+        onRemove={handleOpenRemoveAlert}
+      />
+
       <NotificationAlert
         open={openAddAlert && status === 'idle' && !isCreating}
         onClose={handleCloseAddAlert}
         severity="success"
         status="Sucesso"
         message="Disciplina criada com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'idle' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="success"
+        status="Sucesso"
+        message="Disciplina removida com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'failed' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível remover a disciplina selecionada"
       />
     </>
   );

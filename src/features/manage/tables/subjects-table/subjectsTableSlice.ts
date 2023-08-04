@@ -11,6 +11,7 @@ import { TeacherOption } from './dialogs/add-subject/types/teacher-option';
 import { Subject } from './types/subject';
 import { createSubject } from '../../../../api/subjects/create-subject.req';
 import { AddSubjectBody } from './dialogs/add-subject/types/add-subject-body';
+import { deleteSubject } from '../../../../api/subjects/delete-subject.req';
 
 export interface SubjectsTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -116,6 +117,25 @@ export const subjectsTableSlice = createSlice({
           state.isCreating = false;
         }
       );
+
+    builder
+      .addCase(removeSubject.pending, (state) => {
+        state.status = 'loading';
+        state.isRemoving = true;
+      })
+      .addCase(removeSubject.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isRemoving = false;
+      })
+      .addCase(
+        removeSubject.fulfilled,
+        (state, action: PayloadAction<Subject[]>) => {
+          state.list = action.payload;
+          state.status = 'idle';
+          state.isRemoving = false;
+        }
+      );
   },
 });
 
@@ -145,10 +165,39 @@ export const getAddSubjectOptions = createAsyncThunk(
 );
 
 export const addNewSubject = createAsyncThunk(
-  'knowledgeAreasTable/addNewSubject',
+  'subjectsTable/addNewSubject',
   async (body: AddSubjectBody, thunkAPI) => {
     try {
       const response = await createSubject(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const removeSubject = createAsyncThunk(
+  'subjectsTable/removeSubject',
+  async (subjectId: number, thunkAPI) => {
+    try {
+      await deleteSubject(subjectId);
+
+      const response = await fetchSubjects();
 
       return response.data;
     } catch (e: any) {

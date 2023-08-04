@@ -264,7 +264,6 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
             </Grid>
 
             <Grid item xs={6} container>
-              {JSON.stringify(chosenTeacher)}
               <Grid item xs={12}>
                 <Autocomplete
                   id="add-subject-teacher-option"
@@ -292,7 +291,6 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
             </Grid>
 
             <Grid item xs={12} container mt={2} mb={5}>
-              {JSON.stringify(chosenMonitors)}
               <Grid item xs={12}>
                 <Autocomplete
                   id="add-subject-monitors-options"
