@@ -13,6 +13,7 @@ import {
   Slide,
   TextField,
   Typography,
+  createFilterOptions,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
@@ -106,6 +107,17 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
       handleOpenAddFailedAlert();
     }
   };
+
+  const autoCompleteMonitorOptions = createFilterOptions<MonitorOption>({
+    matchFrom: 'start',
+    stringify: (option) => `${option.firstName} ${option.lastName}`,
+  });
+
+  const autoCompleteKnowledgeAreaOptions =
+    createFilterOptions<KnowledgeAreaOption>({
+      matchFrom: 'start',
+      stringify: (option) => option.name,
+    });
 
   const handleClose = () => {
     onClose();
@@ -209,6 +221,7 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
                   options={knowledgeAreasList}
                   value={chosenKnowledgeArea}
                   defaultValue={chosenKnowledgeArea}
+                  filterOptions={autoCompleteKnowledgeAreaOptions}
                   onChange={(
                     event: any,
                     newValue: KnowledgeAreaOption | null
@@ -247,7 +260,7 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
               />
             </Grid>
 
-            <Grid item xs={4} container>
+            <Grid item xs={6} container>
               <Grid item xs={12}>
                 <Autocomplete
                   id="add-subject-teacher-option"
@@ -276,13 +289,16 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
             <Grid item xs={12} container mt={2} mb={5}>
               <Grid item xs={12}>
                 <Autocomplete
-                  multiple
                   id="add-subject-monitors-options"
+                  multiple
                   options={monitorsList}
-                  onChange={(event: any, newValue: MonitorOption | null) => {
-                    alert(JSON.stringify(newValue));
-                  }}
+                  value={chosenMonitors}
+                  defaultValue={chosenMonitors}
+                  filterOptions={autoCompleteMonitorOptions}
                   disableCloseOnSelect
+                  onChange={(event: any, newValue: MonitorOption[]) => {
+                    setChosenMonitors(newValue);
+                  }}
                   getOptionLabel={(option) =>
                     `${option.firstName} ${option.lastName}`
                   }
@@ -299,10 +315,9 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
                   )}
                   renderInput={(params) => (
                     <TextField
-                      rows={2}
                       {...params}
                       label="Monitores(as)"
-                      placeholder="Selecione os monitores para esta disciplina"
+                      placeholder="Selecione os(as) monitores(as) para esta disciplina"
                     />
                   )}
                 />
