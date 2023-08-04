@@ -2,13 +2,13 @@ import { AxiosResponse } from 'axios';
 import { instance } from '../instance';
 
 export const fetchSubjects = async (): Promise<AxiosResponse> => {
-  const req = await instance.get('/subjects');
+  const res = await instance.get('/subjects');
 
-  return req;
+  return res;
 };
 
 export const fetchCreateSubjectOptions = async (): Promise<AxiosResponse> => {
-  const req = await instance.get('/subjects/create-options');
+  const res = await instance.get('/subjects/create-options');
 
-  return req;
+  return res;
 };

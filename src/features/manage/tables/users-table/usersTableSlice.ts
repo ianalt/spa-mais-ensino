@@ -30,6 +30,7 @@ import {
   fetchIncomeStats,
   fetchUfStats,
 } from '../../../../api/users/stats.req';
+import { Role } from '../../../../utils/enums/role.enum';
 
 export interface UsersTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -699,7 +700,7 @@ export const getIsLoading = (state: RootState) => {
 export const getIsMonitorOrTeacher = (state: RootState) => {
   const { selected } = state.usersTable;
 
-  return selected?.role === 'monitor' || selected?.role === 'professor';
+  return selected?.role === Role.MONITOR || selected?.role === Role.PROFESSOR;
 };
 
 export const getStudentsEthnicityStats = (state: RootState) => {

@@ -146,7 +146,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                       <Typography fontWeight={700}>{'Disciplina:'} </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography>{selected?.subject || '—'}</Typography>
+                      {selected?.subject || '—'}
                     </Grid>
                   </Grid>
                 </Grid>

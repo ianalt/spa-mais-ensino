@@ -218,6 +218,7 @@ export default function UsersTable() {
                   },
                   grouping: {
                     placeholder: 'Arraste as colunas para agrupar',
+                    groupedBy: 'Agrupamento por',
                   },
                   toolbar: {
                     searchTooltip: 'Pesquisar',

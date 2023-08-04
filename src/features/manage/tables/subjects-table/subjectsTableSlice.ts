@@ -9,6 +9,8 @@ import { KnowledgeAreaOption } from './dialogs/add-subject/types/knowledge-area-
 import { MonitorOption } from './dialogs/add-subject/types/monitor-option';
 import { TeacherOption } from './dialogs/add-subject/types/teacher-option';
 import { Subject } from './types/subject';
+import { createSubject } from '../../../../api/subjects/create-subject.req';
+import { AddSubjectBody } from './dialogs/add-subject/types/add-subject-body';
 
 export interface SubjectsTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -90,6 +92,30 @@ export const subjectsTableSlice = createSlice({
           state.monitorsList = monitorsList;
         }
       );
+
+    builder
+      .addCase(addNewSubject.pending, (state) => {
+        state.status = 'loading';
+        state.isCreating = true;
+      })
+      .addCase(addNewSubject.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isCreating = false;
+      })
+      .addCase(
+        addNewSubject.fulfilled,
+        (state, action: PayloadAction<Subject>) => {
+          const { list } = state;
+
+          const newSubject = action.payload;
+
+          state.list = [newSubject, ...list];
+
+          state.status = 'idle';
+          state.isCreating = false;
+        }
+      );
   },
 });
 
@@ -115,6 +141,33 @@ export const getAddSubjectOptions = createAsyncThunk(
     };
 
     return options;
+  }
+);
+
+export const addNewSubject = createAsyncThunk(
+  'knowledgeAreasTable/addNewSubject',
+  async (body: AddSubjectBody, thunkAPI) => {
+    try {
+      const response = await createSubject(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
   }
 );
 

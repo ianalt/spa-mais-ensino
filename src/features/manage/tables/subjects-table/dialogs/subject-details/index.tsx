@@ -132,7 +132,7 @@ export default function SubjectDetails({ open, onClose }: SubjectDetailsProps) {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography>
-                      {selected?.knowledgeArea.name || '—'}
+                      {selected?.knowledgeArea?.name || '—'}
                     </Typography>
                   </Grid>
                 </Grid>

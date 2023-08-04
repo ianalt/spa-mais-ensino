@@ -116,6 +116,7 @@ export default function KnowledgeAreasTable() {
             },
             grouping: {
               placeholder: 'Arraste as colunas para agrupar',
+              groupedBy: 'Agrupamento por',
             },
             toolbar: {
               searchTooltip: 'Pesquisar',
@@ -183,7 +184,10 @@ export default function KnowledgeAreasTable() {
         <CreateKnowledgeArea
           open={openCreate}
           onClose={handleCloseCreate}
-          onCreate={handleOpenCreateAlert}
+          onCreate={() => {
+            handleOpenCreateAlert();
+            dispatch(getKnowledgeAreasList());
+          }}
         />
 
         <RemoveKnowledgeArea

@@ -1,3 +1,5 @@
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { LoadingButton } from '@mui/lab';
 import {
   Alert,
@@ -18,19 +20,17 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
+import NotificationAlert from '../../../../../notification-alert';
 import {
+  addNewSubject,
   getAddSubjectOptions,
   resetErrors,
   selectSubjectsTable,
 } from '../../subjectsTableSlice';
 import { AddSubjectBody } from './types/add-subject-body';
-import NotificationAlert from '../../../../../notification-alert';
 import { KnowledgeAreaOption } from './types/knowledge-area-option';
-import { TeacherOption } from './types/teacher-option';
 import { MonitorOption } from './types/monitor-option';
-import { isJSDocNullableType } from 'typescript';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { TeacherOption } from './types/teacher-option';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -84,25 +84,27 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
 
   const handleAddSubject = async () => {
     const knowledgeAreaId = chosenKnowledgeArea?.id || 0;
+
     const teacherId = chosenTeacher?.id || 0;
+
     const monitorsIds =
       chosenMonitors.length > 0
         ? chosenMonitors.map((monitor) => monitor.id)
         : [];
 
     const body: AddSubjectBody = {
-      name,
-      description,
+      name: name.trim(),
+      description: description.trim(),
       knowledgeAreaId,
       teacherId,
       monitorsIds,
     };
 
     try {
-      //   await dispatch(addNewSubject(body)).unwrap();
-      console.log(body);
-      //   onAdd();
-      //   handleClose();
+      await dispatch(addNewSubject(body)).unwrap();
+
+      onAdd();
+      handleClose();
     } catch (rejectedValueOrSerializedError) {
       handleOpenAddFailedAlert();
     }
@@ -145,7 +147,7 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
       dispatch(resetErrors());
       dispatch(getAddSubjectOptions());
     }
-  }, [open]);
+  }, [open, dispatch]);
 
   return (
     <div>
@@ -158,12 +160,12 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{'Adicionar nova área de conhecimento'}</DialogTitle>
+        <DialogTitle>{'Adicionar nova disciplina'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="create-knowledge-area-dialog-slide-description">
-            Preencha as informações abaixo para criar uma nova área de
-            conhecimento. <strong>Confirme</strong> os dados antes de clicar no
-            botão <strong>Criar</strong>.
+            Preencha as informações abaixo para criar uma nova disciplina.{' '}
+            <strong>Confirme</strong> os dados antes de clicar no botão{' '}
+            <strong>Criar</strong>.
           </DialogContentText>
 
           <Grid container justifyContent="flex-start">
@@ -173,7 +175,7 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
                 onClose={handleCloseAddFailedAlert}
                 severity="error"
                 status="Erro"
-                message="Erro(s) detectado(s) durante registro de nova área de conhecimento"
+                message="Erro(s) detectado(s) durante registro de nova disciplina"
               />
             </Grid>
             {status === 'failed' && (
@@ -218,6 +220,7 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
               <Grid item xs={12} pl={1}>
                 <Autocomplete
                   id="add-subject-knowledge-area-option"
+                  noOptionsText="Nenhuma opção encontrada"
                   options={knowledgeAreasList}
                   value={chosenKnowledgeArea}
                   defaultValue={chosenKnowledgeArea}
@@ -261,9 +264,11 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
             </Grid>
 
             <Grid item xs={6} container>
+              {JSON.stringify(chosenTeacher)}
               <Grid item xs={12}>
                 <Autocomplete
                   id="add-subject-teacher-option"
+                  noOptionsText="Nenhuma opção encontrada"
                   options={teachersList}
                   value={chosenTeacher}
                   defaultValue={chosenTeacher}
@@ -287,9 +292,11 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
             </Grid>
 
             <Grid item xs={12} container mt={2} mb={5}>
+              {JSON.stringify(chosenMonitors)}
               <Grid item xs={12}>
                 <Autocomplete
                   id="add-subject-monitors-options"
+                  noOptionsText="Nenhuma opção encontrada"
                   multiple
                   options={monitorsList}
                   value={chosenMonitors}

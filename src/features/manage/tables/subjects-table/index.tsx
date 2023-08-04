@@ -12,10 +12,13 @@ import {
   setSelected,
 } from './subjectsTableSlice';
 import AddSubject from './dialogs/add-subject';
+import NotificationAlert from '../../../notification-alert';
 
 export default function SubjectsTable() {
   const dispatch = useAppDispatch();
   const subjectsTable = useAppSelector(selectSubjectsTable);
+
+  const { status, isCreating } = subjectsTable;
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -99,6 +102,7 @@ export default function SubjectsTable() {
           </span>
         </Tooltip>
       </Grid>
+      <Grid item xs={12}></Grid>
       <Grid item xs={12}>
         <MaterialTable
           localization={{
@@ -110,6 +114,7 @@ export default function SubjectsTable() {
             },
             grouping: {
               placeholder: 'Arraste as colunas para agrupar',
+              groupedBy: 'Agrupamento por',
             },
             toolbar: {
               searchTooltip: 'Pesquisar',
@@ -162,7 +167,6 @@ export default function SubjectsTable() {
           ]}
           columns={[
             { title: 'Nome', field: 'name', defaultSort: 'asc' },
-            { title: 'Descrição', field: 'description' },
             { title: 'Área de conhecimento', field: 'knowledgeArea.name' },
             {
               title: 'Ativa?',
@@ -177,7 +181,22 @@ export default function SubjectsTable() {
 
       <SubjectDetails open={openDetails} onClose={handleCloseDetails} />
 
-      <AddSubject open={openAdd} onAdd={() => {}} onClose={handleCloseAdd} />
+      <AddSubject
+        open={openAdd}
+        onAdd={() => {
+          handleOpenAddAlert();
+          dispatch(getSubjectsList());
+        }}
+        onClose={handleCloseAdd}
+      />
+
+      <NotificationAlert
+        open={openAddAlert && status === 'idle' && !isCreating}
+        onClose={handleCloseAddAlert}
+        severity="success"
+        status="Sucesso"
+        message="Disciplina criada com sucesso"
+      />
     </>
   );
 }
