@@ -14,6 +14,7 @@ import {
 import AddSubject from './dialogs/add-subject';
 import NotificationAlert from '../../../notification-alert';
 import RemoveSubject from './dialogs/remove-subject';
+import EditSubject from './dialogs/edit-subject';
 
 export default function SubjectsTable() {
   const dispatch = useAppDispatch();
@@ -196,6 +197,12 @@ export default function SubjectsTable() {
         open={openRemove}
         onClose={handleCloseRemove}
         onRemove={handleOpenRemoveAlert}
+      />
+
+      <EditSubject
+        open={openEdit}
+        onClose={handleCloseEdit}
+        onEdit={() => {}}
       />
 
       <NotificationAlert

@@ -22,17 +22,16 @@ import { forwardRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
 import NotificationAlert from '../../../../../notification-alert';
 import {
-  editSubject,
-  getAddSubjectOptions,
+  getEditSubjectOptions,
   resetErrors,
   selectSubjectsTable,
 } from '../../subjectsTableSlice';
-import { KnowledgeAreaOption } from '../add-subject/types/knowledge-area-option';
-import { TeacherOption } from '../add-subject/types/teacher-option';
-import { MonitorOption } from '../add-subject/types/monitor-option';
-import { EditSubjectBody } from './types/edit-subject-body';
-import { Role } from '../../../../../../utils/enums/role.enum';
 
+import { Role } from '../../../../../../utils/enums/role.enum';
+import { KnowledgeAreaOption } from '../../types/knowledge-area-option';
+import { MonitorOption } from '../../types/monitor-option';
+import { TeacherOption } from '../../types/teacher-option';
+import { EditSubjectBody } from './types/edit-subject-body';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -49,13 +48,16 @@ const Transition = forwardRef(function Transition(
 interface EditSubjectProps {
   open: boolean;
   onClose: any;
-  onAdd: any;
+  onEdit: any;
 }
 
-export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) {
+export default function EditSubject({
+  open,
+  onClose,
+  onEdit,
+}: EditSubjectProps) {
   const dispatch = useAppDispatch();
   const subjectsTable = useAppSelector(selectSubjectsTable);
-
 
   const {
     status,
@@ -64,11 +66,11 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
     knowledgeAreasList,
     teachersList,
     monitorsList,
-    selected
+    selected,
   } = subjectsTable;
 
-  const [openAddFailedAlert, setOpenAddFailedAlert] = useState<boolean>(false);
-
+  const [openEditFailedAlert, setOpenEditFailedAlert] =
+    useState<boolean>(false);
 
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -79,21 +81,22 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
   );
   const [chosenMonitors, setChosenMonitors] = useState<MonitorOption[]>([]);
 
+  const [monitorOptions, setMonitorOptions] = useState<MonitorOption[]>([]);
+
   const setFields = () => {
-    const teacherFound = selected?.users.find(user => user.role === Role.PROFESSOR) || null
-    //TODO pending include teacjer and monitor
+    const teacherFound =
+      selected?.users.find((user) => user.role === Role.PROFESSOR) || null;
 
-    const teacher = 
-
-    const monitorsFound = selected?.users.filter(user => user.role === Role.MONITOR) || []
+    //TODO find a way to remove duplicates
+    const monitorsFound =
+      selected?.users.filter((user) => user.role === Role.MONITOR) || [];
 
     setName(selected?.name || '');
     setDescription(selected?.description || '');
     setChosenKnowledgeArea(selected?.knowledgeArea || null);
     setChosenTeacher(teacherFound);
     setChosenMonitors(monitorsFound);
-  }
-
+  };
 
   const handleEditSubject = async () => {
     const knowledgeAreaId = chosenKnowledgeArea?.id || 0;
@@ -106,6 +109,7 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
         : [];
 
     const body: EditSubjectBody = {
+      subjectId: selected?.id || 0,
       name: name.trim(),
       description: description.trim(),
       knowledgeAreaId,
@@ -114,7 +118,7 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
     };
 
     try {
-      console.log(body)
+      console.log(body);
       // await dispatch(editSubject(body)).unwrap();
 
       // onEdit();
@@ -140,10 +144,10 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
   };
 
   const handleOpenEditFailedAlert = () => {
-    setOpenAddFailedAlert(true);
+    setOpenEditFailedAlert(true);
   };
 
-  const handleCloseAddFailedAlert = (
+  const handleCloseEditFailedAlert = (
     event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
@@ -151,7 +155,7 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
       return;
     }
 
-    setOpenAddFailedAlert(false);
+    setOpenEditFailedAlert(false);
   };
 
   useEffect(() => {
@@ -159,7 +163,7 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
       setFields();
 
       dispatch(resetErrors());
-      dispatch(getAddSubjectOptions());
+      dispatch(getEditSubjectOptions(selected?.id || 0));
     }
   }, [open, dispatch]);
 
@@ -185,8 +189,8 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
           <Grid container justifyContent="flex-start">
             <Grid item xs={12}>
               <NotificationAlert
-                open={status === 'failed' && openAddFailedAlert}
-                onClose={handleCloseAddFailedAlert}
+                open={status === 'failed' && openEditFailedAlert}
+                onClose={handleCloseEditFailedAlert}
                 severity="error"
                 status="Erro"
                 message="Erro(s) detectado(s) durante registro de nova disciplina"
@@ -306,6 +310,7 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
 
             <Grid item xs={12} container mt={2} mb={5}>
               <Grid item xs={12}>
+                {JSON.stringify(chosenMonitors)}
                 <Autocomplete
                   id="edit-subject-monitors-options"
                   noOptionsText="Nenhuma opção encontrada"
@@ -327,7 +332,14 @@ export default function EditSubject({ open, onClose, onAdd }: EditSubjectProps) 
                         icon={icon}
                         checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={selected}
+                        checked={
+                          selected ||
+                          (chosenMonitors.find(
+                            (monitor) => monitor.id === option.id
+                          )
+                            ? true
+                            : false)
+                        }
                       />
                       {`${option.firstName} ${option.lastName}`}
                     </li>

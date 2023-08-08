@@ -1,4 +1,5 @@
 import { Role } from '../../../../../utils/enums/role.enum';
+import { KnowledgeAreaOption } from './knowledge-area-option';
 
 interface BasicUserInfo {
   id: number;
@@ -6,11 +7,6 @@ interface BasicUserInfo {
   email: string;
   firstName: string;
   lastName: string;
-}
-
-interface BasicKnowledgeAreaInfo {
-  id: number;
-  name: string;
 }
 
 interface BasicCategoryInfo {
@@ -24,6 +20,6 @@ export interface Subject {
   name: string;
   description: string;
   users: BasicUserInfo[];
-  knowledgeArea: BasicKnowledgeAreaInfo;
+  knowledgeArea: KnowledgeAreaOption;
   categories: BasicCategoryInfo[];
 }

@@ -1,17 +1,19 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSubject } from '../../../../api/subjects/create-subject.req';
+import { deleteSubject } from '../../../../api/subjects/delete-subject.req';
 import {
   fetchCreateSubjectOptions,
   fetchSubjects,
+  fetchUpdateSubjectOptions,
 } from '../../../../api/subjects/subjects.req';
 import { RootState } from '../../../../app/store';
-import { AddSubjectOptions } from './dialogs/add-subject/types/add-subject-options';
-import { KnowledgeAreaOption } from './dialogs/add-subject/types/knowledge-area-option';
-import { MonitorOption } from './dialogs/add-subject/types/monitor-option';
-import { TeacherOption } from './dialogs/add-subject/types/teacher-option';
-import { Subject } from './types/subject';
-import { createSubject } from '../../../../api/subjects/create-subject.req';
 import { AddSubjectBody } from './dialogs/add-subject/types/add-subject-body';
-import { deleteSubject } from '../../../../api/subjects/delete-subject.req';
+import { AddSubjectOptions } from './dialogs/add-subject/types/add-subject-options';
+import { EditSubjectOptions } from './dialogs/edit-subject/types/edit-subject-options';
+import { KnowledgeAreaOption } from './types/knowledge-area-option';
+import { MonitorOption } from './types/monitor-option';
+import { Subject } from './types/subject';
+import { TeacherOption } from './types/teacher-option';
 
 export interface SubjectsTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -119,6 +121,26 @@ export const subjectsTableSlice = createSlice({
       );
 
     builder
+      .addCase(getEditSubjectOptions.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getEditSubjectOptions.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(
+        getEditSubjectOptions.fulfilled,
+        (state, action: PayloadAction<EditSubjectOptions>) => {
+          const { knowledgeAreasList, teachersList, monitorsList } =
+            action.payload;
+
+          state.status = 'idle';
+          state.knowledgeAreasList = knowledgeAreasList;
+          state.teachersList = teachersList;
+          state.monitorsList = monitorsList;
+        }
+      );
+
+    builder
       .addCase(removeSubject.pending, (state) => {
         state.status = 'loading';
         state.isRemoving = true;
@@ -188,6 +210,21 @@ export const addNewSubject = createAsyncThunk(
         return thunkAPI.rejectWithValue(errors);
       }
     }
+  }
+);
+
+export const getEditSubjectOptions = createAsyncThunk(
+  'subjectsTable/getEditSubjectOptions',
+  async (subjectId: number) => {
+    const res = await fetchUpdateSubjectOptions(subjectId);
+
+    const options: EditSubjectOptions = {
+      knowledgeAreasList: res.data.knowledgeAreaOptions,
+      teachersList: res.data.teacherOptions,
+      monitorsList: res.data.monitorsOptions,
+    };
+
+    return options;
   }
 );
 

@@ -12,3 +12,11 @@ export const fetchCreateSubjectOptions = async (): Promise<AxiosResponse> => {
 
   return res;
 };
+
+export const fetchUpdateSubjectOptions = async (
+  subjectId: number
+): Promise<AxiosResponse> => {
+  const res = await instance.get(`/subjects/update-options/${subjectId}`);
+
+  return res;
+};

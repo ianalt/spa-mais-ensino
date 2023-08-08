@@ -27,10 +27,10 @@ import {
   resetErrors,
   selectSubjectsTable,
 } from '../../subjectsTableSlice';
+import { KnowledgeAreaOption } from '../../types/knowledge-area-option';
+import { MonitorOption } from '../../types/monitor-option';
+import { TeacherOption } from '../../types/teacher-option';
 import { AddSubjectBody } from './types/add-subject-body';
-import { KnowledgeAreaOption } from './types/knowledge-area-option';
-import { MonitorOption } from './types/monitor-option';
-import { TeacherOption } from './types/teacher-option';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
