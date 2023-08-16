@@ -1,20 +1,21 @@
 import AddIcon from '@mui/icons-material/Add';
+import { Fab, Grid, Tooltip, Typography } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
+import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
+import NotificationAlert from '../../../notification-alert';
+import CreateKnowledgeArea from './dialogs/create-knowledge-area';
+import EditKnowledgeArea from './dialogs/edit-knowledge-area';
 import KnowledgeAreaDetails from './dialogs/knowledge-area-details';
+import RemoveKnowledgeArea from './dialogs/remove-knowledge-area';
 import {
   getKnowledgeAreasList,
   resetSelected,
   selectKnowledgeAreasTable,
   setSelected,
 } from './knowledgeAreasTableSlice';
-import { Fab, Grid, Tooltip, Typography } from '@mui/material';
-import CreateKnowledgeArea from './dialogs/create-knowledge-area';
-import NotificationAlert from '../../../notification-alert';
-import RemoveKnowledgeArea from './dialogs/remove-knowledge-area';
-import EditKnowledgeArea from './dialogs/edit-knowledge-area';
 
 export default function KnowledgeAreasTable() {
   const dispatch = useAppDispatch();
@@ -107,35 +108,7 @@ export default function KnowledgeAreasTable() {
 
       <Grid item xs={12}>
         <MaterialTable
-          localization={{
-            body: {
-              emptyDataSourceMessage: 'Nenhum registro para exibir',
-            },
-            header: {
-              actions: 'Ações',
-            },
-            grouping: {
-              placeholder: 'Arraste as colunas para agrupar',
-              groupedBy: 'Agrupamento por',
-            },
-            toolbar: {
-              searchTooltip: 'Pesquisar',
-              exportTitle: 'Baixar lista',
-              exportAriaLabel: 'Baixar lista',
-              exportPDFName: 'Baixar como PDF',
-              exportCSVName: 'Baixar como CSV',
-              searchPlaceholder: 'Pesquisar',
-            },
-            pagination: {
-              labelRowsSelect: 'linhas',
-              labelDisplayedRows: '{count} de {from}-{to}',
-              firstTooltip: 'Primeira página',
-              previousTooltip: 'Página anterior',
-              nextTooltip: 'Próxima página',
-              lastTooltip: 'Última página',
-              labelRowsPerPage: 'Linhas por página',
-            },
-          }}
+          localization={ptBrTableLocalization}
           options={{
             search: true,
             filtering: true,

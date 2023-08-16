@@ -7,10 +7,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { Dispatch, SetStateAction, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { useAppSelector } from '../../../../../../app/hooks';
-import { setSelected } from '../../categoriesTableSlice';
-import { selectCategoriesTable } from '../../categoriesTableSlice';
+import { selectCategoriesTable, setSelected } from '../../categoriesTableSlice';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -23,7 +22,7 @@ const Transition = forwardRef(function Transition(
 
 interface CategoriesDetailsProps {
   open: boolean;
-  onClose: Dispatch<SetStateAction<boolean>>;
+  onClose: any;
 }
 
 export default function CategoriesDetails({
@@ -34,8 +33,8 @@ export default function CategoriesDetails({
   const { selected } = categoriesTable;
 
   const handleClose = () => {
-    onClose(true);
-    setSelected(undefined);
+    onClose();
+    setSelected(null);
   };
 
   return (
@@ -44,21 +43,21 @@ export default function CategoriesDetails({
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => onClose(true)}
-        aria-describedby="categories-details-dialog-slide-description"
+        onClose={handleClose}
+        aria-describedby="category-details-dialog-slide-description"
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>{'Detalhes da categoria'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="categories-details-dialog-slide-description">
-            {'Aqui estão as informações sobre esta categoria: '}
+          <DialogContentText id="category-details-dialog-slide-description">
+            {'Aqui estão os detalhes sobre esta categoria: '}
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
               <Divider>
-                <Chip label="Dados Básicos" />
+                <Chip label="Detalhes" />
               </Divider>
             </Grid>
 
@@ -74,7 +73,18 @@ export default function CategoriesDetails({
 
               <Grid item container xs="auto" py={1} pr={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'Ativa?'} </Typography>
+                  <Typography fontWeight={700}>{'Disciplina:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{selected?.subject.name}</Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item container xs="auto" py={1} pr={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>
+                    {'Categoria ativa?'}{' '}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.active ? 'Sim' : 'Não'}</Typography>

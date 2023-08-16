@@ -4,6 +4,11 @@ import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
+import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
+import NotificationAlert from '../../../notification-alert';
+import AddSubject from './dialogs/add-subject';
+import EditSubject from './dialogs/edit-subject';
+import RemoveSubject from './dialogs/remove-subject';
 import SubjectDetails from './dialogs/subject-details';
 import {
   getSubjectsList,
@@ -11,10 +16,6 @@ import {
   selectSubjectsTable,
   setSelected,
 } from './subjectsTableSlice';
-import AddSubject from './dialogs/add-subject';
-import NotificationAlert from '../../../notification-alert';
-import RemoveSubject from './dialogs/remove-subject';
-import EditSubject from './dialogs/edit-subject';
 
 export default function SubjectsTable() {
   const dispatch = useAppDispatch();
@@ -107,35 +108,7 @@ export default function SubjectsTable() {
       <Grid item xs={12}></Grid>
       <Grid item xs={12}>
         <MaterialTable
-          localization={{
-            body: {
-              emptyDataSourceMessage: 'Nenhum registro para exibir',
-            },
-            header: {
-              actions: 'Ações',
-            },
-            grouping: {
-              placeholder: 'Arraste as colunas para agrupar',
-              groupedBy: 'Agrupamento por',
-            },
-            toolbar: {
-              searchTooltip: 'Pesquisar',
-              exportTitle: 'Baixar lista',
-              exportAriaLabel: 'Baixar lista',
-              exportPDFName: 'Baixar como PDF',
-              exportCSVName: 'Baixar como CSV',
-              searchPlaceholder: 'Pesquisar',
-            },
-            pagination: {
-              labelRowsSelect: 'linhas',
-              labelDisplayedRows: '{count} de {from}-{to}',
-              firstTooltip: 'Primeira página',
-              previousTooltip: 'Página anterior',
-              nextTooltip: 'Próxima página',
-              lastTooltip: 'Última página',
-              labelRowsPerPage: 'Linhas por página',
-            },
-          }}
+          localization={ptBrTableLocalization}
           options={{
             search: true,
             filtering: true,

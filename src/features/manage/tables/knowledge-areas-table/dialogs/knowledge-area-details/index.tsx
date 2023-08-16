@@ -53,7 +53,7 @@ export default function KnowledgeAreaDetails({
         <DialogTitle>{'Detalhes da área de conhecimento'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="knowledge-area-details-dialog-slide-description">
-            {'Aqui estão as informações sobre esta área de conhecimento: '}
+            {'Aqui estão os detalhes sobre esta área de conhecimento: '}
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>

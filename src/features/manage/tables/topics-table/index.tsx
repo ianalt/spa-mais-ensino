@@ -2,9 +2,9 @@ import * as _ from 'lodash';
 import MaterialTable from 'material-table';
 import { Fragment, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import { setSelected } from './topicsTableSlice';
-import { selectTopicsTable } from './topicsTableSlice';
+import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
 import TopicDetails from './dialogs/topic-details';
+import { selectTopicsTable, setSelected } from './topicsTableSlice';
 
 export default function TopicsTable() {
   const dispatch = useAppDispatch();
@@ -17,6 +17,7 @@ export default function TopicsTable() {
   return (
     <Fragment>
       <MaterialTable
+        localization={ptBrTableLocalization}
         options={{ search: true, filtering: true }}
         actions={[
           (rowData) => ({
