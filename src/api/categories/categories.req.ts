@@ -6,3 +6,9 @@ export const fetchCategories = async (): Promise<AxiosResponse> => {
 
   return req;
 };
+
+export const fetchCategoryOptions = async (): Promise<AxiosResponse> => {
+  const res = await instance.get('/categories/options');
+
+  return res;
+};

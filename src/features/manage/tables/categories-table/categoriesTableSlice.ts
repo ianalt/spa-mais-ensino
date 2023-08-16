@@ -1,8 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchCategories } from '../../../../api/categories/categories.req';
+import {
+  fetchCategories,
+  fetchCategoryOptions,
+} from '../../../../api/categories/categories.req';
+import { createCategory } from '../../../../api/categories/create-category.req';
 import { RootState } from '../../../../app/store';
+import { AddCategoryBody } from './dialogs/add-category/types/add-category-body';
+import { CategoryOptions } from './dialogs/types/category-options';
+import { SubjectOption } from './dialogs/types/subject-option';
 import { Category } from './types/category';
-import { SubjectOption } from './types/subject-option';
 
 export interface CategoriesTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -30,11 +36,19 @@ export const categoriesTableSlice = createSlice({
   name: 'categoriesTable',
   initialState,
   reducers: {
+    resetErrors: (state) => {
+      state.status = 'idle';
+      state.error = initialState.error;
+    },
     setSelected: (state, action: PayloadAction<Category | null>) => {
       state.selected = action.payload;
     },
     setList: (state, action: PayloadAction<Category[]>) => {
       state.list = action.payload;
+    },
+    resetSelected: (state) => {
+      state.selected = initialState.selected;
+      state.status = initialState.status;
     },
   },
   extraReducers: (builder) => {
@@ -52,6 +66,47 @@ export const categoriesTableSlice = createSlice({
           state.list = action.payload;
         }
       );
+
+    builder
+      .addCase(getCategoryOptions.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getCategoryOptions.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(
+        getCategoryOptions.fulfilled,
+        (state, action: PayloadAction<CategoryOptions>) => {
+          const { subjectOptions } = action.payload;
+
+          state.status = 'idle';
+          state.subjectsList = subjectOptions;
+        }
+      );
+
+    builder
+      .addCase(addNewCategory.pending, (state) => {
+        state.status = 'loading';
+        state.isCreating = true;
+      })
+      .addCase(addNewCategory.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isCreating = false;
+      })
+      .addCase(
+        addNewCategory.fulfilled,
+        (state, action: PayloadAction<Category>) => {
+          const { list } = state;
+
+          const newCategory = action.payload;
+
+          state.list = [newCategory, ...list];
+
+          state.status = 'idle';
+          state.isCreating = false;
+        }
+      );
   },
 });
 
@@ -65,7 +120,48 @@ export const getCategoriesList = createAsyncThunk(
   }
 );
 
-export const { setSelected, setList } = categoriesTableSlice.actions;
+export const getCategoryOptions = createAsyncThunk(
+  'categoriesTable/getCategoryOptions',
+  async () => {
+    const res = await fetchCategoryOptions();
+
+    const options: CategoryOptions = {
+      subjectOptions: res.data.subjectOptions,
+    };
+
+    return options;
+  }
+);
+
+export const addNewCategory = createAsyncThunk(
+  'categoriesTable/addNewCategory',
+  async (body: AddCategoryBody, thunkAPI) => {
+    try {
+      const response = await createCategory(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const { resetErrors, setSelected, setList, resetSelected } =
+  categoriesTableSlice.actions;
 
 export const selectCategoriesTable = (state: RootState) =>
   state.categoriesTable;

@@ -105,7 +105,7 @@ export default function SubjectsTable() {
           </span>
         </Tooltip>
       </Grid>
-      <Grid item xs={12}></Grid>
+
       <Grid item xs={12}>
         <MaterialTable
           localization={ptBrTableLocalization}
