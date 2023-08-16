@@ -1,22 +1,30 @@
-import * as _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { selectCategoriesTable, setSelected } from './categoriesTableSlice';
 import CategoryDetails from './dialogs/category-details';
+import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
 
 export default function CategoriesTable() {
   const dispatch = useAppDispatch();
   const categoriesTable = useAppSelector(selectCategoriesTable);
 
   const [openDetails, setOpenDetails] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openRemove, setOpenRemove] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
   return (
-    <Fragment>
+    <>
       <MaterialTable
-        options={{ search: true, filtering: true }}
+        localization={ptBrTableLocalization}
+        options={{
+          search: true,
+          filtering: true,
+          grouping: true,
+          exportButton: true,
+        }}
         actions={[
           (rowData) => ({
             icon: 'delete',
@@ -43,20 +51,21 @@ export default function CategoriesTable() {
         ]}
         columns={[
           { title: 'Nome', field: 'name', defaultSort: 'asc' },
-          { title: 'Descrição', field: 'description' },
+          { title: 'Disciplina', field: 'subject.name' },
           {
             title: 'Ativa?',
             field: 'active',
             type: 'boolean',
           },
         ]}
-        data={_.cloneDeep(categoriesTable.list)}
+        data={cloneDeep(categoriesTable.list)}
         title="Lista de Categorias"
       />
+
       <CategoryDetails
         open={openDetails}
         onClose={() => setOpenDetails(false)}
       />
-    </Fragment>
+    </>
   );
 }

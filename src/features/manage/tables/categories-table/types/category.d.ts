@@ -1,21 +1,8 @@
+import { SubjectOption } from './subject-option';
+
 export interface Category {
   id: number;
   active: boolean;
   name: string;
+  subject: SubjectOption;
 }
-
-// @Expose()
-// id: number;
-
-// @Expose()
-// name: string;
-
-// @Expose()
-// @ValidateNested({ each: true })
-// @Type(() => BaseSubjectDto)
-// subject: BaseSubjectDto;
-
-// @Expose()
-// @ValidateNested({ each: true })
-// @Type(() => BaseTopicDto)
-// topics: BaseTopicDto[];

@@ -93,7 +93,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
         <DialogTitle>{'Detalhes do usuário'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="user-details-dialog-slide-description">
-            {'Aqui estão as informações sobre este usuário: '}
+            {'Aqui estão os detalhes sobre este usuário: '}
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>

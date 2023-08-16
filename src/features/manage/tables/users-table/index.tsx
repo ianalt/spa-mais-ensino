@@ -35,6 +35,7 @@ import {
   selectUsersTable,
   setSelected,
 } from './usersTableSlice';
+import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -209,35 +210,7 @@ export default function UsersTable() {
 
             <Grid item xs={12}>
               <MaterialTable
-                localization={{
-                  body: {
-                    emptyDataSourceMessage: 'Nenhum registro para exibir',
-                  },
-                  header: {
-                    actions: 'Ações',
-                  },
-                  grouping: {
-                    placeholder: 'Arraste as colunas para agrupar',
-                    groupedBy: 'Agrupamento por',
-                  },
-                  toolbar: {
-                    searchTooltip: 'Pesquisar',
-                    exportTitle: 'Baixar lista',
-                    exportAriaLabel: 'Baixar lista',
-                    exportPDFName: 'Baixar como PDF',
-                    exportCSVName: 'Baixar como CSV',
-                    searchPlaceholder: 'Pesquisar',
-                  },
-                  pagination: {
-                    labelRowsSelect: 'linhas',
-                    labelDisplayedRows: '{count} de {from}-{to}',
-                    firstTooltip: 'Primeira página',
-                    previousTooltip: 'Página anterior',
-                    nextTooltip: 'Próxima página',
-                    lastTooltip: 'Última página',
-                    labelRowsPerPage: 'Linhas por página',
-                  },
-                }}
+                localization={ptBrTableLocalization}
                 options={{
                   search: true,
                   filtering: true,

@@ -91,7 +91,7 @@ export default function SubjectDetails({ open, onClose }: SubjectDetailsProps) {
         <DialogTitle>{'Detalhes da disciplina'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="subject-details-dialog-slide-description">
-            {'Aqui estão as informações sobre esta disciplina: '}
+            {'Aqui estão os detalhes sobre esta disciplina: '}
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>

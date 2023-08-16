@@ -2,24 +2,35 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchCategories } from '../../../../api/categories/categories.req';
 import { RootState } from '../../../../app/store';
 import { Category } from './types/category';
+import { SubjectOption } from './types/subject-option';
 
 export interface CategoriesTableState {
   status: 'idle' | 'loading' | 'failed';
   list: Category[];
-  selected?: Category;
+  selected: Category | null;
+  error: any;
+  isCreating: boolean;
+  isRemoving: boolean;
+  isUpdating: boolean;
+  subjectsList: SubjectOption[];
 }
 
 const initialState: CategoriesTableState = {
   status: 'idle',
   list: [],
-  selected: undefined,
+  selected: null,
+  error: null,
+  isCreating: false,
+  isRemoving: false,
+  isUpdating: false,
+  subjectsList: [],
 };
 
 export const categoriesTableSlice = createSlice({
   name: 'categoriesTable',
   initialState,
   reducers: {
-    setSelected: (state, action: PayloadAction<Category | undefined>) => {
+    setSelected: (state, action: PayloadAction<Category | null>) => {
       state.selected = action.payload;
     },
     setList: (state, action: PayloadAction<Category[]>) => {

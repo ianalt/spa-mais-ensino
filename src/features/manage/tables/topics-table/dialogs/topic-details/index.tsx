@@ -48,7 +48,7 @@ export default function TopicDetails({ open, onClose }: TopicDetailsProps) {
         <DialogTitle>{'Detalhes do tópico'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="topic-details-dialog-slide-description">
-            {'Aqui estão as informações sobre tópico: '}
+            {'Aqui estão os detalhes sobre tópico: '}
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>
