@@ -14,6 +14,8 @@ import { KnowledgeAreaOption } from './types/knowledge-area-option';
 import { MonitorOption } from './types/monitor-option';
 import { Subject } from './types/subject';
 import { TeacherOption } from './types/teacher-option';
+import { EditSubjectBody } from './dialogs/edit-subject/types/edit-subject-body';
+import { updateSubject } from '../../../../api/subjects/update-subject.req';
 
 export interface SubjectsTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -158,6 +160,32 @@ export const subjectsTableSlice = createSlice({
           state.isRemoving = false;
         }
       );
+
+    builder
+      .addCase(editSubject.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editSubject.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(
+        editSubject.fulfilled,
+        (state, action: PayloadAction<Subject>) => {
+          const editedKnowledgeArea = action.payload;
+
+          const currentList = state.list.filter(
+            (knowledgeArea) => knowledgeArea.id !== editedKnowledgeArea.id
+          );
+
+          state.list = [editedKnowledgeArea, ...currentList];
+
+          state.status = 'idle';
+          state.isUpdating = false;
+        }
+      );
   },
 });
 
@@ -225,6 +253,33 @@ export const getEditSubjectOptions = createAsyncThunk(
     };
 
     return options;
+  }
+);
+
+export const editSubject = createAsyncThunk(
+  'subjectsTable/editSubject',
+  async (body: EditSubjectBody, thunkAPI) => {
+    try {
+      const response = await updateSubject(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
   }
 );
 

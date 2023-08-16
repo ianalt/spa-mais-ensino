@@ -1,6 +1,8 @@
 export interface EditSubjectBody {
   subjectId: number;
 
+  active: boolean;
+
   name: string;
 
   description?: string;

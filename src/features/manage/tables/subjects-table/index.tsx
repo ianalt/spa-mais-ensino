@@ -20,7 +20,7 @@ export default function SubjectsTable() {
   const dispatch = useAppDispatch();
   const subjectsTable = useAppSelector(selectSubjectsTable);
 
-  const { status, isCreating, isRemoving } = subjectsTable;
+  const { status, isCreating, isRemoving, isUpdating } = subjectsTable;
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -202,7 +202,7 @@ export default function SubjectsTable() {
       <EditSubject
         open={openEdit}
         onClose={handleCloseEdit}
-        onEdit={() => {}}
+        onEdit={handleOpenEditAlert}
       />
 
       <NotificationAlert
@@ -211,6 +211,14 @@ export default function SubjectsTable() {
         severity="success"
         status="Sucesso"
         message="Disciplina criada com sucesso"
+      />
+
+      <NotificationAlert
+        open={openEditAlert && status === 'idle' && !isUpdating}
+        onClose={handleCloseEditAlert}
+        severity="success"
+        status="Sucesso"
+        message="Disciplina editada com sucesso"
       />
 
       <NotificationAlert

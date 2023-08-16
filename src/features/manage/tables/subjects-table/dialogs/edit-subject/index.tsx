@@ -20,18 +20,20 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
+import { Role } from '../../../../../../utils/enums/role.enum';
 import NotificationAlert from '../../../../../notification-alert';
 import {
+  editSubject,
   getEditSubjectOptions,
   resetErrors,
   selectSubjectsTable,
 } from '../../subjectsTableSlice';
-
-import { Role } from '../../../../../../utils/enums/role.enum';
 import { KnowledgeAreaOption } from '../../types/knowledge-area-option';
 import { MonitorOption } from '../../types/monitor-option';
 import { TeacherOption } from '../../types/teacher-option';
 import { EditSubjectBody } from './types/edit-subject-body';
+import { ActiveOption } from '../../../../../../utils/options/types/active-option';
+import { activeOptions } from '../../../../../../utils/options/types/active-options';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -61,7 +63,7 @@ export default function EditSubject({
 
   const {
     status,
-    isCreating,
+    isUpdating,
     error,
     knowledgeAreasList,
     teachersList,
@@ -80,22 +82,28 @@ export default function EditSubject({
     null
   );
   const [chosenMonitors, setChosenMonitors] = useState<MonitorOption[]>([]);
-
-  const [monitorOptions, setMonitorOptions] = useState<MonitorOption[]>([]);
+  const [active, setActive] = useState<ActiveOption | null>(null);
 
   const setFields = () => {
     const teacherFound =
       selected?.users.find((user) => user.role === Role.PROFESSOR) || null;
 
-    //TODO find a way to remove duplicates
-    const monitorsFound =
-      selected?.users.filter((user) => user.role === Role.MONITOR) || [];
-
     setName(selected?.name || '');
     setDescription(selected?.description || '');
     setChosenKnowledgeArea(selected?.knowledgeArea || null);
     setChosenTeacher(teacherFound);
-    setChosenMonitors(monitorsFound);
+    setChosenMonitors([]);
+
+    const initialActive = activeOptions.find(
+      (option) => option.value === selected?.active
+    );
+    setActive(initialActive ? initialActive : null);
+  };
+
+  const resetFields = () => {
+    setName('');
+    setDescription('');
+    setActive(null);
   };
 
   const handleEditSubject = async () => {
@@ -110,6 +118,7 @@ export default function EditSubject({
 
     const body: EditSubjectBody = {
       subjectId: selected?.id || 0,
+      active: active?.value || false,
       name: name.trim(),
       description: description.trim(),
       knowledgeAreaId,
@@ -118,11 +127,10 @@ export default function EditSubject({
     };
 
     try {
-      console.log(body);
-      // await dispatch(editSubject(body)).unwrap();
+      await dispatch(editSubject(body)).unwrap();
 
-      // onEdit();
-      // handleClose();
+      onEdit();
+      handleClose();
     } catch (rejectedValueOrSerializedError) {
       handleOpenEditFailedAlert();
     }
@@ -140,6 +148,7 @@ export default function EditSubject({
     });
 
   const handleClose = () => {
+    resetFields();
     onClose();
   };
 
@@ -165,7 +174,7 @@ export default function EditSubject({
       dispatch(resetErrors());
       dispatch(getEditSubjectOptions(selected?.id || 0));
     }
-  }, [open, dispatch]);
+  }, [open]);
 
   return (
     <div>
@@ -183,7 +192,7 @@ export default function EditSubject({
           <DialogContentText id="create-knowledge-area-dialog-slide-description">
             Preencha as informações abaixo para criar uma nova disciplina.{' '}
             <strong>Confirme</strong> os dados antes de clicar no botão{' '}
-            <strong>Criar</strong>.
+            <strong>Salvar mudanças</strong>.
           </DialogContentText>
 
           <Grid container justifyContent="flex-start">
@@ -263,6 +272,30 @@ export default function EditSubject({
               </Grid>
             </Grid>
 
+            <Grid item xs={12} container>
+              <Grid item xs={4}>
+                <Autocomplete
+                  id="edit-subject-active-options"
+                  value={active}
+                  defaultValue={active}
+                  onChange={(event: any, newValue: ActiveOption | null) => {
+                    setActive(newValue);
+                  }}
+                  options={activeOptions}
+                  getOptionLabel={(option) => option.label}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      margin="normal"
+                      required
+                      fullWidth
+                      label="Disciplina ativa?"
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+
             <Grid item xs={12}>
               <TextField
                 id="description"
@@ -310,14 +343,12 @@ export default function EditSubject({
 
             <Grid item xs={12} container mt={2} mb={5}>
               <Grid item xs={12}>
-                {JSON.stringify(chosenMonitors)}
                 <Autocomplete
                   id="edit-subject-monitors-options"
                   noOptionsText="Nenhuma opção encontrada"
                   multiple
                   options={monitorsList}
                   value={chosenMonitors}
-                  defaultValue={chosenMonitors}
                   filterOptions={autoCompleteMonitorOptions}
                   disableCloseOnSelect
                   onChange={(event: any, newValue: MonitorOption[]) => {
@@ -332,14 +363,7 @@ export default function EditSubject({
                         icon={icon}
                         checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={
-                          selected ||
-                          (chosenMonitors.find(
-                            (monitor) => monitor.id === option.id
-                          )
-                            ? true
-                            : false)
-                        }
+                        checked={selected}
                       />
                       {`${option.firstName} ${option.lastName}`}
                     </li>
@@ -364,10 +388,16 @@ export default function EditSubject({
           <LoadingButton
             variant="contained"
             onClick={handleEditSubject}
-            loading={isCreating || status === 'loading'}
-            disabled={!name || isCreating || status === 'loading'}
+            loading={isUpdating || status === 'loading'}
+            disabled={
+              !name ||
+              !chosenKnowledgeArea ||
+              !chosenTeacher ||
+              isUpdating ||
+              status === 'loading'
+            }
           >
-            Criar
+            Salvar mudanças
           </LoadingButton>
         </DialogActions>
       </Dialog>

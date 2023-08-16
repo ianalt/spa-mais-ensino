@@ -339,7 +339,13 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
             variant="contained"
             onClick={handleAddSubject}
             loading={isCreating || status === 'loading'}
-            disabled={!name || isCreating || status === 'loading'}
+            disabled={
+              !name ||
+              !chosenKnowledgeArea ||
+              !chosenTeacher ||
+              isCreating ||
+              status === 'loading'
+            }
           >
             Criar
           </LoadingButton>
