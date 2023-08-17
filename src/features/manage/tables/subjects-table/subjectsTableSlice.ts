@@ -174,13 +174,13 @@ export const subjectsTableSlice = createSlice({
       .addCase(
         editSubject.fulfilled,
         (state, action: PayloadAction<Subject>) => {
-          const editedKnowledgeArea = action.payload;
+          const editedSubject = action.payload;
 
           const currentList = state.list.filter(
-            (knowledgeArea) => knowledgeArea.id !== editedKnowledgeArea.id
+            (subject) => subject.id !== editedSubject.id
           );
 
-          state.list = [editedKnowledgeArea, ...currentList];
+          state.list = [editedSubject, ...currentList];
 
           state.status = 'idle';
           state.isUpdating = false;

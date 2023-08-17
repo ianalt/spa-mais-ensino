@@ -14,6 +14,7 @@ import {
 } from './categoriesTableSlice';
 import AddCategory from './dialogs/add-category';
 import CategoryDetails from './dialogs/category-details';
+import EditCategory from './dialogs/edit-category';
 
 export default function CategoriesTable() {
   const dispatch = useAppDispatch();
@@ -120,6 +121,7 @@ export default function CategoriesTable() {
               tooltip: 'Remover',
               onClick: (event) => {
                 dispatch(setSelected(rowData));
+                handleOpenRemove();
               },
             }),
             (rowData) => ({
@@ -127,6 +129,7 @@ export default function CategoriesTable() {
               tooltip: 'Editar',
               onClick: (event) => {
                 dispatch(setSelected(rowData));
+                handleOpenEdit();
               },
             }),
             (rowData) => ({
@@ -134,7 +137,7 @@ export default function CategoriesTable() {
               tooltip: 'Detalhes',
               onClick: (event) => {
                 dispatch(setSelected(rowData));
-                setOpenDetails(true);
+                handleOpenDetails();
               },
             }),
           ]}
@@ -166,12 +169,29 @@ export default function CategoriesTable() {
         onClose={handleCloseAdd}
       />
 
+      <EditCategory
+        open={openEdit}
+        onEdit={() => {
+          handleOpenEditAlert();
+          dispatch(getCategoriesList());
+        }}
+        onClose={handleCloseEdit}
+      />
+
       <NotificationAlert
         open={openAddAlert && status === 'idle' && !isCreating}
         onClose={handleCloseAddAlert}
         severity="success"
         status="Sucesso"
-        message="Disciplina criada com sucesso"
+        message="Categoria criada com sucesso"
+      />
+
+      <NotificationAlert
+        open={openEditAlert && status === 'idle' && !isUpdating}
+        onClose={handleCloseEditAlert}
+        severity="success"
+        status="Sucesso"
+        message="Categoria editada com sucesso"
       />
     </>
   );

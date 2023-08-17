@@ -122,14 +122,14 @@ export default function AddCategory({
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="create-knowledge-area-dialog-slide-description"
+        aria-describedby="add-category-dialog-slide-description"
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>{'Adicionar nova disciplina'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="create-knowledge-area-dialog-slide-description">
-            Preencha as informações abaixo para criar uma nova disciplina.{' '}
+          <DialogContentText id="add-category-dialog-slide-description">
+            Preencha as informações abaixo para criar uma nova categoria.{' '}
             <strong>Confirme</strong> os dados antes de clicar no botão{' '}
             <strong>Criar</strong>.
           </DialogContentText>
