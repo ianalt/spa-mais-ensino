@@ -4,13 +4,14 @@ import {
   fetchCategoryOptions,
 } from '../../../../api/categories/categories.req';
 import { createCategory } from '../../../../api/categories/create-category.req';
+import { deleteCategory } from '../../../../api/categories/delete-category.req';
+import { updateCategory } from '../../../../api/categories/update-category.req';
 import { RootState } from '../../../../app/store';
 import { AddCategoryBody } from './dialogs/add-category/types/add-category-body';
+import { EditCategoryBody } from './dialogs/edit-category/types/edit-category-body';
 import { CategoryOptions } from './dialogs/types/category-options';
 import { SubjectOption } from './dialogs/types/subject-option';
 import { Category } from './types/category';
-import { EditCategoryBody } from './dialogs/edit-category/types/edit-category-body';
-import { updateCategory } from '../../../../api/categories/update-category.req';
 
 export interface CategoriesTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -135,6 +136,25 @@ export const categoriesTableSlice = createSlice({
           state.isUpdating = false;
         }
       );
+
+    builder
+      .addCase(removeCategory.pending, (state) => {
+        state.status = 'loading';
+        state.isRemoving = true;
+      })
+      .addCase(removeCategory.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isRemoving = false;
+      })
+      .addCase(
+        removeCategory.fulfilled,
+        (state, action: PayloadAction<Category[]>) => {
+          state.list = action.payload;
+          state.status = 'idle';
+          state.isRemoving = false;
+        }
+      );
   },
 });
 
@@ -193,6 +213,35 @@ export const editCategory = createAsyncThunk(
   async (body: EditCategoryBody, thunkAPI) => {
     try {
       const response = await updateCategory(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const removeCategory = createAsyncThunk(
+  'categoriesTable/removeCategory',
+  async (categoryId: number, thunkAPI) => {
+    try {
+      await deleteCategory(categoryId);
+
+      const response = await fetchCategories();
 
       return response.data;
     } catch (e: any) {

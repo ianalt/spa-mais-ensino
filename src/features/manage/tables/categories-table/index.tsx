@@ -15,6 +15,7 @@ import {
 import AddCategory from './dialogs/add-category';
 import CategoryDetails from './dialogs/category-details';
 import EditCategory from './dialogs/edit-category';
+import RemoveCategory from './dialogs/remove-category';
 
 export default function CategoriesTable() {
   const dispatch = useAppDispatch();
@@ -178,6 +179,12 @@ export default function CategoriesTable() {
         onClose={handleCloseEdit}
       />
 
+      <RemoveCategory
+        open={openRemove}
+        onClose={handleCloseRemove}
+        onRemove={handleOpenRemoveAlert}
+      />
+
       <NotificationAlert
         open={openAddAlert && status === 'idle' && !isCreating}
         onClose={handleCloseAddAlert}
@@ -192,6 +199,22 @@ export default function CategoriesTable() {
         severity="success"
         status="Sucesso"
         message="Categoria editada com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'idle' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="success"
+        status="Sucesso"
+        message="Categoria removida com sucesso"
+      />
+
+      <NotificationAlert
+        open={openRemoveAlert && status === 'failed' && !isRemoving}
+        onClose={handleCloseRemoveAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível remover a categoria selecionada"
       />
     </>
   );
