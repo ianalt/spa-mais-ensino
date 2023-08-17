@@ -104,13 +104,13 @@ export default function CreateKnowledgeArea({
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="create-knowledge-area-dialog-slide-description"
+        aria-describedby="add-knowledge-area-dialog-slide-description"
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>{'Adicionar nova área de conhecimento'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="create-knowledge-area-dialog-slide-description">
+          <DialogContentText id="add-knowledge-area-dialog-slide-description">
             Preencha as informações abaixo para criar uma nova área de
             conhecimento. <strong>Confirme</strong> os dados antes de clicar no
             botão <strong>Criar</strong>.

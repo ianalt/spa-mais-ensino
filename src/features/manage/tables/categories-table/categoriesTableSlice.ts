@@ -9,6 +9,8 @@ import { AddCategoryBody } from './dialogs/add-category/types/add-category-body'
 import { CategoryOptions } from './dialogs/types/category-options';
 import { SubjectOption } from './dialogs/types/subject-option';
 import { Category } from './types/category';
+import { EditCategoryBody } from './dialogs/edit-category/types/edit-category-body';
+import { updateCategory } from '../../../../api/categories/update-category.req';
 
 export interface CategoriesTableState {
   status: 'idle' | 'loading' | 'failed';
@@ -107,6 +109,32 @@ export const categoriesTableSlice = createSlice({
           state.isCreating = false;
         }
       );
+
+    builder
+      .addCase(editCategory.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editCategory.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(
+        editCategory.fulfilled,
+        (state, action: PayloadAction<Category>) => {
+          const editedCategory = action.payload;
+
+          const currentList = state.list.filter(
+            (category) => category.id !== editedCategory.id
+          );
+
+          state.list = [editedCategory, ...currentList];
+
+          state.status = 'idle';
+          state.isUpdating = false;
+        }
+      );
   },
 });
 
@@ -138,6 +166,33 @@ export const addNewCategory = createAsyncThunk(
   async (body: AddCategoryBody, thunkAPI) => {
     try {
       const response = await createCategory(body);
+
+      return response.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editCategory = createAsyncThunk(
+  'categoriesTable/editCategory',
+  async (body: EditCategoryBody, thunkAPI) => {
+    try {
+      const response = await updateCategory(body);
 
       return response.data;
     } catch (e: any) {

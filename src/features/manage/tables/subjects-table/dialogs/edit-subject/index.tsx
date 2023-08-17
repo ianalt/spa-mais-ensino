@@ -183,13 +183,13 @@ export default function EditSubject({
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="create-knowledge-area-dialog-slide-description"
+        aria-describedby="edit-subject-dialog-slide-description"
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>{'Adicionar nova disciplina'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="create-knowledge-area-dialog-slide-description">
+          <DialogContentText id="edit-subject-dialog-slide-description">
             Preencha as informações abaixo para criar uma nova disciplina.{' '}
             <strong>Confirme</strong> os dados antes de clicar no botão{' '}
             <strong>Salvar mudanças</strong>.
