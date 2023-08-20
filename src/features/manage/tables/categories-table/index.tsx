@@ -1,5 +1,13 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Grid, Tooltip, Typography } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  Box,
+  Fab,
+  Grid,
+  LinearProgress,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
@@ -8,6 +16,7 @@ import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localizatio
 import NotificationAlert from '../../../notification-alert';
 import {
   getCategoriesList,
+  getIsLoading,
   resetSelected,
   selectCategoriesTable,
   setSelected,
@@ -22,6 +31,7 @@ export default function CategoriesTable() {
   const categoriesTable = useAppSelector(selectCategoriesTable);
 
   const { status, isCreating, isRemoving, isUpdating } = categoriesTable;
+  const isLoading = useAppSelector(getIsLoading);
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -31,6 +41,10 @@ export default function CategoriesTable() {
   const [openAddAlert, setOpenAddAlert] = useState<boolean>(false);
   const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
   const [openEditAlert, setOpenEditAlert] = useState<boolean>(false);
+
+  const handleRefreshCategories = () => {
+    dispatch(getCategoriesList());
+  };
 
   const handleOpenDetails = () => setOpenDetails(true);
   const handleCloseDetails = () => setOpenDetails(false);
@@ -94,66 +108,92 @@ export default function CategoriesTable() {
       </Grid>
 
       <Grid item xs={12} container justifyContent="flex-end" my={1}>
-        <Tooltip title="Criar nova categoria">
-          <span>
-            <Fab
-              color="primary"
-              aria-label="create-category"
-              onClick={handleOpenAdd}
-            >
-              <AddIcon />
-            </Fab>
-          </span>
-        </Tooltip>
+        <Grid item xs="auto" mx={1}>
+          <Tooltip title="Criar nova categoria">
+            <span>
+              <Fab
+                color="primary"
+                aria-label="add-category"
+                onClick={handleOpenAdd}
+                disabled={isLoading}
+              >
+                <AddIcon />
+              </Fab>
+            </span>
+          </Tooltip>
+        </Grid>
+
+        <Grid item xs="auto" mx={1}>
+          <Tooltip title="Atualizar dados">
+            <span>
+              <Fab
+                color="primary"
+                aria-label="refresh-categories"
+                onClick={handleRefreshCategories}
+                disabled={isLoading}
+              >
+                <RefreshIcon />
+              </Fab>
+            </span>
+          </Tooltip>
+        </Grid>
       </Grid>
 
       <Grid item xs={12}>
-        <MaterialTable
-          localization={ptBrTableLocalization}
-          options={{
-            search: true,
-            filtering: true,
-            grouping: true,
-            exportButton: true,
-          }}
-          actions={[
-            (rowData) => ({
-              icon: 'delete',
-              tooltip: 'Remover',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenRemove();
-              },
-            }),
-            (rowData) => ({
-              icon: 'edit',
-              tooltip: 'Editar',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenEdit();
-              },
-            }),
-            (rowData) => ({
-              icon: 'search',
-              tooltip: 'Detalhes',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenDetails();
-              },
-            }),
-          ]}
-          columns={[
-            { title: 'Nome', field: 'name', defaultSort: 'asc' },
-            { title: 'Disciplina', field: 'subject.name' },
-            {
-              title: 'Ativa?',
-              field: 'active',
-              type: 'boolean',
-            },
-          ]}
-          data={cloneDeep(categoriesTable.list)}
-          title="Lista de Categorias"
-        />
+        {isLoading ? (
+          <Box mt={3}>
+            <LinearProgress />
+          </Box>
+        ) : (
+          <>
+            <MaterialTable
+              localization={ptBrTableLocalization}
+              options={{
+                search: true,
+                filtering: true,
+                grouping: true,
+                exportButton: true,
+              }}
+              actions={[
+                (rowData) => ({
+                  icon: 'delete',
+                  tooltip: 'Remover',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenRemove();
+                  },
+                }),
+                (rowData) => ({
+                  icon: 'edit',
+                  tooltip: 'Editar',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenEdit();
+                  },
+                }),
+                (rowData) => ({
+                  icon: 'search',
+                  tooltip: 'Detalhes',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenDetails();
+                  },
+                }),
+              ]}
+              columns={[
+                { title: 'Nome', field: 'name', defaultSort: 'asc' },
+                { title: 'Disciplina', field: 'subject.name' },
+                {
+                  title: 'Ativa?',
+                  field: 'active',
+                  type: 'boolean',
+                },
+              ]}
+              data={cloneDeep(categoriesTable.list)}
+              title="Lista de Categorias"
+            />
+          </>
+        )}
       </Grid>
 
       <CategoryDetails

@@ -1,5 +1,13 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Grid, Tooltip, Typography } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  Fab,
+  Grid,
+  Tooltip,
+  Typography,
+  LinearProgress,
+  Box,
+} from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
@@ -11,6 +19,7 @@ import EditSubject from './dialogs/edit-subject';
 import RemoveSubject from './dialogs/remove-subject';
 import SubjectDetails from './dialogs/subject-details';
 import {
+  getIsLoading,
   getSubjectsList,
   resetSelected,
   selectSubjectsTable,
@@ -22,6 +31,7 @@ export default function SubjectsTable() {
   const subjectsTable = useAppSelector(selectSubjectsTable);
 
   const { status, isCreating, isRemoving, isUpdating } = subjectsTable;
+  const isLoading = useAppSelector(getIsLoading);
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -31,6 +41,10 @@ export default function SubjectsTable() {
   const [openAddAlert, setOpenAddAlert] = useState<boolean>(false);
   const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
   const [openEditAlert, setOpenEditAlert] = useState<boolean>(false);
+
+  const handleRefreshSubjects = () => {
+    dispatch(getSubjectsList());
+  };
 
   const handleOpenDetails = () => setOpenDetails(true);
   const handleCloseDetails = () => setOpenDetails(false);
@@ -93,66 +107,92 @@ export default function SubjectsTable() {
         </Grid>
       </Grid>
       <Grid item xs={12} container justifyContent="flex-end" my={1}>
-        <Tooltip title="Criar nova disciplina">
-          <span>
-            <Fab
-              color="primary"
-              aria-label="create-subject"
-              onClick={handleOpenAdd}
-            >
-              <AddIcon />
-            </Fab>
-          </span>
-        </Tooltip>
+        <Grid item xs="auto" mx={1}>
+          <Tooltip title="Criar nova disciplina">
+            <span>
+              <Fab
+                color="primary"
+                aria-label="add-subject"
+                onClick={handleOpenAdd}
+                disabled={isLoading}
+              >
+                <AddIcon />
+              </Fab>
+            </span>
+          </Tooltip>
+        </Grid>
+
+        <Grid item xs="auto" mx={1}>
+          <Tooltip title="Atualizar dados">
+            <span>
+              <Fab
+                color="primary"
+                aria-label="refresh-subjects"
+                onClick={handleRefreshSubjects}
+                disabled={isLoading}
+              >
+                <RefreshIcon />
+              </Fab>
+            </span>
+          </Tooltip>
+        </Grid>
       </Grid>
 
       <Grid item xs={12}>
-        <MaterialTable
-          localization={ptBrTableLocalization}
-          options={{
-            search: true,
-            filtering: true,
-            exportButton: true,
-            grouping: true,
-          }}
-          actions={[
-            (rowData) => ({
-              icon: 'delete',
-              tooltip: 'Remover',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenRemove();
-              },
-            }),
-            (rowData) => ({
-              icon: 'edit',
-              tooltip: 'Editar',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenEdit();
-              },
-            }),
-            (rowData) => ({
-              icon: 'search',
-              tooltip: 'Detalhes',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenDetails();
-              },
-            }),
-          ]}
-          columns={[
-            { title: 'Nome', field: 'name', defaultSort: 'asc' },
-            { title: 'Área de conhecimento', field: 'knowledgeArea.name' },
-            {
-              title: 'Ativa?',
-              field: 'active',
-              type: 'boolean',
-            },
-          ]}
-          data={cloneDeep(subjectsTable.list)}
-          title=""
-        />
+        {isLoading ? (
+          <Box mt={3}>
+            <LinearProgress />
+          </Box>
+        ) : (
+          <>
+            <MaterialTable
+              localization={ptBrTableLocalization}
+              options={{
+                search: true,
+                filtering: true,
+                exportButton: true,
+                grouping: true,
+              }}
+              actions={[
+                (rowData) => ({
+                  icon: 'delete',
+                  tooltip: 'Remover',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenRemove();
+                  },
+                }),
+                (rowData) => ({
+                  icon: 'edit',
+                  tooltip: 'Editar',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenEdit();
+                  },
+                }),
+                (rowData) => ({
+                  icon: 'search',
+                  tooltip: 'Detalhes',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenDetails();
+                  },
+                }),
+              ]}
+              columns={[
+                { title: 'Nome', field: 'name', defaultSort: 'asc' },
+                { title: 'Área de conhecimento', field: 'knowledgeArea.name' },
+                {
+                  title: 'Ativa?',
+                  field: 'active',
+                  type: 'boolean',
+                },
+              ]}
+              data={cloneDeep(subjectsTable.list)}
+              title=""
+            />
+          </>
+        )}
       </Grid>
 
       <SubjectDetails open={openDetails} onClose={handleCloseDetails} />

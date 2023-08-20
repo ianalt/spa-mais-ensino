@@ -233,4 +233,11 @@ export const { resetErrors, setSelected, setList, resetSelected } =
 export const selectKnowledgeAreasTable = (state: RootState) =>
   state.knowledgeAreasTable;
 
+export const getIsLoading = (state: RootState) => {
+  const { status, isCreating, isRemoving, isUpdating } =
+    state.knowledgeAreasTable;
+
+  return status === 'loading' || isCreating || isRemoving || isUpdating;
+};
+
 export default knowledgeAreasTableSlice.reducer;

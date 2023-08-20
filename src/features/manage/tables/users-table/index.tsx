@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
   Fab,
@@ -13,6 +14,7 @@ import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { selectUser } from '../../../../user/userSlice';
+import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
 import NotificationAlert from '../../../notification-alert';
 import AccessCountStats from './charts/access-count/AccessCountStats';
 import AvgIncomeStats from './charts/avg-income/AvgIncomeStats';
@@ -35,7 +37,6 @@ import {
   selectUsersTable,
   setSelected,
 } from './usersTableSlice';
-import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
 
 export default function UsersTable() {
   const dispatch = useAppDispatch();
@@ -82,6 +83,10 @@ export default function UsersTable() {
 
   const handleOpenCreate = () => {
     setOpenCreate(true);
+  };
+
+  const handleRefreshUsers = () => {
+    dispatch(getUsersList());
   };
 
   const handleCloseCreate = () => {
@@ -194,18 +199,35 @@ export default function UsersTable() {
               </Grid>
             </Grid>
             <Grid item xs={12} container justifyContent="flex-end" my={1}>
-              <Tooltip title="Criar novo usuário">
-                <span>
-                  <Fab
-                    color="primary"
-                    aria-label="create-user"
-                    onClick={handleOpenCreate}
-                    disabled={isLoading}
-                  >
-                    <AddIcon />
-                  </Fab>
-                </span>
-              </Tooltip>
+              <Grid item xs="auto" mx={1}>
+                <Tooltip title="Criar novo usuário">
+                  <span>
+                    <Fab
+                      color="primary"
+                      aria-label="create-user"
+                      onClick={handleOpenCreate}
+                      disabled={isLoading}
+                    >
+                      <AddIcon />
+                    </Fab>
+                  </span>
+                </Tooltip>
+              </Grid>
+
+              <Grid item xs="auto" mx={1}>
+                <Tooltip title="Atualizar dados">
+                  <span>
+                    <Fab
+                      color="primary"
+                      aria-label="refresh-users"
+                      onClick={handleRefreshUsers}
+                      disabled={isLoading}
+                    >
+                      <RefreshIcon />
+                    </Fab>
+                  </span>
+                </Tooltip>
+              </Grid>
             </Grid>
 
             <Grid item xs={12}>

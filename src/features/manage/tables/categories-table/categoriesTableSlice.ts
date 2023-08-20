@@ -270,4 +270,10 @@ export const { resetErrors, setSelected, setList, resetSelected } =
 export const selectCategoriesTable = (state: RootState) =>
   state.categoriesTable;
 
+export const getIsLoading = (state: RootState) => {
+  const { status, isCreating, isRemoving, isUpdating } = state.categoriesTable;
+
+  return status === 'loading' || isCreating || isRemoving || isUpdating;
+};
+
 export default categoriesTableSlice.reducer;

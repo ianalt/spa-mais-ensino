@@ -317,4 +317,10 @@ export const { setSelected, setList, resetSelected, resetErrors } =
 
 export const selectSubjectsTable = (state: RootState) => state.subjectsTable;
 
+export const getIsLoading = (state: RootState) => {
+  const { status, isCreating, isRemoving, isUpdating } = state.subjectsTable;
+
+  return status === 'loading' || isCreating || isRemoving || isUpdating;
+};
+
 export default subjectsTableSlice.reducer;

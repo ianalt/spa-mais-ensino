@@ -1,5 +1,13 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Grid, Tooltip, Typography } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  Box,
+  Fab,
+  Grid,
+  LinearProgress,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
@@ -11,6 +19,7 @@ import EditKnowledgeArea from './dialogs/edit-knowledge-area';
 import KnowledgeAreaDetails from './dialogs/knowledge-area-details';
 import RemoveKnowledgeArea from './dialogs/remove-knowledge-area';
 import {
+  getIsLoading,
   getKnowledgeAreasList,
   resetSelected,
   selectKnowledgeAreasTable,
@@ -22,6 +31,8 @@ export default function KnowledgeAreasTable() {
   const knowledgeAreasTable = useAppSelector(selectKnowledgeAreasTable);
   const { status, isCreating, isRemoving, isUpdating } = knowledgeAreasTable;
 
+  const isLoading = useAppSelector(getIsLoading);
+
   const [openDetails, setOpenDetails] = useState(false);
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [openRemove, setOpenRemove] = useState(false);
@@ -30,6 +41,10 @@ export default function KnowledgeAreasTable() {
   const [openCreateAlert, setOpenCreateAlert] = useState<boolean>(false);
   const [openRemoveAlert, setOpenRemoveAlert] = useState<boolean>(false);
   const [openEditAlert, setOpenEditAlert] = useState<boolean>(false);
+
+  const handleRefreshKnowledgeAreas = () => {
+    dispatch(getKnowledgeAreasList());
+  };
 
   const handleOpenDetails = () => setOpenDetails(true);
   const handleCloseDetails = () => setOpenDetails(false);
@@ -92,66 +107,92 @@ export default function KnowledgeAreasTable() {
         </Grid>
       </Grid>
       <Grid item xs={12} container justifyContent="flex-end" my={1}>
-        <Tooltip title="Criar nova área de conhecimento">
-          <span>
-            <Fab
-              color="primary"
-              aria-label="create-user"
-              onClick={handleOpenCreate}
-              // disabled={isLoading}
-            >
-              <AddIcon />
-            </Fab>
-          </span>
-        </Tooltip>
+        <Grid item xs="auto" mx={1}>
+          <Tooltip title="Criar nova área de conhecimento">
+            <span>
+              <Fab
+                color="primary"
+                aria-label="add-knowledge-area"
+                onClick={handleOpenCreate}
+                disabled={isLoading}
+              >
+                <AddIcon />
+              </Fab>
+            </span>
+          </Tooltip>
+        </Grid>
+
+        <Grid item xs="auto" mx={1}>
+          <Tooltip title="Atualizar dados">
+            <span>
+              <Fab
+                color="primary"
+                aria-label="refresh-knowledge-areas"
+                onClick={handleRefreshKnowledgeAreas}
+                disabled={isLoading}
+              >
+                <RefreshIcon />
+              </Fab>
+            </span>
+          </Tooltip>
+        </Grid>
       </Grid>
 
       <Grid item xs={12}>
-        <MaterialTable
-          localization={ptBrTableLocalization}
-          options={{
-            search: true,
-            filtering: true,
-            exportButton: true,
-          }}
-          actions={[
-            (rowData) => ({
-              icon: 'delete',
-              tooltip: 'Remover',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenRemove();
-              },
-            }),
-            (rowData) => ({
-              icon: 'edit',
-              tooltip: 'Editar',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenEdit();
-              },
-            }),
-            (rowData) => ({
-              icon: 'search',
-              tooltip: 'Detalhes',
-              onClick: (event) => {
-                dispatch(setSelected(rowData));
-                handleOpenDetails();
-              },
-            }),
-          ]}
-          columns={[
-            { title: 'Nome', field: 'name', defaultSort: 'asc' },
-            { title: 'Descrição', field: 'description' },
-            {
-              title: 'Área ativa?',
-              field: 'active',
-              type: 'boolean',
-            },
-          ]}
-          data={cloneDeep(knowledgeAreasTable.list)}
-          title=""
-        />
+        {isLoading ? (
+          <Box mt={3}>
+            <LinearProgress />
+          </Box>
+        ) : (
+          <>
+            <MaterialTable
+              localization={ptBrTableLocalization}
+              options={{
+                search: true,
+                filtering: true,
+                exportButton: true,
+              }}
+              actions={[
+                (rowData) => ({
+                  icon: 'delete',
+                  tooltip: 'Remover',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenRemove();
+                  },
+                }),
+                (rowData) => ({
+                  icon: 'edit',
+                  tooltip: 'Editar',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenEdit();
+                  },
+                }),
+                (rowData) => ({
+                  icon: 'search',
+                  tooltip: 'Detalhes',
+                  onClick: (event) => {
+                    dispatch(setSelected(rowData));
+                    handleOpenDetails();
+                  },
+                }),
+              ]}
+              columns={[
+                { title: 'Nome', field: 'name', defaultSort: 'asc' },
+                { title: 'Descrição', field: 'description' },
+                {
+                  title: 'Área ativa?',
+                  field: 'active',
+                  type: 'boolean',
+                },
+              ]}
+              data={cloneDeep(knowledgeAreasTable.list)}
+              title=""
+            />
+          </>
+        )}
+
         <KnowledgeAreaDetails open={openDetails} onClose={handleCloseDetails} />
 
         <CreateKnowledgeArea
