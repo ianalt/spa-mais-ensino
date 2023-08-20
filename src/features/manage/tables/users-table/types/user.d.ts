@@ -1,3 +1,4 @@
+import { Role } from '../../../../../utils/enums/role.enum';
 import { Address } from './address';
 import { EducationInfo } from './education-info';
 import { FinancialInfo } from './financial-info';
@@ -12,7 +13,7 @@ interface BasicSubjectInfo {
 export interface User {
   id: number;
   active: boolean;
-  role: 'estudante' | 'monitor' | 'professor' | 'admin';
+  role: Role;
   email: string;
   firstName: string;
   lastName: string;

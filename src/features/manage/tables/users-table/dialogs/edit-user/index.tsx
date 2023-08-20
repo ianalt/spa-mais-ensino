@@ -24,7 +24,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import dayjs from 'dayjs';
 import { forwardRef, useEffect, useState } from 'react';
 import { viacep } from '../../../../../../api/cep/cep.req';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
@@ -75,13 +74,13 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface CreateUserProps {
+interface EditUserProps {
   open: boolean;
   onClose: any;
   onEdit: any;
 }
 
-export default function EditUser({ open, onClose, onEdit }: CreateUserProps) {
+export default function EditUser({ open, onClose, onEdit }: EditUserProps) {
   const dispatch = useAppDispatch();
   const usersTable = useAppSelector(selectUsersTable);
   const { status, isUpdating, error, selected } = usersTable;
