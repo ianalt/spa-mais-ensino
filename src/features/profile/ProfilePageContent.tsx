@@ -1,7 +1,7 @@
 import { Grid, Typography } from '@mui/material';
 export default function ProfilePageContent() {
   return (
-    <Grid item xs={12} container>
+    <Grid item xs={12} container mt={5}>
       <Grid item xs={7} p={2}>
         <img
           src="/undraw_profile_details_re_ch9r.svg"

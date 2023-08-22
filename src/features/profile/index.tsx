@@ -1,21 +1,18 @@
+import { Grid, LinearProgress } from '@mui/material';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import {
-  getProfile,
-  selectUser,
-  selectUserProfile,
-} from '../../user/userSlice';
+import { getProfile, selectUser } from '../../user/userSlice';
+import ProfileDetails from './ProfileDetails';
 import ProfilePageContent from './ProfilePageContent';
-import { Grid } from '@mui/material';
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
 
-  const userProfile = useAppSelector(selectUserProfile);
-
   const user = useAppSelector(selectUser);
 
   useEffect(() => {
+    document.title = '+Ensino: Meu perfil';
+
     dispatch(getProfile());
   }, []);
 
@@ -23,11 +20,9 @@ export default function ProfilePage() {
     <Grid container>
       <ProfilePageContent />
 
-      {user.status === 'loading' ? (
-        <div>carregando...</div>
-      ) : (
-        <div>{userProfile && userProfile.email}</div>
-      )}
+      <Grid item xs={12} container>
+        {user.status === 'loading' ? <LinearProgress /> : <ProfileDetails />}
+      </Grid>
     </Grid>
   );
 }

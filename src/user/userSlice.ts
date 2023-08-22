@@ -76,4 +76,10 @@ export const selectUser = (state: RootState) => state.user;
 
 export const selectUserProfile = (state: RootState) => state.user.profile;
 
+export const getIsMonitorOrTeacher = (state: RootState) => {
+  const { profile } = state.user;
+
+  return profile?.role === Role.MONITOR || profile?.role === Role.PROFESSOR;
+};
+
 export default userSlice.reducer;

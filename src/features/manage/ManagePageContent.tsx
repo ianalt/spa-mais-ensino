@@ -1,12 +1,12 @@
 import { Grid, Typography } from '@mui/material';
 
-export default function ContentManage() {
+export default function ManagePageContent() {
   return (
-    <Grid item xs={12} container>
+    <Grid item xs={12} container mt={5}>
       <Grid item xs={6} container alignContent="center" p={2}>
         <Typography variant="h3">Gerenciamento</Typography>
         <Typography variant="body1">
-          Aqui, administradores são capazes de gerenciar o
+          Aqui, administradores são capazes de gerenciar o{' '}
           <strong>conteúdo</strong> da plataforma <strong>+Ensino</strong>, bem
           como consultar <strong>estatísticas</strong> sobre acesso dos
           estudantes, total de <strong>tópicos publicados</strong> e comentários
@@ -15,7 +15,7 @@ export default function ContentManage() {
           respectivas <strong>disciplinas</strong>.
         </Typography>
       </Grid>
-      <Grid item xs={6} p={2}>
+      <Grid item xs={6} p={4}>
         <img
           src="/undraw_server_status_re_n8ln.svg"
           alt="Imagem"
