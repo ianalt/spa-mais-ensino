@@ -12,13 +12,13 @@ import HomePage from './features/home';
 import { Login } from './features/login';
 import ManagePage from './features/manage';
 import NotFoundPage from './features/not-found/NotFoundPage';
+import ProfilePage from './features/profile';
 import SignUp from './features/sign-up';
 import WelcomePage from './features/welcome';
 import { DefaultLayout } from './layout/default.layout';
 import { WelcomeLayout } from './layout/welcome.layout';
 import { login as reduxLogin, selectUser } from './user/userSlice';
 import { Role } from './utils/enums/role.enum';
-import EditProfilePage from './features/edit-profile';
 
 export const AppRoutes = () => {
   return (
@@ -74,7 +74,7 @@ export const AppRoutes = () => {
             <RequireRole
               roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
             >
-              <EditProfilePage />
+              <ProfilePage />
             </RequireRole>
           }
           path="/mais-ensino/meu-perfil"

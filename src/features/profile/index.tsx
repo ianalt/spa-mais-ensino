@@ -2,14 +2,16 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   getProfile,
-  selectCurrentUser,
   selectUser,
+  selectUserProfile,
 } from '../../user/userSlice';
+import ProfilePageContent from './ProfilePageContent';
+import { Grid } from '@mui/material';
 
-export default function EditProfilePage() {
+export default function ProfilePage() {
   const dispatch = useAppDispatch();
 
-  const currentUser = useAppSelector(selectCurrentUser);
+  const userProfile = useAppSelector(selectUserProfile);
 
   const user = useAppSelector(selectUser);
 
@@ -18,14 +20,14 @@ export default function EditProfilePage() {
   }, []);
 
   return (
-    <>
-      <h1>Editar perfil</h1>
+    <Grid container>
+      <ProfilePageContent />
 
       {user.status === 'loading' ? (
         <div>carregando...</div>
       ) : (
-        <div>{currentUser && currentUser.email}</div>
+        <div>{userProfile && userProfile.email}</div>
       )}
-    </>
+    </Grid>
   );
 }

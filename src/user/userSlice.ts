@@ -12,13 +12,13 @@ export interface BasicUserInfo {
 
 //TODO change to full user object
 export interface UserState extends BasicUserInfo {
-  currentUser: User | null;
+  profile: User | null;
   status: 'loading' | 'idle' | 'failed';
   loggedIn: boolean;
 }
 
 const initialState: UserState = {
-  currentUser: null,
+  profile: null,
   status: 'idle',
   id: 0,
   email: '',
@@ -43,6 +43,9 @@ export const userSlice = createSlice({
       state.role = initialState.role;
       state.loggedIn = initialState.loggedIn;
     },
+    resetProfile: (state) => {
+      state.profile = initialState.profile;
+    },
   },
 
   extraReducers: (builder) => {
@@ -55,7 +58,7 @@ export const userSlice = createSlice({
       })
       .addCase(getProfile.fulfilled, (state, action: PayloadAction<User>) => {
         state.status = 'idle';
-        state.currentUser = action.payload;
+        state.profile = action.payload;
       });
   },
 });
@@ -67,10 +70,10 @@ export const getProfile = createAsyncThunk('user/getProfile', async () => {
   return user;
 });
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, resetProfile } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 
-export const selectCurrentUser = (state: RootState) => state.user.currentUser;
+export const selectUserProfile = (state: RootState) => state.user.profile;
 
 export default userSlice.reducer;
