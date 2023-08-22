@@ -55,7 +55,7 @@ export default function ProfileDetails() {
         </Grid>
 
         <Grid item xs={12} container my={1}>
-          <Grid item xs="auto" p={1}>
+          <Grid item xs="auto" p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'E-mail:'} </Typography>
             </Grid>
@@ -66,7 +66,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          <Grid item xs="auto" container p={1}>
+          <Grid item xs="auto" container p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'Nível de acesso:'} </Typography>
             </Grid>
@@ -75,7 +75,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          <Grid item xs="auto" container p={1}>
+          <Grid item xs="auto" container p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'Conta ativa?'} </Typography>
             </Grid>
@@ -87,7 +87,7 @@ export default function ProfileDetails() {
           {!isMonitorOrTeacher ? (
             <></>
           ) : (
-            <Grid item xs="auto" container p={1}>
+            <Grid item xs="auto" container p={2}>
               <Grid item xs={9}>
                 <Grid item xs={12}>
                   <Typography fontWeight={700}>{'Disciplina:'} </Typography>
@@ -109,7 +109,7 @@ export default function ProfileDetails() {
         </Grid>
 
         <Grid item xs={12} container my={1}>
-          <Grid item xs="auto" p={1}>
+          <Grid item xs="auto" p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'Nome:'} </Typography>
             </Grid>
@@ -118,7 +118,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          <Grid item xs="auto" container p={1}>
+          <Grid item xs="auto" container p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'Sobrenome(s):'} </Typography>
             </Grid>
@@ -127,7 +127,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          <Grid item xs="auto" container p={1}>
+          <Grid item xs="auto" container p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'CPF:'} </Typography>
             </Grid>
@@ -136,7 +136,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          <Grid item xs="auto" container p={1}>
+          <Grid item xs="auto" container p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'Data de nascimento:'} </Typography>
             </Grid>
@@ -145,7 +145,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          <Grid item xs="auto" container p={1}>
+          <Grid item xs="auto" container p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'Etnia:'} </Typography>
             </Grid>
@@ -154,7 +154,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          <Grid item xs="auto" container p={1}>
+          <Grid item xs="auto" container p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'Gênero:'} </Typography>
             </Grid>
@@ -168,7 +168,7 @@ export default function ProfileDetails() {
           profile?.role === Role.ADMIN ? (
             <></>
           ) : (
-            <Grid item xs={2} container p={1}>
+            <Grid item xs={2} container p={2}>
               <Grid item xs={12}>
                 <Typography fontWeight={700}>
                   {'Renda familiar total:'}{' '}
@@ -187,7 +187,7 @@ export default function ProfileDetails() {
           profile?.role === Role.ADMIN ? (
             <></>
           ) : (
-            <Grid item xs={3} container p={1}>
+            <Grid item xs={3} container p={2}>
               <Grid item xs={12}>
                 <Typography fontWeight={700}>
                   {'Total de membros da moradia:'}{' '}
@@ -202,7 +202,7 @@ export default function ProfileDetails() {
           )}
         </Grid>
 
-        <Grid item xs={4} container p={1}>
+        <Grid item xs={4} container p={2}>
           <Grid item xs={12}>
             <Typography fontWeight={700}>{'Números de telefone:'} </Typography>
           </Grid>
@@ -232,7 +232,7 @@ export default function ProfileDetails() {
         </Grid>
 
         <Grid item xs={12} container my={1} px={1}>
-          <Grid item xs={2} mr={2} p={1}>
+          <Grid item xs={2} mr={2} p={2}>
             <Grid item xs={12}>
               <Typography fontWeight={700}>{'CEP:'} </Typography>
             </Grid>
@@ -242,17 +242,19 @@ export default function ProfileDetails() {
           </Grid>
 
           <Grid item xs={12} container>
-            <Grid item xs={5} container p={1}>
+            <Grid item xs="auto" container p={2}>
               <Grid item xs={12}>
-                <Typography fontWeight={700}>{'Endereço:'} </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>{profile?.address.street}</Typography>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Endereço:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{profile?.address.street}</Typography>
+                </Grid>
               </Grid>
             </Grid>
 
-            <Grid item xs={6} container p={1}>
-              <Grid item xs={4}>
+            <Grid item xs="auto" container p={2}>
+              <Grid item xs={12}>
                 <Grid item xs={12}>
                   <Typography fontWeight={700}>{'Número:'} </Typography>
                 </Grid>
@@ -262,17 +264,19 @@ export default function ProfileDetails() {
               </Grid>
             </Grid>
 
-            <Grid item xs={2} container p={1}>
+            <Grid item xs="auto" container p={2}>
               <Grid item xs={12}>
-                <Typography fontWeight={700}>{'Bairro:'} </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>{profile?.address.neighborhood}</Typography>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Bairro:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{profile?.address.neighborhood}</Typography>
+                </Grid>
               </Grid>
             </Grid>
 
-            <Grid item xs={5} container p={1}>
-              <Grid item xs={6}>
+            <Grid item xs="auto" container p={2}>
+              <Grid item xs={12}>
                 <Grid item xs={12}>
                   <Typography fontWeight={700}>{'Complemento:'} </Typography>
                 </Grid>
@@ -282,7 +286,7 @@ export default function ProfileDetails() {
               </Grid>
             </Grid>
 
-            <Grid item xs={4} container p={1}>
+            <Grid item xs="auto" container p={2}>
               <Grid item xs={12}>
                 <Typography fontWeight={700}>{'Cidade:'} </Typography>
               </Grid>
@@ -291,7 +295,7 @@ export default function ProfileDetails() {
               </Grid>
             </Grid>
 
-            <Grid item xs={1} container p={1}>
+            <Grid item xs="auto" container p={2}>
               <Grid item xs={12}>
                 <Typography fontWeight={700}>{'UF:'} </Typography>
               </Grid>
@@ -326,11 +330,11 @@ export default function ProfileDetails() {
               return (
                 <Box key={index + 1} my={2} maxWidth="40%">
                   <Paper>
-                    <Grid item xs={12} container p={1}>
+                    <Grid item xs={12} container p={2}>
                       {profile?.role === Role.ESTUDANTE ? (
                         <></>
                       ) : (
-                        <Grid item xs={12} p={1}>
+                        <Grid item xs={12} p={2}>
                           <Grid item xs={12}>
                             <Typography fontWeight={700}>
                               {'Nome do curso:'}{' '}
@@ -342,7 +346,7 @@ export default function ProfileDetails() {
                         </Grid>
                       )}
 
-                      <Grid item xs={12} p={1}>
+                      <Grid item xs={12} p={2}>
                         <Grid item xs={12}>
                           <Typography fontWeight={700}>
                             {'Nome da instituição:'}{' '}
@@ -353,7 +357,7 @@ export default function ProfileDetails() {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={12} p={1}>
+                      <Grid item xs={12} p={2}>
                         <Grid item xs={12}>
                           <Typography fontWeight={700}>
                             {'Nível de formação:'}{' '}
@@ -364,7 +368,7 @@ export default function ProfileDetails() {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={6} container p={1}>
+                      <Grid item xs={6} container p={2}>
                         <Grid item xs={12}>
                           <Typography fontWeight={700}>
                             {'Ano de início:'}{' '}
@@ -375,7 +379,7 @@ export default function ProfileDetails() {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={6} container p={1}>
+                      <Grid item xs={6} container p={2}>
                         <Grid item xs={12}>
                           <Typography fontWeight={700}>
                             {'Ano de conclusão:'}{' '}
