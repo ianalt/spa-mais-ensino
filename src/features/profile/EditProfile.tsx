@@ -414,42 +414,42 @@ export default function EditProfile({
     }
   };
 
-  const resetFields = () => {
-    setCepError(false);
-    setCepErrorMessage('');
-    setIsCepLoading(false);
-    setEmail('');
-    setFirstName('');
-    setLastName('');
-    setCpf('');
-    setBirthDate('');
-    setEthnicity(null);
-    setGender(null);
+  // const resetFields = () => {
+  //   setCepError(false);
+  //   setCepErrorMessage('');
+  //   setIsCepLoading(false);
+  //   setEmail('');
+  //   setFirstName('');
+  //   setLastName('');
+  //   setCpf('');
+  //   setBirthDate('');
+  //   setEthnicity(null);
+  //   setGender(null);
 
-    setGeneralIncome(0);
-    setTotalHouseHoldMembers(0);
+  //   setGeneralIncome(0);
+  //   setTotalHouseHoldMembers(0);
 
-    setPhoneNumber1('');
-    setPhoneNumber2('');
+  //   setPhoneNumber1('');
+  //   setPhoneNumber2('');
 
-    setCep('');
-    setStreet('');
-    setStreetNumber('');
-    setNeighborhood('');
-    setComplement('');
-    setCity('');
-    setUf(null);
+  //   setCep('');
+  //   setStreet('');
+  //   setStreetNumber('');
+  //   setNeighborhood('');
+  //   setComplement('');
+  //   setCity('');
+  //   setUf(null);
 
-    setEducationInfoList([
-      {
-        institutionName: '',
-        courseName: '',
-        schoolingLevel: null,
-        startYear: '',
-        conclusionYear: null,
-      },
-    ]);
-  };
+  //   setEducationInfoList([
+  //     {
+  //       institutionName: '',
+  //       courseName: '',
+  //       schoolingLevel: null,
+  //       startYear: '',
+  //       conclusionYear: null,
+  //     },
+  //   ]);
+  // };
 
   const handleClose = () => {
     // dispatch(resetProfile());
@@ -480,259 +480,65 @@ export default function EditProfile({
   }, [open]);
 
   const handleEditProfile = async () => {
-    if (profile?.role === Role.ESTUDANTE) {
-      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
-        !phoneNumber2
-          ? [phoneNumber1].map((phone) => {
-              return {
-                phoneNumber: phone,
-              };
-            })
-          : [phoneNumber1, phoneNumber2].map((phone, i) => {
-              return {
-                phoneNumber: phone,
-              };
-            });
-
-      const body: EditProfileBody = {
-        userId: profile.id,
-
-        user: {
-          email,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-        },
-
-        address: {
-          id: profile.address.id,
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-
-        financialInfo: {
-          id: profile.financialInfo.id,
-          generalIncome,
-          totalHouseHoldMembers,
-        },
-
-        phoneNumbers,
-
-        educationInfoList:
-          educationInfoList.length > 0
-            ? educationInfoList.map((educationInfo) => {
-                return {
-                  ...educationInfo,
-                  conclusionYear:
-                    educationInfo.conclusionYear === ''
-                      ? null
-                      : educationInfo.conclusionYear,
-                  schoolingLevel: educationInfo.schoolingLevel
-                    ? educationInfo.schoolingLevel.value
-                    : null,
-                };
-              })
-            : [],
-      };
-
-      try {
-        await dispatch(editProfile(body)).unwrap();
-
-        onEdit();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenEditProfileFailedAlert();
-      }
-    }
-
-    if (profile?.role === Role.MONITOR) {
-      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
-        !phoneNumber2
-          ? [phoneNumber1].map((phone) => {
-              return {
-                phoneNumber: phone,
-              };
-            })
-          : [phoneNumber1, phoneNumber2].map((phone, i) => {
-              return {
-                phoneNumber: phone,
-              };
-            });
-
-      const body: UpdateMonitorBody = {
-        userId: profile.id,
-
-        user: {
-          email,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-          active: active?.value,
-        },
-
-        address: {
-          id: profile.address.id,
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-
-        phoneNumbers,
-
-        educationInfoList: educationInfoList.map((educationInfo) => {
+    const phoneNumbers: { id?: number; phoneNumber?: string }[] = !phoneNumber2
+      ? [phoneNumber1].map((phone) => {
           return {
-            ...educationInfo,
-            conclusionYear:
-              educationInfo.conclusionYear === ''
-                ? null
-                : educationInfo.conclusionYear,
-            schoolingLevel: educationInfo.schoolingLevel
-              ? educationInfo.schoolingLevel.value
-              : null,
+            phoneNumber: phone,
           };
-        }),
-      };
-
-      try {
-        await dispatch(editProfile(body)).unwrap();
-
-        onEdit();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenEditProfileFailedAlert();
-      }
-    }
-
-    if (profile?.role === Role.PROFESSOR) {
-      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
-        !phoneNumber2
-          ? [phoneNumber1].map((phone) => {
-              return {
-                phoneNumber: phone,
-              };
-            })
-          : [phoneNumber1, phoneNumber2].map((phone, i) => {
-              return {
-                phoneNumber: phone,
-              };
-            });
-
-      const body: UpdateTeacherBody = {
-        userId: profile.id,
-
-        user: {
-          email,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-          active: active?.value,
-        },
-
-        address: {
-          id: profile.address.id,
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-
-        phoneNumbers,
-
-        educationInfoList: educationInfoList.map((educationInfo) => {
+        })
+      : [phoneNumber1, phoneNumber2].map((phone, i) => {
           return {
-            ...educationInfo,
-            conclusionYear:
-              educationInfo.conclusionYear === ''
-                ? null
-                : educationInfo.conclusionYear,
-            schoolingLevel: educationInfo.schoolingLevel
-              ? educationInfo.schoolingLevel.value
-              : null,
+            phoneNumber: phone,
           };
-        }),
-      };
+        });
 
-      try {
-        await dispatch(editProfile(body)).unwrap();
+    const body: EditProfileBody = {
+      user: {
+        email,
+        firstName,
+        lastName,
+        cpf,
+        birthDate: convertBirthDate(birthDate),
+        ethnicity: ethnicity?.value,
+        gender: gender?.value,
+        role: profile?.role || Role.ESTUDANTE,
+      },
 
-        onEdit();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenEditProfileFailedAlert();
-      }
-    }
+      address: {
+        id: profile?.address.id || 0,
+        cep,
+        street,
+        streetNumber,
+        neighborhood,
+        complement,
+        city,
+        uf: uf?.value,
+      },
 
-    if (profile?.role === Role.ADMIN) {
-      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
-        !phoneNumber2
-          ? [phoneNumber1].map((phone) => {
-              return {
-                phoneNumber: phone,
-              };
-            })
-          : [phoneNumber1, phoneNumber2].map((phone, i) => {
-              return {
-                phoneNumber: phone,
-              };
-            });
+      phoneNumbers,
 
-      const body: UpdateAdminBody = {
-        userId: profile.id,
+      educationInfoList: educationInfoList.map((educationInfo) => {
+        return {
+          ...educationInfo,
+          conclusionYear:
+            educationInfo.conclusionYear === ''
+              ? null
+              : educationInfo.conclusionYear,
+          schoolingLevel: educationInfo.schoolingLevel
+            ? educationInfo.schoolingLevel.value
+            : null,
+        };
+      }),
+    };
 
-        user: {
-          email,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-          active: active?.value,
-        },
+    try {
+      // await dispatch(editProfile(body)).unwrap();
+      console.log(body.user.birthDate);
 
-        address: {
-          id: profile.address.id,
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-
-        phoneNumbers,
-      };
-
-      try {
-        await dispatch(editProfile(body)).unwrap();
-
-        onEdit();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenEditProfileFailedAlert();
-      }
+      // onEdit();
+      // handleClose();
+    } catch (rejectedValueOrSerializedError) {
+      handleOpenEditProfileFailedAlert();
     }
   };
 
@@ -811,28 +617,6 @@ export default function EditProfile({
                   type="email"
                 />
               </Grid>
-
-              <Grid item xs={4} p={1}>
-                <Autocomplete
-                  id="active-options"
-                  value={active}
-                  defaultValue={active}
-                  onChange={(event: any, newValue: ActiveOption | null) => {
-                    setActive(newValue);
-                  }}
-                  options={activeOptions}
-                  getOptionLabel={(option) => option.label}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      margin="normal"
-                      required
-                      fullWidth
-                      label="Conta ativa?"
-                    />
-                  )}
-                />
-              </Grid>
             </Grid>
           </Grid>
 
@@ -902,6 +686,7 @@ export default function EditProfile({
                   <InputLabel htmlFor="formatted-birth-date-mask-input">
                     Data de nascimento *
                   </InputLabel>
+                  {JSON.stringify(convertBirthDate(birthDate))}
                   <Input
                     id="formatted-birth-date-mask-input"
                     name="birth-date"
@@ -1411,7 +1196,7 @@ export default function EditProfile({
 
           <LoadingButton
             variant="contained"
-            onClick={() => alert('opa')}
+            onClick={handleEditProfile}
             loading={isUpdating}
             disabled={isUpdating}
           >
