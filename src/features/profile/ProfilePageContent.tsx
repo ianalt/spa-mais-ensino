@@ -1,5 +1,16 @@
-import { Grid, Typography } from '@mui/material';
-export default function ProfilePageContent() {
+import { Button, Grid, Typography } from '@mui/material';
+
+interface ProfilePageContentProps {
+  onEditProfileClick: any;
+}
+
+export default function ProfilePageContent({
+  onEditProfileClick,
+}: ProfilePageContentProps) {
+  const handleOpenEditProfileOption = () => {
+    onEditProfileClick();
+  };
+
   return (
     <Grid item xs={12} container mt={5}>
       <Grid item xs={7} p={2}>
@@ -11,13 +22,26 @@ export default function ProfilePageContent() {
         />
       </Grid>
       <Grid item xs={5} container alignContent="center" p={2}>
-        <Typography variant="h3">Meu Perfil</Typography>
-        <Typography variant="body1">
-          Aqui, você pode conferir os seus <strong>dados</strong> cadastrais.
-          Caso queira editar qualquer informação para deixar sua conta{' '}
-          <strong>atualizada</strong>, basta clicar na opção{' '}
-          <strong>Editar perfil</strong>.
-        </Typography>
+        <Grid item xs={12}>
+          <Typography variant="h3">Meu Perfil</Typography>
+          <Typography variant="body1">
+            Aqui, você pode conferir os seus <strong>dados</strong> cadastrais.
+            Caso queira editar qualquer informação para deixar sua conta{' '}
+            <strong>atualizada</strong>, basta clicar na opção{' '}
+            <strong>Editar perfil</strong>.
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12} container justifyContent="center" p={5}>
+          <Button
+            variant="contained"
+            size="large"
+            color="secondary"
+            onClick={handleOpenEditProfileOption}
+          >
+            Editar perfil
+          </Button>
+        </Grid>
       </Grid>
     </Grid>
   );

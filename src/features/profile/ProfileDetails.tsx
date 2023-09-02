@@ -46,7 +46,7 @@ export default function ProfileDetails() {
   };
 
   return (
-    <>
+    <Paper>
       <Grid item xs={12} container justifyContent={'flex-start'}>
         <Grid item xs={12} my={2}>
           <Divider>
@@ -397,6 +397,6 @@ export default function ProfileDetails() {
           </Grid>
         </>
       )}
-    </>
+    </Paper>
   );
 }

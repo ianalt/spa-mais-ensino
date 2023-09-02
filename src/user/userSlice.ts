@@ -15,6 +15,8 @@ export interface UserState extends BasicUserInfo {
   profile: User | null;
   status: 'loading' | 'idle' | 'failed';
   loggedIn: boolean;
+  error: any;
+  isUpdating: boolean;
 }
 
 const initialState: UserState = {
@@ -24,6 +26,8 @@ const initialState: UserState = {
   email: '',
   role: Role.USUARIO,
   loggedIn: false,
+  error: null,
+  isUpdating: false,
 };
 
 export const userSlice = createSlice({
@@ -45,6 +49,10 @@ export const userSlice = createSlice({
     },
     resetProfile: (state) => {
       state.profile = initialState.profile;
+    },
+    resetErrors: (state) => {
+      state.status = 'idle';
+      state.error = initialState.error;
     },
   },
 
@@ -70,7 +78,7 @@ export const getProfile = createAsyncThunk('user/getProfile', async () => {
   return user;
 });
 
-export const { login, logout, resetProfile } = userSlice.actions;
+export const { login, logout, resetProfile, resetErrors } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 
