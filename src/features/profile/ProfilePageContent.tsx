@@ -2,13 +2,19 @@ import { Button, Grid, Typography } from '@mui/material';
 
 interface ProfilePageContentProps {
   onEditProfileClick: any;
+  onChangePasswordClick: any;
 }
 
 export default function ProfilePageContent({
   onEditProfileClick,
+  onChangePasswordClick,
 }: ProfilePageContentProps) {
   const handleOpenEditProfileOption = () => {
     onEditProfileClick();
+  };
+
+  const handleOpenChangePasswordOption = () => {
+    onChangePasswordClick();
   };
 
   return (
@@ -32,14 +38,25 @@ export default function ProfilePageContent({
           </Typography>
         </Grid>
 
-        <Grid item xs={12} container justifyContent="center" p={5}>
+        <Grid item xs={12} container justifyContent="space-evenly" p={5}>
           <Button
+            id="edit-profile-button"
             variant="contained"
             size="large"
             color="secondary"
             onClick={handleOpenEditProfileOption}
           >
             Editar perfil
+          </Button>
+
+          <Button
+            id="change-password-button"
+            variant="contained"
+            size="large"
+            color="secondary"
+            onClick={handleOpenChangePasswordOption}
+          >
+            Alterar senha
           </Button>
         </Grid>
       </Grid>

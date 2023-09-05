@@ -25,32 +25,30 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { ActiveOption } from '../../utils/options/types/active-option';
-import { EthnicityOption } from '../../utils/options/types/ethnicity-option';
-import { GenderOption } from '../../utils/options/types/gender-option';
-import { UfOption } from '../../utils/options/types/uf-option';
-import { EducationInfoOption } from '../manage/tables/users-table/dialogs/create-user/types/education-info-option';
-import { SchoolingLevelOption } from '../../utils/options/types/schooling-level-option';
 import { viacep } from '../../api/cep/cep.req';
-import { ufOptions } from '../../utils/options/uf-options';
-import { activeOptions } from '../../utils/options/types/active-options';
-import { ethnicityOptions } from '../../utils/options/ethnicity-options';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { editProfile, resetErrors, selectUser } from '../../user/userSlice';
+import { convertBirthDate } from '../../utils/conversions/convert-birth-date';
 import { Role } from '../../utils/enums/role.enum';
+import { BirthDateCustom } from '../../utils/masks/birth-date-mask';
+import { CepMaskCustom } from '../../utils/masks/cep-mask';
+import { CpfMaskCustom } from '../../utils/masks/cpf-mask';
+import { NumericFormatCustom } from '../../utils/masks/numeric-mask';
+import { PhoneNumberMaskCustom } from '../../utils/masks/phone-number-mask';
+import { YearMaskCustom } from '../../utils/masks/year-mask';
+import { ethnicityOptions } from '../../utils/options/ethnicity-options';
+import { genderOptions } from '../../utils/options/gender-options';
 import {
   schoolingLevelOptions,
   schoolingLevelOptionsForNonStudents,
 } from '../../utils/options/schooling-level-options';
-import { genderOptions } from '../../utils/options/gender-options';
-import { resetErrors, resetProfile, selectUser } from '../../user/userSlice';
-import { convertBirthDate } from '../../utils/conversions/convert-birth-date';
+import { EthnicityOption } from '../../utils/options/types/ethnicity-option';
+import { GenderOption } from '../../utils/options/types/gender-option';
+import { SchoolingLevelOption } from '../../utils/options/types/schooling-level-option';
+import { UfOption } from '../../utils/options/types/uf-option';
+import { ufOptions } from '../../utils/options/uf-options';
+import { EducationInfoOption } from '../manage/tables/users-table/dialogs/create-user/types/education-info-option';
 import NotificationAlert from '../notification-alert';
-import { BirthDateCustom } from '../../utils/masks/birth-date-mask';
-import { NumericFormatCustom } from '../../utils/masks/numeric-mask';
-import { PhoneNumberMaskCustom } from '../../utils/masks/phone-number-mask';
-import { CepMaskCustom } from '../../utils/masks/cep-mask';
-import { CpfMaskCustom } from '../../utils/masks/cpf-mask';
-import { YearMaskCustom } from '../../utils/masks/year-mask';
 import { EditProfileBody } from './types/edit-profile.body';
 
 const Transition = forwardRef(function Transition(
@@ -85,7 +83,7 @@ export default function EditProfile({
   const [isCepLoading, setIsCepLoading] = useState<boolean>(false);
 
   const [email, setEmail] = useState<string>('');
-  const [active, setActive] = useState<ActiveOption | null>(null);
+  const [password, setPassword] = useState<string>('');
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -313,11 +311,7 @@ export default function EditProfile({
   const setFields = () => {
     if (profile) {
       setEmail(profile.email);
-
-      const initialActive = activeOptions.find(
-        (option) => option.value === profile.active
-      );
-      setActive(initialActive ? initialActive : null);
+      setPassword('');
 
       setFirstName(profile.firstName);
       setLastName(profile.lastName);
@@ -414,46 +408,7 @@ export default function EditProfile({
     }
   };
 
-  // const resetFields = () => {
-  //   setCepError(false);
-  //   setCepErrorMessage('');
-  //   setIsCepLoading(false);
-  //   setEmail('');
-  //   setFirstName('');
-  //   setLastName('');
-  //   setCpf('');
-  //   setBirthDate('');
-  //   setEthnicity(null);
-  //   setGender(null);
-
-  //   setGeneralIncome(0);
-  //   setTotalHouseHoldMembers(0);
-
-  //   setPhoneNumber1('');
-  //   setPhoneNumber2('');
-
-  //   setCep('');
-  //   setStreet('');
-  //   setStreetNumber('');
-  //   setNeighborhood('');
-  //   setComplement('');
-  //   setCity('');
-  //   setUf(null);
-
-  //   setEducationInfoList([
-  //     {
-  //       institutionName: '',
-  //       courseName: '',
-  //       schoolingLevel: null,
-  //       startYear: '',
-  //       conclusionYear: null,
-  //     },
-  //   ]);
-  // };
-
   const handleClose = () => {
-    // dispatch(resetProfile());
-    // // resetFields();
     onClose();
   };
 
@@ -532,11 +487,10 @@ export default function EditProfile({
     };
 
     try {
-      // await dispatch(editProfile(body)).unwrap();
-      console.log(body.user.birthDate);
+      await dispatch(editProfile(body)).unwrap();
 
-      // onEdit();
-      // handleClose();
+      onEdit();
+      handleClose();
     } catch (rejectedValueOrSerializedError) {
       handleOpenEditProfileFailedAlert();
     }
@@ -545,20 +499,21 @@ export default function EditProfile({
   return (
     <div>
       <Dialog
-        id="edit-user"
+        id="edit-profile"
         open={open || isUpdating}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="edit-user-dialog-slide-description"
+        aria-describedby="edit-profile-dialog-slide-description"
         maxWidth="xl"
         fullWidth
       >
-        <DialogTitle>{'Editar usuário'}</DialogTitle>
+        <DialogTitle>{'Editar perfil'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="edit-user-dialog-slide-description">
-            Faça as edições desejadas para o usuário. <strong>Confirme</strong>{' '}
-            os dados antes de clicar no botão <strong>Salvar mudanças</strong>.
+          <DialogContentText id="edit-profile-dialog-slide-description">
+            Faça as edições desejadas para o seu perfil.{' '}
+            <strong>Confirme</strong> os dados antes de clicar no botão{' '}
+            <strong>Salvar mudanças</strong>.
           </DialogContentText>
 
           <Grid container justifyContent="flex-start">
@@ -686,7 +641,7 @@ export default function EditProfile({
                   <InputLabel htmlFor="formatted-birth-date-mask-input">
                     Data de nascimento *
                   </InputLabel>
-                  {JSON.stringify(convertBirthDate(birthDate))}
+
                   <Input
                     id="formatted-birth-date-mask-input"
                     name="birth-date"
