@@ -13,7 +13,7 @@ export default function ProfilePage() {
 
   const user = useAppSelector(selectUser);
 
-  const { status, isUpdating } = user;
+  const { status, isUpdating, isChangingPassword } = user;
 
   const [openEditProfile, setOpenEditProfile] = useState<boolean>(false);
   const [openChangePassword, setOpenChangePassword] = useState<boolean>(false);
@@ -79,7 +79,9 @@ export default function ProfilePage() {
       />
 
       <NotificationAlert
-        open={openChangePasswordAlert && status === 'idle' && !isUpdating}
+        open={
+          openChangePasswordAlert && status === 'idle' && !isChangingPassword
+        }
         onClose={handleCloseChangePasswordAlert}
         severity="success"
         status="Sucesso"
