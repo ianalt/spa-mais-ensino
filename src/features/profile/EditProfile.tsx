@@ -83,7 +83,6 @@ export default function EditProfile({
   const [isCepLoading, setIsCepLoading] = useState<boolean>(false);
 
   const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -311,7 +310,6 @@ export default function EditProfile({
   const setFields = () => {
     if (profile) {
       setEmail(profile.email);
-      setPassword('');
 
       setFirstName(profile.firstName);
       setLastName(profile.lastName);
@@ -320,7 +318,7 @@ export default function EditProfile({
       const dateString = () => {
         const dateParts = profile.birthDate.toString().split('-');
 
-        return `${dateParts[2]}${dateParts[1]}${dateParts[0]}`;
+        return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
       };
 
       setBirthDate(dateString());
@@ -641,7 +639,7 @@ export default function EditProfile({
                   <InputLabel htmlFor="formatted-birth-date-mask-input">
                     Data de nascimento *
                   </InputLabel>
-
+                  {JSON.stringify(birthDate)}
                   <Input
                     id="formatted-birth-date-mask-input"
                     name="birth-date"

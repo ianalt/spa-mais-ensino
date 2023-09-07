@@ -23,6 +23,7 @@ export interface UserState extends BasicUserInfo {
   loggedIn: boolean;
   error: any;
   isUpdating: boolean;
+  isChangingPassword: boolean;
 }
 
 const initialState: UserState = {
@@ -34,6 +35,7 @@ const initialState: UserState = {
   loggedIn: false,
   error: null,
   isUpdating: false,
+  isChangingPassword: false,
 };
 
 export const userSlice = createSlice({
@@ -95,16 +97,16 @@ export const userSlice = createSlice({
     builder
       .addCase(passwordChange.pending, (state) => {
         state.status = 'loading';
-        state.isUpdating = true;
+        state.isChangingPassword = true;
       })
       .addCase(passwordChange.rejected, (state, action) => {
         state.error = action.payload;
         state.status = 'failed';
-        state.isUpdating = false;
+        state.isChangingPassword = false;
       })
       .addCase(passwordChange.fulfilled, (state) => {
         state.status = 'idle';
-        state.isUpdating = false;
+        state.isChangingPassword = false;
       });
   },
 });

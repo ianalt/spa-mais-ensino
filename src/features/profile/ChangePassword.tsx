@@ -14,7 +14,6 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { passwordChange, resetErrors, selectUser } from '../../user/userSlice';
 import NotificationAlert from '../notification-alert';
 import { ChangePasswordBody } from './types/change-password.body';
-import { current } from '@reduxjs/toolkit';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -38,7 +37,7 @@ export default function EditProfile({
 }: EditProfileProps) {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectUser);
-  const { status, isUpdating, error } = currentUser;
+  const { status, isUpdating, error, isChangingPassword } = currentUser;
 
   const [openChangePasswordFailedAlert, setOpenChangePasswordFailedAlert] =
     useState<boolean>(false);
@@ -102,7 +101,7 @@ export default function EditProfile({
     <div>
       <Dialog
         id="change-password"
-        open={open || isUpdating}
+        open={open || isChangingPassword}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
