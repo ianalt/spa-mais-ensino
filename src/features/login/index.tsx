@@ -18,6 +18,7 @@ import { login } from '../../api/users/login';
 import { useAppDispatch } from '../../app/hooks';
 import { login as reduxLogin } from '../../user/userSlice';
 import { checkFieldErrors, FieldErrors } from '../../utils/checkFieldErrors';
+import { Role } from '../../utils/enums/role.enum';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -57,7 +58,7 @@ export const Login = () => {
       const decodedToken: {
         email: string;
         sub: number;
-        role: 'usuario' | 'estudante' | 'monitor' | 'professor' | 'admin';
+        role: Role;
       } = jwt_decode(res.data.access_token);
 
       dispatch(

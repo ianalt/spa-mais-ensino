@@ -1,5 +1,6 @@
 export const convertBirthDate = (date: string) => {
-  const dateParts = date.split('/');
+  //TODO had to do this due to undefined bug
+  const dateParts = date.includes('/') ? date.split('/') : date.split('-');
 
   const convertedBirthDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
 

@@ -14,6 +14,7 @@ import { Link, useMatch, useNavigate, useResolvedPath } from 'react-router-dom';
 import type { LinkProps } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { logout, selectUser } from '../user/userSlice';
+import { Role } from '../utils/enums/role.enum';
 
 function CustomLink({ children, to, ...props }: LinkProps) {
   let resolved = useResolvedPath(to);
@@ -67,7 +68,7 @@ const pages = [
   'Gerenciamento',
 ];
 
-const settings = ['Configurações', 'Sair'];
+const settings = ['Editar perfil', 'Sair'];
 
 export const DefaultAppBar = () => {
   const dispatch = useAppDispatch();
@@ -78,7 +79,7 @@ export const DefaultAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const filterUserPages = () => {
-    if (user.role === 'estudante')
+    if (user.role === Role.ESTUDANTE)
       return pages.filter((page) => {
         return (
           page !== 'Comentários' &&
@@ -87,7 +88,7 @@ export const DefaultAppBar = () => {
         );
       });
 
-    if (user.role === 'monitor' || user.role === 'professor')
+    if (user.role === Role.MONITOR || user.role === Role.PROFESSOR)
       return pages.filter((page) => {
         return page !== 'Gerenciamento';
       });
@@ -98,7 +99,7 @@ export const DefaultAppBar = () => {
   };
 
   const filterUserNavigation = () => {
-    if (user.role === 'estudante')
+    if (user.role === Role.ESTUDANTE)
       return navigation.filter((nav) => {
         return (
           nav.title !== 'Comentários' &&
@@ -107,7 +108,7 @@ export const DefaultAppBar = () => {
         );
       });
 
-    if (user.role === 'monitor' || user.role === 'professor')
+    if (user.role === Role.MONITOR || user.role === Role.PROFESSOR)
       return navigation.filter((nav) => {
         return nav.title !== 'Gerenciamento';
       });
@@ -121,6 +122,10 @@ export const DefaultAppBar = () => {
     dispatch(logout());
     localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME!);
     navigate('/');
+  };
+
+  const handleNavigateToEditProfile = () => {
+    navigate('/mais-ensino/meu-perfil');
   };
 
   const handleOpenNavMenu = (event: any) => {
@@ -145,6 +150,9 @@ export const DefaultAppBar = () => {
     switch (action) {
       case 'Sair':
         handleLogout();
+        break;
+      case 'Editar perfil':
+        handleNavigateToEditProfile();
         break;
       default:
         break;

@@ -12,11 +12,13 @@ import HomePage from './features/home';
 import { Login } from './features/login';
 import ManagePage from './features/manage';
 import NotFoundPage from './features/not-found/NotFoundPage';
+import ProfilePage from './features/profile';
 import SignUp from './features/sign-up';
 import WelcomePage from './features/welcome';
 import { DefaultLayout } from './layout/default.layout';
 import { WelcomeLayout } from './layout/welcome.layout';
 import { login as reduxLogin, selectUser } from './user/userSlice';
+import { Role } from './utils/enums/role.enum';
 
 export const AppRoutes = () => {
   return (
@@ -60,31 +62,43 @@ export const AppRoutes = () => {
         <Route index element={<HomePage />} />
         <Route
           element={
-            <RequireRole role="admin">
+            <RequireRole roles={[Role.ADMIN]}>
               <ManagePage />
             </RequireRole>
           }
           path="/mais-ensino/gerenciamento"
         />
+        {/* //TODO edit profile route */}
+        <Route
+          element={
+            <RequireRole
+              roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
+            >
+              <ProfilePage />
+            </RequireRole>
+          }
+          path="/mais-ensino/meu-perfil"
+        />
       </Route>
 
-      <Route element={<DefaultLayout />} path="/default"></Route>
-      <Route path="*" element={<NotFoundPage />}></Route>
+      <Route element={<DefaultLayout />} path="/default" />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
 
 const RequireRole = ({
   children,
-  role,
+  roles,
 }: {
   children: JSX.Element;
-  role: string;
+  roles?: Role[];
 }) => {
   const user = useAppSelector(selectUser);
   let location = useLocation();
 
-  if (user.role !== role) {
+  //TODO maybe error because of usuario
+  if (roles && !roles.includes(user.role)) {
     return <Navigate to="/mais-ensino" state={{ from: location }} replace />;
   }
 
@@ -113,7 +127,7 @@ const CheckLogin = ({ children }: { children: JSX.Element }) => {
         exp: number;
         sub: number;
         email: string;
-        role: 'usuario' | 'estudante' | 'monitor' | 'professor' | 'admin';
+        role: Role;
       } = jwt_decode(sdnToken);
       const currentDate = new Date();
       const expDate = new Date(exp * 1000);
@@ -144,7 +158,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const user = useAppSelector(selectUser);
   let location = useLocation();
 
-  if (!user.loggedIn || user.role === 'usuario') {
+  if (!user.loggedIn || user.role === Role.USUARIO) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
