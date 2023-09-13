@@ -84,16 +84,16 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          {!isMonitorOrTeacher ? (
-            <></>
-          ) : (
+          {isMonitorOrTeacher && (
             <Grid item xs="auto" container p={2}>
               <Grid item xs={9}>
                 <Grid item xs={12}>
                   <Typography fontWeight={700}>{'Disciplina:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  {profile?.subject || '—'}
+                  <Typography>
+                    {profile && profile.subject ? profile.subject.name : '—'}
+                  </Typography>
                 </Grid>
               </Grid>
             </Grid>

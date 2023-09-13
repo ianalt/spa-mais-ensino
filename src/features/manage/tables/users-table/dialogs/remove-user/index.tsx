@@ -154,16 +154,18 @@ export default function RemoveUser({
                 </Grid>
               </Grid>
 
-              {!isMonitorOrTeacher ? (
-                <></>
-              ) : (
+              {isMonitorOrTeacher && (
                 <Grid item xs={4} container p={1}>
                   <Grid item xs={9}>
                     <Grid item xs={12}>
                       <Typography fontWeight={700}>{'Disciplina:'} </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography>{selected?.subject || '—'}</Typography>
+                      <Typography>
+                        {selected && selected.subject
+                          ? selected.subject.name
+                          : '—'}
+                      </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
