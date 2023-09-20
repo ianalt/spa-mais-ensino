@@ -19,6 +19,7 @@ import { DefaultLayout } from './layout/default.layout';
 import { WelcomeLayout } from './layout/welcome.layout';
 import { login as reduxLogin, selectUser } from './user/userSlice';
 import { Role } from './utils/enums/role.enum';
+import MySubjectPage from './features/my-subject';
 
 export const AppRoutes = () => {
   return (
@@ -60,6 +61,16 @@ export const AppRoutes = () => {
         path="/mais-ensino"
       >
         <Route index element={<HomePage />} />
+
+        <Route
+          element={
+            <RequireRole roles={[Role.PROFESSOR, Role.MONITOR]}>
+              <MySubjectPage />
+            </RequireRole>
+          }
+          path="/mais-ensino/minha-disciplina"
+        />
+
         <Route
           element={
             <RequireRole roles={[Role.ADMIN]}>
@@ -68,7 +79,7 @@ export const AppRoutes = () => {
           }
           path="/mais-ensino/gerenciamento"
         />
-        {/* //TODO edit profile route */}
+
         <Route
           element={
             <RequireRole

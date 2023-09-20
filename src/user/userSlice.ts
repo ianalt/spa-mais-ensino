@@ -16,7 +16,6 @@ export interface BasicUserInfo {
   role: Role;
 }
 
-//TODO change to full user object
 export interface UserState extends BasicUserInfo {
   profile: User | null;
   status: 'loading' | 'idle' | 'failed';
@@ -89,6 +88,9 @@ export const userSlice = createSlice({
       })
       .addCase(editProfile.fulfilled, (state, action: PayloadAction<User>) => {
         state.profile = action.payload;
+        state.id = action.payload.id;
+        state.email = action.payload.email;
+        state.role = action.payload.role;
 
         state.status = 'idle';
         state.isUpdating = false;

@@ -639,7 +639,6 @@ export default function EditProfile({
                   <InputLabel htmlFor="formatted-birth-date-mask-input">
                     Data de nascimento *
                   </InputLabel>
-                  {JSON.stringify(birthDate)}
                   <Input
                     id="formatted-birth-date-mask-input"
                     name="birth-date"
