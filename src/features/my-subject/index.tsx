@@ -1,24 +1,29 @@
-import { Typography } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { getProfile, selectUser } from '../../user/userSlice';
+import { CircularProgress, Divider, Grid } from '@mui/material';
 import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import {
+  getTeacherOrMonitorSubject,
+  selectSubjects,
+} from '../../slices/subjectsSlice';
 import MySubjectPageContent from './MySubjectContent';
+import MySubjectDetails from './MySubjectDetails';
 
 export default function MySubjectPage() {
   const dispatch = useAppDispatch();
-  const currentUser = useAppSelector(selectUser);
-
-  const { profile } = currentUser;
 
   useEffect(() => {
-    document.title = '+Ensino: Minha disciplina';
+    document.title = '+Ensino | Minha disciplina';
 
-    dispatch(getProfile());
+    dispatch(getTeacherOrMonitorSubject());
   }, []);
 
   return (
-    <>
+    <Grid container>
       <MySubjectPageContent />
-    </>
+      <Grid item xs={12}>
+        <Divider />
+      </Grid>
+      <MySubjectDetails />
+    </Grid>
   );
 }

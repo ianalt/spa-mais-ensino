@@ -9,7 +9,7 @@ interface BasicUserInfo {
   lastName: string;
 }
 
-interface BasicCategoryInfo {
+export interface BasicCategoryInfo {
   id: number;
   name: string;
 }
