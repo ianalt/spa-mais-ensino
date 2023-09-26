@@ -9,25 +9,39 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { BasicCategoryInfo } from '../manage/tables/subjects-table/types/subject';
+import { selectCategories } from '../../slices/categoriesSlice';
+import { useAppSelector } from '../../app/hooks';
 
 interface CategoryCardProps {
   category: BasicCategoryInfo;
+  onRemoveRequest: any;
+  onEditRequest: any;
 }
 
-export default function CategoryCard({ category }: CategoryCardProps) {
+export default function CategoryCard({
+  category,
+  onRemoveRequest,
+  onEditRequest,
+}: CategoryCardProps) {
+  const categories = useAppSelector(selectCategories);
+  const { status } = categories;
+
   const handleRemoveCategory = () => {
-    dispatchEvent(openRemoveCategory());
+    // dispatchEvent(openRemoveCategory());
+    onRemoveRequest();
   };
 
   const handleEditCategory = () => {
-    dispatchEvent(openEditCategory());
+    // dispatchEvent(openEditCategory());
+    onEditRequest();
   };
   return (
     <Grid item p={1}>
-      <Card sx={{ maxWidth: 325 }}>
+      <Card sx={{ maxWidth: 300 }}>
         <CardActionArea onClick={() => alert('expandir categoria')}>
           <CardMedia
             sx={{ objectFit: 'contain' }}
@@ -37,38 +51,41 @@ export default function CategoryCard({ category }: CategoryCardProps) {
             alt="pessoa com livro"
           />
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography gutterBottom variant="h5" textAlign="center">
               {category.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi,
-              recusandae minima similique rerum non ratione labore officia
-              totam. Neque consequatur debitis excepturi blanditiis ullam quidem
-              facilis! Magni nihil ad optio!
             </Typography>
           </CardContent>
         </CardActionArea>
         <CardActions>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="space-between">
             <Grid item p={1}>
-              <Fab
-                size="small"
-                color="secondary"
-                onClick={handleRemoveCategory}
-              >
-                <DeleteIcon />
-              </Fab>
+              <Tooltip title="Remover categoria" arrow>
+                <span>
+                  <Fab
+                    size="small"
+                    color="secondary"
+                    onClick={handleRemoveCategory}
+                    disabled={status === 'loading'}
+                  >
+                    <DeleteIcon />
+                  </Fab>
+                </span>
+              </Tooltip>
             </Grid>
 
             <Grid item p={1}>
-              <Fab
-                sx={{ borderRadius: 28 }}
-                size="small"
-                color="primary"
-                onClick={handleEditCategory}
-              >
-                <EditIcon />
-              </Fab>
+              <Tooltip title="Editar categoria" arrow>
+                <span>
+                  <Fab
+                    sx={{ borderRadius: 28 }}
+                    size="small"
+                    color="primary"
+                    onClick={handleEditCategory}
+                  >
+                    <EditIcon />
+                  </Fab>
+                </span>
+              </Tooltip>
             </Grid>
           </Grid>
         </CardActions>

@@ -145,7 +145,7 @@ export default function EditCategory({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{'Adicionar nova disciplina'}</DialogTitle>
+        <DialogTitle>{'Editar categoria'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="edit-category-dialog-slide-description">
             Preencha as informações abaixo para criar uma nova categoria.{' '}
@@ -160,7 +160,7 @@ export default function EditCategory({
                 onClose={handleCloseEditFailedAlert}
                 severity="error"
                 status="Erro"
-                message="Erro(s) detectado(s) durante registro de nova disciplina"
+                message="Erro(s) detectado(s) durante edição de categoria"
               />
             </Grid>
             {status === 'failed' && (
@@ -219,7 +219,7 @@ export default function EditCategory({
                       margin="normal"
                       required
                       fullWidth
-                      label="Professor(a)"
+                      label="Disciplina"
                     />
                   )}
                 />

@@ -12,3 +12,9 @@ export const fetchCategoryOptions = async (): Promise<AxiosResponse> => {
 
   return res;
 };
+
+export const fetchCategory = async (id: number): Promise<AxiosResponse> => {
+  const req = await instance.get(`/categories/${id}`);
+
+  return req;
+};

@@ -1,15 +1,34 @@
 import { CircularProgress, Grid, Typography } from '@mui/material';
-import { useAppSelector } from '../../app/hooks';
-import { selectSubjects } from '../../slices/subjectsSlice';
+import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { getCategory, selectCategories } from '../../slices/categoriesSlice';
+import {
+  getTeacherOrMonitorSubject,
+  selectSubjects,
+} from '../../slices/subjectsSlice';
 import CategoryCard from './CategoryCard';
+import MySubjectEditCategory from './EditCategory';
 
 export default function MySubjectDetails() {
+  const dispatch = useAppDispatch();
+
   const subjects = useAppSelector(selectSubjects);
-  const { selectedSubject, status } = subjects;
+  const { selectedSubject } = subjects;
+
+  const categories = useAppSelector(selectCategories);
+
+  const [openRemoveCategory, setOpenRemoveCategory] = useState<boolean>(false);
+  const [openEditCategory, setOpenEditCategory] = useState<boolean>(false);
+
+  const handleOpenRemoveCategory = () => setOpenRemoveCategory(true);
+  const handleCloseRemoveCategory = () => setOpenRemoveCategory(false);
+
+  const handleOpenEditCategory = () => setOpenEditCategory(true);
+  const handleCloseEditCategory = () => setOpenEditCategory(false);
 
   return (
     <Grid item xs={12} container mt={5}>
-      {status === 'loading' ? (
+      {subjects.status === 'loading' || categories.status === 'loading' ? (
         <Grid item xs={12}>
           <CircularProgress size="large" />
         </Grid>
@@ -35,10 +54,23 @@ export default function MySubjectDetails() {
                 <CategoryCard
                   key={`subject-category-${category.id}`}
                   category={category}
+                  onRemoveRequest={handleOpenRemoveCategory}
+                  onEditRequest={async () => {
+                    await dispatch(getCategory(category.id));
+                    handleOpenEditCategory();
+                  }}
                 />
               );
             })}
           </Grid>
+
+          {/* <MySubjectRemoveCategory open={openRemoveCategory} onRemove={{() => dispatch(get)}} onClose={handleCloseRemoveCategory} /> */}
+          <MySubjectEditCategory
+            open={openEditCategory}
+            onEdit={() => dispatch(getTeacherOrMonitorSubject())}
+            onClose={handleCloseEditCategory}
+            subjectId={selectedSubject?.id || 0}
+          />
         </Grid>
       )}
     </Grid>

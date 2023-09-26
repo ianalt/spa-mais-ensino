@@ -5,4 +5,5 @@ export interface Category {
   active: boolean;
   name: string;
   subject: SubjectOption;
+  //TODO include topics
 }
