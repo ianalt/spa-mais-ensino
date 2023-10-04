@@ -8,6 +8,7 @@ import {
 } from '../../slices/subjectsSlice';
 import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
+import NotificationAlert from '../notification-alert';
 
 export default function MySubjectDetails() {
   const dispatch = useAppDispatch();
@@ -18,13 +19,40 @@ export default function MySubjectDetails() {
   const categories = useAppSelector(selectCategories);
 
   const [openRemoveCategory, setOpenRemoveCategory] = useState<boolean>(false);
+  const [openRemoveCategoryAlert, setOpenRemoveCategoryAlert] =
+    useState<boolean>(false);
+
   const [openEditCategory, setOpenEditCategory] = useState<boolean>(false);
+  const [openEditCategoryAlert, setOpenEditCategoryAlert] =
+    useState<boolean>(false);
 
   const handleOpenRemoveCategory = () => setOpenRemoveCategory(true);
   const handleCloseRemoveCategory = () => setOpenRemoveCategory(false);
+  const handleOpenRemoveCategoryAlert = () => setOpenRemoveCategoryAlert(true);
+  const handleCloseRemoveCategoryAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenRemoveCategoryAlert(false);
+  };
 
   const handleOpenEditCategory = () => setOpenEditCategory(true);
   const handleCloseEditCategory = () => setOpenEditCategory(false);
+  const handleOpenEditCategoryAlert = () => setOpenEditCategoryAlert(true);
+  const handleCloseEditCategoryAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenEditCategoryAlert(false);
+  };
 
   return (
     <Grid item xs={12} container mt={5}>
@@ -65,14 +93,66 @@ export default function MySubjectDetails() {
           </Grid>
 
           {/* <MySubjectRemoveCategory open={openRemoveCategory} onRemove={{() => dispatch(get)}} onClose={handleCloseRemoveCategory} /> */}
-          <MySubjectEditCategory
-            open={openEditCategory}
-            onEdit={() => dispatch(getTeacherOrMonitorSubject())}
-            onClose={handleCloseEditCategory}
-            subjectId={selectedSubject?.id || 0}
-          />
         </Grid>
       )}
+
+      <MySubjectEditCategory
+        open={openEditCategory}
+        onEdit={() => {
+          dispatch(getTeacherOrMonitorSubject());
+          handleOpenEditCategoryAlert();
+        }}
+        onClose={handleCloseEditCategory}
+        subjectId={selectedSubject?.id || 0}
+      />
+
+      <NotificationAlert
+        open={
+          openEditCategoryAlert &&
+          categories.status === 'idle' &&
+          !categories.isUpdating
+        }
+        onClose={handleCloseEditCategoryAlert}
+        severity="success"
+        status="Sucesso"
+        message="Categoria editada com sucesso"
+      />
+
+      <NotificationAlert
+        open={
+          openEditCategoryAlert &&
+          categories.status === 'failed' &&
+          !categories.isUpdating
+        }
+        onClose={handleCloseEditCategoryAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível editar a categoria"
+      />
+
+      <NotificationAlert
+        open={
+          openRemoveCategoryAlert &&
+          categories.status === 'idle' &&
+          !categories.isRemoving
+        }
+        onClose={handleCloseRemoveCategoryAlert}
+        severity="success"
+        status="Sucesso"
+        message="Categoria removida com sucesso"
+      />
+
+      <NotificationAlert
+        open={
+          openRemoveCategoryAlert &&
+          categories.status === 'failed' &&
+          !categories.isRemoving
+        }
+        onClose={handleCloseRemoveCategoryAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível remover a categoria"
+      />
     </Grid>
   );
 }
