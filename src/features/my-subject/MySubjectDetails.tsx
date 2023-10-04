@@ -9,6 +9,7 @@ import {
 import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
 import NotificationAlert from '../notification-alert';
+import MySubjectRemoveCategory from './RemoveCategory';
 
 export default function MySubjectDetails() {
   const dispatch = useAppDispatch();
@@ -82,7 +83,11 @@ export default function MySubjectDetails() {
                 <CategoryCard
                   key={`subject-category-${category.id}`}
                   category={category}
-                  onRemoveRequest={handleOpenRemoveCategory}
+                  onRemoveRequest={async () => {
+                    await dispatch(getCategory(category.id));
+
+                    handleOpenRemoveCategory();
+                  }}
                   onEditRequest={async () => {
                     await dispatch(getCategory(category.id));
                     handleOpenEditCategory();
@@ -91,10 +96,17 @@ export default function MySubjectDetails() {
               );
             })}
           </Grid>
-
-          {/* <MySubjectRemoveCategory open={openRemoveCategory} onRemove={{() => dispatch(get)}} onClose={handleCloseRemoveCategory} /> */}
         </Grid>
       )}
+
+      <MySubjectRemoveCategory
+        open={openRemoveCategory}
+        onRemove={() => {
+          dispatch(getTeacherOrMonitorSubject());
+          handleOpenRemoveCategoryAlert();
+        }}
+        onClose={handleCloseRemoveCategory}
+      />
 
       <MySubjectEditCategory
         open={openEditCategory}

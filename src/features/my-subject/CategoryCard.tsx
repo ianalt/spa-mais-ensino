@@ -31,12 +31,10 @@ export default function CategoryCard({
   const { status } = categories;
 
   const handleRemoveCategory = () => {
-    // dispatchEvent(openRemoveCategory());
     onRemoveRequest();
   };
 
   const handleEditCategory = () => {
-    // dispatchEvent(openEditCategory());
     onEditRequest();
   };
   return (

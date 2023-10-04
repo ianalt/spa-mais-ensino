@@ -42,6 +42,7 @@ export const categoriesSlice = createSlice({
     setList: (state, action: PayloadAction<Category[]>) => {
       state.list = action.payload;
     },
+
     resetSelected: (state) => {
       state.selectedCategory = initialState.selectedCategory;
       state.status = initialState.status;

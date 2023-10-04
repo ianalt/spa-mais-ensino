@@ -37,8 +37,8 @@ export default function RemoveCategory({
   onRemove,
 }: RemoveCategoryProps) {
   const dispatch = useAppDispatch();
-  const subjectsTable = useAppSelector(selectCategoriesTable);
-  const { selected, status, isRemoving } = subjectsTable;
+  const categoriesTable = useAppSelector(selectCategoriesTable);
+  const { selected, status, isRemoving } = categoriesTable;
 
   const handleRemoveCategory = async () => {
     const categoryId = selected ? selected.id : 0;
