@@ -1,4 +1,11 @@
-import { CircularProgress, Grid, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import {
+  CircularProgress,
+  Fab,
+  Grid,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getCategory, selectCategories } from '../../slices/categoriesSlice';
@@ -10,6 +17,7 @@ import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
 import NotificationAlert from '../notification-alert';
 import MySubjectRemoveCategory from './RemoveCategory';
+import MySubjectAddCategory from './AddCategory';
 
 export default function MySubjectDetails() {
   const dispatch = useAppDispatch();
@@ -26,6 +34,24 @@ export default function MySubjectDetails() {
   const [openEditCategory, setOpenEditCategory] = useState<boolean>(false);
   const [openEditCategoryAlert, setOpenEditCategoryAlert] =
     useState<boolean>(false);
+
+  const [openAddCategory, setOpenAddCategory] = useState<boolean>(false);
+  const [openAddCategoryAlert, setOpenAddCategoryAlert] =
+    useState<boolean>(false);
+
+  const handleOpenAddCategory = () => setOpenAddCategory(true);
+  const handleCloseAddCategory = () => setOpenAddCategory(false);
+  const handleOpenAddCategoryAlert = () => setOpenAddCategoryAlert(true);
+  const handleCloseAddCategoryAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAddCategoryAlert(false);
+  };
 
   const handleOpenRemoveCategory = () => setOpenRemoveCategory(true);
   const handleCloseRemoveCategory = () => setOpenRemoveCategory(false);
@@ -77,6 +103,19 @@ export default function MySubjectDetails() {
             </Typography>
           </Grid>
 
+          <Grid item xs={12} container justifyContent="flex-end" mb={1}>
+            <Grid item xs="auto">
+              <Fab
+                variant="extended"
+                color="primary"
+                onClick={handleOpenAddCategory}
+              >
+                <AddIcon />
+                <Typography>Categoria</Typography>
+              </Fab>
+            </Grid>
+          </Grid>
+
           <Grid container justifyContent="space-evenly" item xs={12}>
             {selectedSubject?.categories.map((category) => {
               return (
@@ -99,6 +138,16 @@ export default function MySubjectDetails() {
         </Grid>
       )}
 
+      <MySubjectAddCategory
+        open={openAddCategory}
+        onAdd={() => {
+          dispatch(getTeacherOrMonitorSubject());
+          handleOpenAddCategoryAlert();
+        }}
+        onClose={handleCloseAddCategory}
+        subjectId={subjects.selectedSubject?.id || 0}
+      />
+
       <MySubjectRemoveCategory
         open={openRemoveCategory}
         onRemove={() => {
@@ -116,6 +165,18 @@ export default function MySubjectDetails() {
         }}
         onClose={handleCloseEditCategory}
         subjectId={selectedSubject?.id || 0}
+      />
+
+      <NotificationAlert
+        open={
+          openAddCategoryAlert &&
+          categories.status === 'idle' &&
+          !categories.isCreating
+        }
+        onClose={handleCloseAddCategoryAlert}
+        severity="success"
+        status="Sucesso"
+        message="Categoria criada com sucesso"
       />
 
       <NotificationAlert

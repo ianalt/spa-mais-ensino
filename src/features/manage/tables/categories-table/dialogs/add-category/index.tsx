@@ -126,7 +126,7 @@ export default function AddCategory({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{'Adicionar nova disciplina'}</DialogTitle>
+        <DialogTitle>{'Adicionar nova categoria'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="add-category-dialog-slide-description">
             Preencha as informações abaixo para criar uma nova categoria.{' '}

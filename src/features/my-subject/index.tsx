@@ -1,10 +1,7 @@
-import { CircularProgress, Divider, Grid } from '@mui/material';
+import { Divider, Grid } from '@mui/material';
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import {
-  getTeacherOrMonitorSubject,
-  selectSubjects,
-} from '../../slices/subjectsSlice';
+import { useAppDispatch } from '../../app/hooks';
+import { getTeacherOrMonitorSubject } from '../../slices/subjectsSlice';
 import MySubjectPageContent from './MySubjectContent';
 import MySubjectDetails from './MySubjectDetails';
 
