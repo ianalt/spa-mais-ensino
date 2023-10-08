@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchKnowledgeAreasWelcome } from '../api/knowledge-areas/knowledge-areas.req';
+import { fetchTeacherOrMonitorSubject } from '../api/subjects/subjects.req';
 import { RootState } from '../app/store';
 import { Subject } from '../features/manage/tables/subjects-table/types/subject';
-import { fetchTeacherOrMonitorSubject } from '../api/subjects/subjects.req';
 
 export interface SubjectsState {
   status: 'idle' | 'loading' | 'failed';
@@ -19,7 +18,11 @@ const initialState: SubjectsState = {
 export const subjectsSlice = createSlice({
   name: 'subjects',
   initialState,
-  reducers: {},
+  reducers: {
+    resetErrors: (state) => {
+      state.status = 'idle';
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getTeacherOrMonitorSubject.pending, (state) => {
@@ -48,7 +51,7 @@ export const getTeacherOrMonitorSubject = createAsyncThunk(
   }
 );
 
-export const {} = subjectsSlice.actions;
+export const { resetErrors } = subjectsSlice.actions;
 
 export const selectSubjects = (state: RootState) => state.subjects;
 

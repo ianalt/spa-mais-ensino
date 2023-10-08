@@ -1,6 +1,5 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import Fab from '@mui/material/Fab';
 
 import {
   Card,
@@ -9,12 +8,15 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  IconButton,
   Tooltip,
   Typography,
 } from '@mui/material';
 import { BasicCategoryInfo } from '../manage/tables/subjects-table/types/subject';
 import { selectCategories } from '../../slices/categoriesSlice';
 import { useAppSelector } from '../../app/hooks';
+import { selectUser } from '../../user/userSlice';
+import { Role } from '../../utils/enums/role.enum';
 
 interface CategoryCardProps {
   category: BasicCategoryInfo;
@@ -29,6 +31,9 @@ export default function CategoryCard({
 }: CategoryCardProps) {
   const categories = useAppSelector(selectCategories);
   const { status } = categories;
+
+  const user = useAppSelector(selectUser);
+  const { role } = user;
 
   const handleRemoveCategory = () => {
     onRemoveRequest();
@@ -54,39 +59,40 @@ export default function CategoryCard({
             </Typography>
           </CardContent>
         </CardActionArea>
-        <CardActions>
-          <Grid container justifyContent="space-between">
-            <Grid item p={1}>
-              <Tooltip title="Remover categoria" arrow>
-                <span>
-                  <Fab
-                    size="small"
-                    color="secondary"
-                    onClick={handleRemoveCategory}
-                    disabled={status === 'loading'}
-                  >
-                    <DeleteIcon />
-                  </Fab>
-                </span>
-              </Tooltip>
-            </Grid>
+        {role === Role.PROFESSOR && (
+          <CardActions>
+            <Grid container justifyContent="space-between">
+              <Grid item p={1}>
+                <Tooltip title="Remover categoria" arrow>
+                  <span>
+                    <IconButton
+                      size="small"
+                      color="secondary"
+                      onClick={handleRemoveCategory}
+                      disabled={status === 'loading'}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Grid>
 
-            <Grid item p={1}>
-              <Tooltip title="Editar categoria" arrow>
-                <span>
-                  <Fab
-                    sx={{ borderRadius: 28 }}
-                    size="small"
-                    color="primary"
-                    onClick={handleEditCategory}
-                  >
-                    <EditIcon />
-                  </Fab>
-                </span>
-              </Tooltip>
+              <Grid item p={1}>
+                <Tooltip title="Editar categoria" arrow>
+                  <span>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={handleEditCategory}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Grid>
             </Grid>
-          </Grid>
-        </CardActions>
+          </CardActions>
+        )}
       </Card>
     </Grid>
   );

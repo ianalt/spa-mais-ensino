@@ -1,5 +1,8 @@
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import {
+  Button,
   CircularProgress,
   Fab,
   Grid,
@@ -13,11 +16,13 @@ import {
   getTeacherOrMonitorSubject,
   selectSubjects,
 } from '../../slices/subjectsSlice';
+import NotificationAlert from '../notification-alert';
+import MySubjectAddCategory from './AddCategory';
 import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
-import NotificationAlert from '../notification-alert';
 import MySubjectRemoveCategory from './RemoveCategory';
-import MySubjectAddCategory from './AddCategory';
+import { Role } from '../../utils/enums/role.enum';
+import { selectUser } from '../../user/userSlice';
 
 export default function MySubjectDetails() {
   const dispatch = useAppDispatch();
@@ -25,7 +30,11 @@ export default function MySubjectDetails() {
   const subjects = useAppSelector(selectSubjects);
   const { selectedSubject } = subjects;
 
+  const user = useAppSelector(selectUser);
+
   const categories = useAppSelector(selectCategories);
+
+  const [openAddTopic, setOpenAddTopic] = useState<boolean>(false);
 
   const [openRemoveCategory, setOpenRemoveCategory] = useState<boolean>(false);
   const [openRemoveCategoryAlert, setOpenRemoveCategoryAlert] =
@@ -38,6 +47,9 @@ export default function MySubjectDetails() {
   const [openAddCategory, setOpenAddCategory] = useState<boolean>(false);
   const [openAddCategoryAlert, setOpenAddCategoryAlert] =
     useState<boolean>(false);
+
+  const handleOpenAddTopic = () => setOpenAddTopic(true);
+  const handleCloseAddTopic = () => setOpenAddTopic(false);
 
   const handleOpenAddCategory = () => setOpenAddCategory(true);
   const handleCloseAddCategory = () => setOpenAddCategory(false);
@@ -96,25 +108,44 @@ export default function MySubjectDetails() {
           textAlign="start"
           p={2}
         >
-          <Grid item xs={12} mb={2}>
+          <Grid item xs={12}>
             <Typography variant="h4">{selectedSubject?.name}</Typography>
             <Typography variant="h6">
               {selectedSubject?.knowledgeArea.name}
             </Typography>
           </Grid>
 
-          <Grid item xs={12} container justifyContent="flex-end" mb={1}>
-            <Grid item xs="auto">
-              <Fab
-                variant="extended"
-                color="primary"
-                onClick={handleOpenAddCategory}
-              >
-                <AddIcon />
-                <Typography>Categoria</Typography>
-              </Fab>
-            </Grid>
+          <Grid item xs={12} mb={2}>
+            <Typography variant="body1">
+              {selectedSubject?.description}
+            </Typography>
           </Grid>
+
+          {user.role === Role.PROFESSOR && (
+            <Grid item xs={12} container justifyContent="flex-start" mb={5}>
+              <Grid item xs="auto" px={1}>
+                <Fab
+                  variant="extended"
+                  color="secondary"
+                  onClick={handleOpenAddCategory}
+                >
+                  <AddIcon />
+                  <Typography>Categoria</Typography>
+                </Fab>
+              </Grid>
+
+              <Grid item xs="auto" px={1}>
+                <Fab
+                  variant="extended"
+                  color="secondary"
+                  onClick={handleOpenAddTopic}
+                >
+                  <AddIcon />
+                  <Typography>Tópico</Typography>
+                </Fab>
+              </Grid>
+            </Grid>
+          )}
 
           <Grid container justifyContent="space-evenly" item xs={12}>
             {selectedSubject?.categories.map((category) => {

@@ -8,7 +8,7 @@ export default function MySubjectPageContent() {
           <Typography variant="h3">Minha Disciplina</Typography>
           <Typography variant="body1">
             Aqui, você pode conferir tudo sobre a <strong>disciplina</strong> da
-            qual você é <strong>responsável</strong>. Verifique e gerencie as{' '}
+            qual você <strong>pertence</strong>. Verifique e gerencie as{' '}
             <strong>categorias</strong> de estudo e <strong>tópicos</strong>,
             bem como informações sobre total de <strong>comentários</strong>{' '}
             presentes em cada aula.
