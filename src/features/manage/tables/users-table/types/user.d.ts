@@ -11,7 +11,10 @@ interface BasicSubjectInfo {
 }
 
 export interface User {
+  //TODO include dates
   id: number;
+  createdAt: Date;
+  updatedAt: Date;
   active: boolean;
   role: Role;
   email: string;

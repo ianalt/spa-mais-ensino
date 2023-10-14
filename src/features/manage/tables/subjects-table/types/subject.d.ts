@@ -16,6 +16,8 @@ export interface BasicCategoryInfo {
 
 export interface Subject {
   id: number;
+  createdAt: Date;
+  updatedAt: Date;
   active: boolean;
   name: string;
   description: string;

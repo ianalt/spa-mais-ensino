@@ -15,6 +15,7 @@ import {
   setSelected,
 } from '../../knowledgeAreasTableSlice';
 
+import format from 'date-fns/format';
 import { selectKnowledgeAreasTable } from '../../knowledgeAreasTableSlice';
 
 const Transition = forwardRef(function Transition(
@@ -72,6 +73,42 @@ export default function RemoveKnowledgeArea({
           <DialogContentText id="remove-knowledge-area-dialog-slide-description">
             {'Tem certeza que deseja remover esta área de conhecimento??'}
           </DialogContentText>
+
+          <Grid container justifyContent={'flex-start'}>
+            <Grid item xs={12} container my={1}>
+              <Grid item xs={4} p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Criado em:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>
+                    {selected?.createdAt
+                      ? format(
+                          new Date(`${selected?.createdAt}`),
+                          'dd/MM/yyyy, HH:mm:ss'
+                        )
+                      : '—'}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item xs={4} p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Atualizado em:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>
+                    {selected?.updatedAt
+                      ? format(
+                          new Date(`${selected?.updatedAt}`),
+                          'dd/MM/yyyy, HH:mm:ss'
+                        )
+                      : '—'}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
 
           <Grid container justifyContent={'flex-start'}>
             <Grid item container xs={12} my={1}>

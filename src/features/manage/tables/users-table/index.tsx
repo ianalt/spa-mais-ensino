@@ -188,9 +188,9 @@ export default function UsersTable() {
         </Grid>
 
         {isLoading ? (
-          <Box mt={3}>
+          <Grid item xs={12} mt={3}>
             <LinearProgress />
-          </Box>
+          </Grid>
         ) : (
           <>
             <Grid item xs={12} container>
