@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import { useAppSelector } from '../../app/hooks';
 import { getIsMonitorOrTeacher, selectUserProfile } from '../../user/userSlice';
 import { Role } from '../../utils/enums/role.enum';
+import { format } from 'date-fns';
 
 export default function ProfileDetails() {
   const profile = useAppSelector(selectUserProfile);
@@ -47,6 +48,22 @@ export default function ProfileDetails() {
 
   return (
     <Paper>
+      <Grid container justifyContent={'flex-start'}>
+        <Grid item xs={12} container my={1} p={2}>
+          <Grid item xs={12}>
+            <Typography>
+              <strong>Última atualização em: </strong>
+              {profile?.updatedAt
+                ? format(
+                    new Date(`${profile?.updatedAt}`),
+                    'dd/MM/yyyy, HH:mm:ss'
+                  )
+                : '—'}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Grid>
+
       <Grid item xs={12} container justifyContent={'flex-start'}>
         <Grid item xs={12} my={2}>
           <Divider>
