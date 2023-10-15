@@ -15,6 +15,7 @@ import {
   resetSelected,
   selectCategories,
 } from '../../slices/categoriesSlice';
+import { format } from 'date-fns';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -73,6 +74,42 @@ export default function MySubjectRemoveCategory({
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>
+            <Grid item xs={12} container my={1}>
+              <Grid item xs={4} p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Criado em:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>
+                    {selectedCategory?.createdAt
+                      ? format(
+                          new Date(`${selectedCategory?.createdAt}`),
+                          'dd/MM/yyyy, HH:mm:ss'
+                        )
+                      : '—'}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              <Grid item xs={4} p={1}>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700}>{'Atualizado em:'} </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>
+                    {selectedCategory?.updatedAt
+                      ? format(
+                          new Date(`${selectedCategory?.updatedAt}`),
+                          'dd/MM/yyyy, HH:mm:ss'
+                        )
+                      : '—'}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid container justifyContent={'flex-start'}>
             <Grid item xs={12} my={2}>
               <Divider>
                 <Chip label="Detalhes" />
@@ -86,15 +123,6 @@ export default function MySubjectRemoveCategory({
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selectedCategory?.name}</Typography>
-                </Grid>
-              </Grid>
-
-              <Grid item container xs="auto" py={1} pr={1}>
-                <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'Disciplina:'} </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>{selectedCategory?.subject.name}</Typography>
                 </Grid>
               </Grid>
 
