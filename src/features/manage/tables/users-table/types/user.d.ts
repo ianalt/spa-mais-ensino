@@ -12,6 +12,8 @@ interface BasicSubjectInfo {
 
 export interface User {
   id: number;
+  createdAt: Date;
+  updatedAt: Date;
   active: boolean;
   role: Role;
   email: string;

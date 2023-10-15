@@ -304,7 +304,7 @@ export default function EditSubject({
                 name="description"
                 label="Descrição"
                 variant="outlined"
-                placeholder="Digite uma descrição para a área de conhecimento..."
+                placeholder="Digite uma descrição para a disciplina..."
                 value={description}
                 multiline
                 rows={6}

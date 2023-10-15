@@ -20,3 +20,10 @@ export const fetchUpdateSubjectOptions = async (
 
   return res;
 };
+
+export const fetchTeacherOrMonitorSubject =
+  async (): Promise<AxiosResponse> => {
+    const res = await instance.get(`/subjects/user`);
+
+    return res;
+  };

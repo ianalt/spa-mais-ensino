@@ -9,13 +9,15 @@ interface BasicUserInfo {
   lastName: string;
 }
 
-interface BasicCategoryInfo {
+export interface BasicCategoryInfo {
   id: number;
   name: string;
 }
 
 export interface Subject {
   id: number;
+  createdAt: Date;
+  updatedAt: Date;
   active: boolean;
   name: string;
   description: string;

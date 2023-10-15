@@ -4,6 +4,8 @@ import { RootState } from '../app/store';
 
 export interface KnowledgeArea {
   id: number;
+  createdAt: Date;
+  updatedAt: Date;
   active: boolean;
   name: string;
   description: string | null;
