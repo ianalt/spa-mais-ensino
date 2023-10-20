@@ -8,7 +8,7 @@ import categoriesReducer from '../slices/categoriesSlice';
 import userReducer from '../user/userSlice';
 import subjectsTableReducer from '../features/manage/tables/subjects-table/subjectsTableSlice';
 import categoriesTableReducer from '../features/manage/tables/categories-table/categoriesTableSlice';
-import topicsTableReducer from '../features/manage/tables/topics-table/topicsTableSlice';
+import classesTableReducer from '../features/manage/tables/classes-table/classesTableSlice';
 import signUpReducer from '../features/sign-up/signUpSlice';
 
 export const store = configureStore({
@@ -22,7 +22,7 @@ export const store = configureStore({
     knowledgeAreasTable: knowledgeAreasTableReducer,
     subjectsTable: subjectsTableReducer,
     categoriesTable: categoriesTableReducer,
-    topicsTable: topicsTableReducer,
+    classesTable: classesTableReducer,
     signUp: signUpReducer,
   },
 });

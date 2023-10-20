@@ -1,0 +1,61 @@
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { fetchClasses } from '../../../../api/classes/classes.req';
+import { RootState } from '../../../../app/store';
+import { Classes } from './types/classes';
+
+export interface ClassesTableState {
+  status: 'idle' | 'loading' | 'failed';
+  list: Classes[];
+  selected?: Classes;
+}
+
+const initialState: ClassesTableState = {
+  status: 'idle',
+  list: [],
+  selected: undefined,
+};
+
+export const classesTableSlice = createSlice({
+  name: 'classesTable',
+  initialState,
+  reducers: {
+    setSelected: (state, action: PayloadAction<Classes | undefined>) => {
+      state.selected = action.payload;
+    },
+    setList: (state, action: PayloadAction<Classes[]>) => {
+      state.list = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getClassesList.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getClassesList.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(
+        getClassesList.fulfilled,
+        (state, action: PayloadAction<Classes[]>) => {
+          state.status = 'idle';
+          state.list = action.payload;
+        }
+      );
+  },
+});
+
+export const getClassesList = createAsyncThunk(
+  'classesTable/getClasses',
+  async () => {
+    const response = await fetchClasses();
+    const classes: Classes[] = response.data;
+
+    return classes;
+  }
+);
+
+export const { setSelected, setList } = classesTableSlice.actions;
+
+export const selectClassesTable = (state: RootState) => state.classesTable;
+
+export default classesTableSlice.reducer;

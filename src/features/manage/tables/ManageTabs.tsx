@@ -6,12 +6,12 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../../app/hooks';
 import CategoriesTable from './categories-table';
 import { getCategoriesList } from './categories-table/categoriesTableSlice';
+import TopicsTable from './classes-table';
+import { getClassesList } from './classes-table/classesTableSlice';
 import KnowledgeAreasTable from './knowledge-areas-table';
 import { getKnowledgeAreasList } from './knowledge-areas-table/knowledgeAreasTableSlice';
 import SubjectsTable from './subjects-table';
 import { getSubjectsList } from './subjects-table/subjectsTableSlice';
-import TopicsTable from './topics-table';
-import { getTopicsList } from './topics-table/topicsTableSlice';
 import UsersTable from './users-table';
 
 export default function ManageTabs() {
@@ -26,7 +26,7 @@ export default function ManageTabs() {
     dispatch(getKnowledgeAreasList());
     dispatch(getSubjectsList());
     dispatch(getCategoriesList());
-    dispatch(getTopicsList());
+    dispatch(getClassesList());
   }, []);
 
   return (

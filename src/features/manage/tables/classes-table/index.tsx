@@ -3,8 +3,8 @@ import MaterialTable from 'material-table';
 import { Fragment, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
-import TopicDetails from './dialogs/topic-details';
-import { selectTopicsTable, setSelected } from './topicsTableSlice';
+import TopicDetails from './dialogs/class-details';
+import { selectTopicsTable, setSelected } from './classesTableSlice';
 
 export default function TopicsTable() {
   const dispatch = useAppDispatch();

@@ -11,7 +11,7 @@ import { AddCategoryBody } from './dialogs/add-category/types/add-category-body'
 import { EditCategoryBody } from './dialogs/edit-category/types/edit-category-body';
 import { CategoryOptions } from './dialogs/types/category-options';
 import { SubjectOption } from './dialogs/types/subject-option';
-import { Category } from './types/category';
+import { Category } from './dialogs/types/category';
 
 export interface CategoriesTableState {
   status: 'idle' | 'loading' | 'failed';

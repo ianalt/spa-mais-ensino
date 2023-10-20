@@ -9,7 +9,7 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import { Dispatch, SetStateAction, forwardRef } from 'react';
 import { useAppSelector } from '../../../../../../app/hooks';
-import { selectTopicsTable, setSelected } from '../../topicsTableSlice';
+import { selectClassesTable, setSelected } from '../../classesTableSlice';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -20,14 +20,14 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface TopicDetailsProps {
+interface ClassDetailsProps {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function TopicDetails({ open, onClose }: TopicDetailsProps) {
-  const topicsTable = useAppSelector(selectTopicsTable);
-  const { selected } = topicsTable;
+export default function ClassDetails({ open, onClose }: ClassDetailsProps) {
+  const classesTable = useAppSelector(selectClassesTable);
+  const { selected } = classesTable;
 
   const handleClose = () => {
     onClose(true);
@@ -41,13 +41,13 @@ export default function TopicDetails({ open, onClose }: TopicDetailsProps) {
         TransitionComponent={Transition}
         keepMounted
         onClose={() => onClose(true)}
-        aria-describedby="topic-details-dialog-slide-description"
+        aria-describedby="class-details-dialog-slide-description"
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>{'Detalhes do tópico'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="topic-details-dialog-slide-description">
+          <DialogContentText id="class-details-dialog-slide-description">
             {'Aqui estão os detalhes sobre tópico: '}
           </DialogContentText>
 
