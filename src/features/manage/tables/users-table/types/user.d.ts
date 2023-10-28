@@ -7,7 +7,6 @@ import { PhoneNumber } from './phone-number';
 interface BasicSubjectInfo {
   id: number;
   name: string;
-  description: string;
 }
 
 export interface User {
@@ -27,6 +26,8 @@ export interface User {
   financialInfo: FinancialInfo;
   phoneNumbers: PhoneNumber[];
   educationInfoList: EducationInfo[];
-  comments: any[];
   subject: BasicSubjectInfo | null;
+  //TODO questions and answers
+  createdQuestions: any[];
+  createdAnswers: any[];
 }

@@ -1,7 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
-  Box,
   Fab,
   Grid,
   LinearProgress,

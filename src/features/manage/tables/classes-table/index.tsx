@@ -3,12 +3,12 @@ import MaterialTable from 'material-table';
 import { Fragment, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
-import TopicDetails from './dialogs/class-details';
-import { selectTopicsTable, setSelected } from './classesTableSlice';
+import { selectClassesTable, setSelected } from './classesTableSlice';
+import ClassDetails from './dialogs/class-details';
 
-export default function TopicsTable() {
+export default function ClassesTable() {
   const dispatch = useAppDispatch();
-  const topicsTable = useAppSelector(selectTopicsTable);
+  const classesTable = useAppSelector(selectClassesTable);
 
   const [openDetails, setOpenDetails] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -51,10 +51,10 @@ export default function TopicsTable() {
             type: 'boolean',
           },
         ]}
-        data={_.cloneDeep(topicsTable.list)}
+        data={_.cloneDeep(classesTable.list)}
         title="Lista de tópicos"
       />
-      <TopicDetails open={openDetails} onClose={() => setOpenDetails(false)} />
+      <ClassDetails open={openDetails} onClose={() => setOpenDetails(false)} />
     </Fragment>
   );
 }

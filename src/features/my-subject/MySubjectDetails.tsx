@@ -1,13 +1,9 @@
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import {
-  Button,
   CircularProgress,
   Fab,
   Grid,
-  Tooltip,
-  Typography,
+  Typography
 } from '@mui/material';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -16,13 +12,13 @@ import {
   getTeacherOrMonitorSubject,
   selectSubjects,
 } from '../../slices/subjectsSlice';
+import { selectUser } from '../../user/userSlice';
+import { Role } from '../../utils/enums/role.enum';
 import NotificationAlert from '../notification-alert';
 import MySubjectAddCategory from './AddCategory';
 import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
 import MySubjectRemoveCategory from './RemoveCategory';
-import { Role } from '../../utils/enums/role.enum';
-import { selectUser } from '../../user/userSlice';
 
 export default function MySubjectDetails() {
   const dispatch = useAppDispatch();
