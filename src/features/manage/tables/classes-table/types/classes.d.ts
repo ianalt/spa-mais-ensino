@@ -1,3 +1,32 @@
+import { BasicUserInfo } from '../../subjects-table/types/basic-user-info';
+
+interface ClassQuestion {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  active: boolean;
+  title: string;
+  content: string;
+  //TODO answer
+  answers: any[];
+  //TODO user
+  createdBy: BasicUserInfo;
+}
+
+interface QuestionCategory {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  active: boolean;
+  name: string;
+  subject: SubjectForCategory;
+}
+
+interface SubjectForCategory {
+  id: number;
+  name: string;
+}
+
 export interface Classes {
   id: number;
 
@@ -9,11 +38,11 @@ export interface Classes {
 
   title: string;
 
-  questions: BasicQuestionInfo[];
+  questions: ClassQuestion[];
 
-  classFiles: BasicCLassFileInfo[];
+  classFiles: any[];
 
   createdBy: BasicUserInfo;
 
-  category?: BasicCategoryInfo;
+  category: QuestionCategory;
 }

@@ -25,6 +25,10 @@ export const classesTableSlice = createSlice({
     setList: (state, action: PayloadAction<Classes[]>) => {
       state.list = action.payload;
     },
+    resetSelected: (state) => {
+      state.selected = initialState.selected;
+      state.status = initialState.status;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -54,8 +58,15 @@ export const getClassesList = createAsyncThunk(
   }
 );
 
-export const { setSelected, setList } = classesTableSlice.actions;
+export const { setSelected, setList, resetSelected } =
+  classesTableSlice.actions;
 
 export const selectClassesTable = (state: RootState) => state.classesTable;
+
+export const getIsLoading = (state: RootState) => {
+  const { status } = state.classesTable;
+
+  return status === 'loading';
+};
 
 export default classesTableSlice.reducer;
