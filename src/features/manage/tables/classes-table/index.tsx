@@ -14,8 +14,10 @@ import {
 } from './classesTableSlice';
 import ClassDetails from './dialogs/class-details';
 import { Fab, Grid, LinearProgress, Tooltip, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClassesTable() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const classesTable = useAppSelector(selectClassesTable);
   const { list } = classesTable;
@@ -50,7 +52,7 @@ export default function ClassesTable() {
   };
 
   const handleOpenCreate = () => {
-    alert('Criar nova aula!!!');
+    navigate('/mais-ensino/gerenciamento/nova-aula');
   };
 
   const handleRefreshUsers = () => {

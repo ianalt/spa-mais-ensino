@@ -20,6 +20,7 @@ import { WelcomeLayout } from './layout/welcome.layout';
 import { login as reduxLogin, selectUser } from './user/userSlice';
 import { Role } from './utils/enums/role.enum';
 import MySubjectPage from './features/my-subject';
+import CreateClassPage from './features/create-class';
 
 export const AppRoutes = () => {
   return (
@@ -69,7 +70,16 @@ export const AppRoutes = () => {
             </RequireRole>
           }
           path="/mais-ensino/minha-disciplina"
-        />
+        >
+          <Route
+            element={
+              <RequireRole roles={[Role.PROFESSOR]}>
+                <CreateClassPage />
+              </RequireRole>
+            }
+            path="/mais-ensino/minha-disciplina/aula"
+          />
+        </Route>
 
         <Route
           element={
@@ -78,6 +88,15 @@ export const AppRoutes = () => {
             </RequireRole>
           }
           path="/mais-ensino/gerenciamento"
+        />
+
+        <Route
+          element={
+            <RequireRole roles={[Role.ADMIN]}>
+              <CreateClassPage />
+            </RequireRole>
+          }
+          path="/mais-ensino/gerenciamento/nova-aula"
         />
 
         <Route
