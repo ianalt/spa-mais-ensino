@@ -6,20 +6,20 @@ import { Classes } from './types/classes';
 export interface ClassesTableState {
   status: 'idle' | 'loading' | 'failed';
   list: Classes[];
-  selected?: Classes;
+  selected: Classes | null;
 }
 
 const initialState: ClassesTableState = {
   status: 'idle',
   list: [],
-  selected: undefined,
+  selected: null,
 };
 
 export const classesTableSlice = createSlice({
   name: 'classesTable',
   initialState,
   reducers: {
-    setSelected: (state, action: PayloadAction<Classes | undefined>) => {
+    setSelected: (state, action: PayloadAction<Classes | null>) => {
       state.selected = action.payload;
     },
     setList: (state, action: PayloadAction<Classes[]>) => {
@@ -49,7 +49,7 @@ export const classesTableSlice = createSlice({
 });
 
 export const getClassesList = createAsyncThunk(
-  'classesTable/getClasses',
+  'classesTable/getClassesList',
   async () => {
     const response = await fetchClasses();
     const classes: Classes[] = response.data;

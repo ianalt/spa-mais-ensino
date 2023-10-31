@@ -5,6 +5,7 @@ import usersTableReducer from '../features/manage/tables/users-table/usersTableS
 import knowledgeAreasReducer from '../slices/knowledgeAreasSlice';
 import subjectsReducer from '../slices/subjectsSlice';
 import categoriesReducer from '../slices/categoriesSlice';
+import classesReducer from '../slices/classesSlice';
 import userReducer from '../user/userSlice';
 import subjectsTableReducer from '../features/manage/tables/subjects-table/subjectsTableSlice';
 import categoriesTableReducer from '../features/manage/tables/categories-table/categoriesTableSlice';
@@ -18,6 +19,7 @@ export const store = configureStore({
     knowledgeAreas: knowledgeAreasReducer,
     subjects: subjectsReducer,
     categories: categoriesReducer,
+    classes: classesReducer,
     usersTable: usersTableReducer,
     knowledgeAreasTable: knowledgeAreasTableReducer,
     subjectsTable: subjectsTableReducer,

@@ -31,7 +31,7 @@ export default function ClassDetails({ open, onClose }: ClassDetailsProps) {
 
   const handleClose = () => {
     onClose(true);
-    setSelected(undefined);
+    setSelected(null);
   };
 
   return (
