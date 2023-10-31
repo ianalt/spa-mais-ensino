@@ -152,7 +152,7 @@ export default function CreateClassForm() {
         alignItems="center"
         sx={{ border: '1px solid blue' }}
       >
-        <Grid item xs="auto" px={1} flexDirection="column">
+        <Grid item xs="auto" px={1}>
           {!videoClassFile && <em>Nenhum vídeo selecionado</em>}
           <Button
             component="label"
