@@ -1,4 +1,4 @@
-interface BasicCategoryInfo {
+export interface BasicCategoryInfo {
   id: number;
   name: string;
 }

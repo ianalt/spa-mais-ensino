@@ -100,6 +100,7 @@ export default function CreateClassForm() {
   };
 
   const handleReturnToManagePage = () => {
+    resetFields();
     navigate('/mais-ensino/gerenciamento');
   };
 
