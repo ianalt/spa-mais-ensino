@@ -2,13 +2,15 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
   Autocomplete,
   Button,
+  Divider,
   Grid,
-  Input,
+  List,
+  ListItem,
   TextField,
-  Typography,
   createFilterOptions,
   styled,
 } from '@mui/material';
+
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
@@ -19,6 +21,7 @@ import {
   BasicCategoryInfo,
   SubjectWithCategories,
 } from './types/class-options';
+import { useNavigate } from 'react-router-dom';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -33,12 +36,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 export default function CreateClassForm() {
-  //TODO titulo
-  //TODO categoria
-  //TODO videoaula
-  //TODO material de estudo
-  //TODO preview??? URL.createObjectURL(this.files[0]);
-
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const subjectsList = useAppSelector(selectSubjectOptionsForClass);
@@ -64,6 +62,47 @@ export default function CreateClassForm() {
     stringify: (option) => option.name,
   });
 
+  const handleListExtraFilesNames = () => {
+    if (extraFiles && extraFiles.length > 0) {
+      const length = extraFiles.length;
+      const names = [];
+      for (let i = 0; i < length; ++i) {
+        const name = extraFiles.item(i)?.name || null;
+        names.push(name);
+      }
+
+      return (
+        <List>
+          {names.map((item, index) => {
+            return (
+              <ListItem key={`extra-file-name-${index}`}>
+                <em>{item}</em>
+              </ListItem>
+            );
+          })}
+        </List>
+      );
+    }
+  };
+
+  //TODO create req body
+
+  const handleCreateNewClass = () => {
+    const body = {
+      title: classTitle,
+      categoryId: chosenCategory?.id || 0,
+      videoClassFile,
+      extraFiles,
+    };
+
+    console.log(body);
+    alert('Criar aula!!!');
+  };
+
+  const handleReturnToManagePage = () => {
+    navigate('/mais-ensino/gerenciamento');
+  };
+
   const resetFields = () => {
     setClassTitle('');
     setChosenSubject(null);
@@ -79,10 +118,11 @@ export default function CreateClassForm() {
   }, []);
 
   return (
-    <Grid item xs={12} container mt={2} sx={{ border: '1px solid red' }}>
-      <Grid item xs={12}>
+    <Grid item xs={12} container justifyContent="center" mt={2}>
+      <Grid item xs={8}>
         <TextField
           label="Título"
+          placeholder="Digite um título para a aula"
           fullWidth
           required
           value={classTitle}
@@ -90,8 +130,8 @@ export default function CreateClassForm() {
         />
       </Grid>
 
-      <Grid item xs={12} container justifyContent="space-between">
-        <Grid item xs={5.5}>
+      <Grid item xs={8} container justifyContent="space-between" mt={1}>
+        <Grid item xs={5}>
           <Autocomplete
             id="create-class-form-subject-option"
             noOptionsText="Nenhuma opção encontrada"
@@ -107,6 +147,7 @@ export default function CreateClassForm() {
                 setCategories(categoryOptions);
               } else {
                 setCategories([]);
+                setChosenCategory(null);
               }
             }}
             getOptionLabel={(option) => option.name}
@@ -121,7 +162,7 @@ export default function CreateClassForm() {
             )}
           />
         </Grid>
-        <Grid item xs={5.5}>
+        <Grid item xs={5}>
           <Autocomplete
             id="create-class-form-category-option"
             noOptionsText="Nenhuma opção encontrada"
@@ -145,63 +186,124 @@ export default function CreateClassForm() {
         </Grid>
       </Grid>
 
+      <Grid item xs={8} my={2}>
+        <Divider />
+      </Grid>
+
       <Grid
         item
-        xs={12}
+        xs={6}
+        px={1}
         container
         alignItems="center"
-        sx={{ border: '1px solid blue' }}
+        flexDirection="column"
+        mt={2}
       >
-        <Grid item xs="auto" px={1}>
-          {!videoClassFile && <em>Nenhum vídeo selecionado</em>}
+        <Grid item xs="auto" p={1}>
+          {!videoClassFile || videoClassFile.length <= 0 ? (
+            <em>Nenhum vídeo selecionado</em>
+          ) : (
+            <em>{`${videoClassFile[0].name}`}</em>
+          )}
+        </Grid>
+        <Grid item xs="auto" p={1}>
           <Button
             component="label"
             variant="contained"
+            color="secondary"
             startIcon={<CloudUploadIcon />}
           >
             Adicionar videoaula
             <VisuallyHiddenInput
               type="file"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setVideoClassFile(event.target.files);
+                const value =
+                  event.target.files && event.target.files.length > 0
+                    ? event.target.files
+                    : null;
+
+                setVideoClassFile(value);
               }}
               accept=".mp4"
             />
           </Button>
         </Grid>
-        <Grid item xs="auto" container alignContent="center" px={1}>
-          {videoClassFile && (
-            <Typography>{`${videoClassFile[0].name}`}</Typography>
-          )}
-        </Grid>
+      </Grid>
+
+      <Grid item xs={8} my={2}>
+        <Divider />
       </Grid>
 
       <Grid
         item
         xs={12}
+        px={1}
         container
         alignItems="center"
-        sx={{ border: '1px solid green' }}
+        flexDirection="column"
       >
-        <Grid item xs="auto" px={1}>
-          {!videoClassFile && <em>Nenhum material selecionado</em>}
+        <Grid item xs="auto" p={1}>
+          {!extraFiles || extraFiles.length <= 0 ? (
+            <em>Nenhum material selecionado</em>
+          ) : (
+            //TODO list files names
+            handleListExtraFilesNames()
+          )}
+        </Grid>
+        <Grid item xs="auto" p={1}>
           <Button
             component="label"
             variant="contained"
+            color="secondary"
             startIcon={<CloudUploadIcon />}
           >
             Adicionar materiais complementares
             <VisuallyHiddenInput
               type="file"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setExtraFiles(event.target.files);
+                const value =
+                  event.target.files && event.target.files.length > 0
+                    ? event.target.files
+                    : null;
+
+                setExtraFiles(value);
               }}
               accept=".pdf, .docx, .doc"
               multiple
             />
           </Button>
         </Grid>
-        <Grid item xs="auto" container alignContent="center" px={1}></Grid>
+      </Grid>
+
+      <Grid item xs={8} my={2}>
+        <Divider />
+      </Grid>
+
+      <Grid item xs={8} container justifyContent="space-between" my={2}>
+        <Button
+          size="large"
+          variant="contained"
+          color="primary"
+          onClick={handleReturnToManagePage}
+        >
+          Voltar
+        </Button>
+        <Button
+          // isLoading={isCreating}
+          size="large"
+          variant="contained"
+          color="primary"
+          onClick={handleCreateNewClass}
+          disabled={
+            !classTitle ||
+            !chosenSubject ||
+            !chosenCategory ||
+            !videoClassFile ||
+            videoClassFile.length <= 0
+          }
+        >
+          Criar aula
+        </Button>
       </Grid>
     </Grid>
   );

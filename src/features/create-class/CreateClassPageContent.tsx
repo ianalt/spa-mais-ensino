@@ -4,7 +4,7 @@ export default function CreateClassPageContent() {
   return (
     <Grid item xs={12} container mt={5}>
       <Grid item xs={6} container justifyContent="center" p={4}>
-        <Box width="80%" height="50%">
+        <Box width="70%" height="40%">
           <img
             src="/undraw_tutorial_video_re_wepc.svg"
             alt="Imagem"
@@ -17,7 +17,8 @@ export default function CreateClassPageContent() {
         <Typography variant="body1">
           Forneça um <strong>título</strong> e um <strong>vídeo</strong> para a
           nova aula, além de <strong>materiais complementares</strong> para
-          estudo, caso necessário.
+          estudo, caso necessário. Não esqueça de confirmar todos os dados antes
+          de prosseguir clicando em <strong>Criar Aula</strong>.
         </Typography>
       </Grid>
     </Grid>
