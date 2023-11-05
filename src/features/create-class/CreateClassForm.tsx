@@ -22,6 +22,7 @@ import {
   SubjectWithCategories,
 } from './types/class-options';
 import { useNavigate } from 'react-router-dom';
+import { CreateClassBody } from '../manage/tables/classes-table/types/create-class-body';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -88,11 +89,14 @@ export default function CreateClassForm() {
   //TODO create req body
 
   const handleCreateNewClass = () => {
-    const body = {
+    const body: CreateClassBody = {
       title: classTitle,
       categoryId: chosenCategory?.id || 0,
-      videoClassFile,
-      extraFiles,
+      videoClassFile:
+        videoClassFile && videoClassFile.length === 1
+          ? videoClassFile[0]
+          : null,
+      extraFiles: extraFiles && extraFiles.length > 0 ? extraFiles : null,
     };
 
     console.log(body);
