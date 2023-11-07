@@ -1,5 +1,6 @@
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
+  Alert,
   Autocomplete,
   Button,
   Divider,
@@ -7,6 +8,7 @@ import {
   List,
   ListItem,
   TextField,
+  Typography,
   createFilterOptions,
   styled,
 } from '@mui/material';
@@ -14,7 +16,10 @@ import {
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
+  createNewClass,
   getClassOptions,
+  resetErrors,
+  selectClasses,
   selectSubjectOptionsForClass,
 } from '../../slices/classesSlice';
 import {
@@ -23,6 +28,8 @@ import {
 } from './types/class-options';
 import { useNavigate } from 'react-router-dom';
 import { CreateClassBody } from '../manage/tables/classes-table/types/create-class-body';
+import NotificationAlert from '../notification-alert';
+import { LoadingButton } from '@mui/lab';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -39,6 +46,9 @@ const VisuallyHiddenInput = styled('input')({
 export default function CreateClassForm() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const classes = useAppSelector(selectClasses);
+  const { status, isCreating, error } = classes;
 
   const subjectsList = useAppSelector(selectSubjectOptionsForClass);
 
@@ -86,9 +96,41 @@ export default function CreateClassForm() {
     }
   };
 
-  //TODO create req body
+  const [openCreateClassAlert, setOpenCreateClassAlert] =
+    useState<boolean>(false);
+  const handleOpenCreateClassAlert = () => {
+    setOpenCreateClassAlert(true);
+  };
 
-  const handleCreateNewClass = () => {
+  const handleCloseCreateClassAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenCreateClassAlert(false);
+  };
+
+  const [openCreateClassFailedAlert, setOpenCreateFailedAlert] =
+    useState<boolean>(false);
+  const handleOpenCreateClassFailedAlert = () => {
+    setOpenCreateFailedAlert(true);
+  };
+
+  const handleCloseCreateFailedAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenCreateFailedAlert(false);
+  };
+
+  const handleCreateNewClass = async () => {
     const body: CreateClassBody = {
       title: classTitle,
       categoryId: chosenCategory?.id || 0,
@@ -99,8 +141,14 @@ export default function CreateClassForm() {
       extraFiles: extraFiles && extraFiles.length > 0 ? extraFiles : null,
     };
 
-    console.log(body);
-    alert('Criar aula!!!');
+    try {
+      await dispatch(createNewClass(body)).unwrap();
+
+      //TODO add good notification
+      handleOpenCreateClassAlert();
+    } catch (rejectedValueOrSerializedError) {
+      handleOpenCreateClassFailedAlert();
+    }
   };
 
   const handleReturnToManagePage = () => {
@@ -120,10 +168,55 @@ export default function CreateClassForm() {
   useEffect(() => {
     dispatch(getClassOptions());
     resetFields();
+
+    dispatch(resetErrors());
   }, []);
 
   return (
     <Grid item xs={12} container justifyContent="center" mt={2}>
+      <Grid container justifyContent="flex-start">
+        <Grid item xs={12}>
+          <NotificationAlert
+            open={status === 'failed' && openCreateClassFailedAlert}
+            onClose={handleCloseCreateFailedAlert}
+            severity="error"
+            status="Erro"
+            message="Erro(s) detectado(s) durante criação de nova aula"
+          />
+        </Grid>
+        {status === 'failed' && (
+          <Grid item xs={12} container m={1}>
+            <Alert severity="error">
+              <Typography variant="body1">
+                <strong>Erro ao criar nova aula. </strong>
+              </Typography>
+
+              {error.map((e: string, index: number) => {
+                return (
+                  <Typography key={index} variant="body2">
+                    &gt; {e}.
+                  </Typography>
+                );
+              })}
+            </Alert>
+          </Grid>
+        )}
+
+        {status === 'idle' && !error && (
+          <NotificationAlert
+            open={
+              openCreateClassAlert &&
+              classes.status === 'idle' &&
+              !classes.isCreating
+            }
+            onClose={handleCloseCreateClassAlert}
+            severity="success"
+            status="Sucesso"
+            message="Aula criada com sucesso"
+          />
+        )}
+      </Grid>
+
       <Grid item xs={8}>
         <TextField
           label="Título"
@@ -293,13 +386,15 @@ export default function CreateClassForm() {
         >
           Voltar
         </Button>
-        <Button
-          // isLoading={isCreating}
+        <LoadingButton
+          loading={isCreating || status === 'loading'}
           size="large"
           variant="contained"
           color="primary"
           onClick={handleCreateNewClass}
           disabled={
+            isCreating ||
+            status === 'loading' ||
             !classTitle ||
             !chosenSubject ||
             !chosenCategory ||
@@ -308,7 +403,7 @@ export default function CreateClassForm() {
           }
         >
           Criar aula
-        </Button>
+        </LoadingButton>
       </Grid>
     </Grid>
   );

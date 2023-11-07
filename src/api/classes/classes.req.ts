@@ -6,3 +6,9 @@ export const fetchClasses = async (): Promise<AxiosResponse> => {
 
   return res;
 };
+
+export const fetchClass = async (classId: number): Promise<AxiosResponse> => {
+  const res = await instance.get(`/classes/${classId}`);
+
+  return res;
+};

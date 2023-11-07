@@ -1,6 +1,6 @@
-import { Grid, TextField } from '@mui/material';
-import CreateClassPageContent from './CreateClassPageContent';
+import { Grid } from '@mui/material';
 import CreateClassForm from './CreateClassForm';
+import CreateClassPageContent from './CreateClassPageContent';
 
 export default function CreateClassPage() {
   return (
