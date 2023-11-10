@@ -70,16 +70,16 @@ export const AppRoutes = () => {
             </RequireRole>
           }
           path="/mais-ensino/minha-disciplina"
-        >
-          <Route
-            element={
-              <RequireRole roles={[Role.PROFESSOR]}>
-                <CreateClassPage />
-              </RequireRole>
-            }
-            path="/mais-ensino/minha-disciplina/aula"
-          />
-        </Route>
+        />
+
+        <Route
+          element={
+            <RequireRole roles={[Role.PROFESSOR]}>
+              <CreateClassPage />
+            </RequireRole>
+          }
+          path="/mais-ensino/minha-disciplina/nova-aula"
+        />
 
         <Route
           element={

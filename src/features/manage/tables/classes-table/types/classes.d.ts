@@ -13,7 +13,7 @@ interface ClassQuestion {
   createdBy: BasicUserInfo;
 }
 
-interface QuestionCategory {
+interface ClassCategory {
   id: number;
   createdAt: Date;
   updatedAt: Date;
@@ -44,5 +44,5 @@ export interface Classes {
 
   createdBy: BasicUserInfo;
 
-  category: QuestionCategory;
+  category: ClassCategory;
 }

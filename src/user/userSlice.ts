@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../app/store';
-import { Role } from '../utils/enums/role.enum';
-import { User } from '../features/manage/tables/users-table/types/user';
 import {
   changePassword,
   fetchProfile,
   updateProfile,
 } from '../api/users/profile.req';
-import { EditProfileBody } from '../features/profile/types/edit-profile.body';
+import { RootState } from '../app/store';
+import { User } from '../features/manage/tables/users-table/types/user';
 import { ChangePasswordBody } from '../features/profile/types/change-password.body';
+import { EditProfileBody } from '../features/profile/types/edit-profile.body';
+import { Role } from '../utils/enums/role.enum';
 
 export interface BasicUserInfo {
   id: number;

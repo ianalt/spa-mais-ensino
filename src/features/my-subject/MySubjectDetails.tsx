@@ -1,11 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  CircularProgress,
-  Fab,
-  Grid,
-  Typography
-} from '@mui/material';
+import { CircularProgress, Fab, Grid, Typography } from '@mui/material';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getCategory, selectCategories } from '../../slices/categoriesSlice';
 import {
@@ -21,6 +17,7 @@ import MySubjectEditCategory from './EditCategory';
 import MySubjectRemoveCategory from './RemoveCategory';
 
 export default function MySubjectDetails() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const subjects = useAppSelector(selectSubjects);
@@ -44,8 +41,9 @@ export default function MySubjectDetails() {
   const [openAddCategoryAlert, setOpenAddCategoryAlert] =
     useState<boolean>(false);
 
-  const handleOpenAddTopic = () => setOpenAddTopic(true);
-  const handleCloseAddTopic = () => setOpenAddTopic(false);
+  const handleOpenCreateClass = () => {
+    navigate('/mais-ensino/minha-disciplina/nova-aula');
+  };
 
   const handleOpenAddCategory = () => setOpenAddCategory(true);
   const handleCloseAddCategory = () => setOpenAddCategory(false);
@@ -134,10 +132,10 @@ export default function MySubjectDetails() {
                 <Fab
                   variant="extended"
                   color="secondary"
-                  onClick={handleOpenAddTopic}
+                  onClick={handleOpenCreateClass}
                 >
                   <AddIcon />
-                  <Typography>Tópico</Typography>
+                  <Typography>Aula</Typography>
                 </Fab>
               </Grid>
             </Grid>

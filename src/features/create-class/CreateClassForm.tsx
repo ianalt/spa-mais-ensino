@@ -13,7 +13,9 @@ import {
   styled,
 } from '@mui/material';
 
+import { LoadingButton } from '@mui/lab';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   createNewClass,
@@ -23,13 +25,17 @@ import {
   selectSubjectOptionsForClass,
 } from '../../slices/classesSlice';
 import {
+  getTeacherOrMonitorSubject,
+  selectSubjects,
+} from '../../slices/subjectsSlice';
+import { selectUser } from '../../user/userSlice';
+import { Role } from '../../utils/enums/role.enum';
+import { CreateClassBody } from '../manage/tables/classes-table/types/create-class-body';
+import NotificationAlert from '../notification-alert';
+import {
   BasicCategoryInfo,
   SubjectWithCategories,
 } from './types/class-options';
-import { useNavigate } from 'react-router-dom';
-import { CreateClassBody } from '../manage/tables/classes-table/types/create-class-body';
-import NotificationAlert from '../notification-alert';
-import { LoadingButton } from '@mui/lab';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -49,6 +55,11 @@ export default function CreateClassForm() {
 
   const classes = useAppSelector(selectClasses);
   const { status, isCreating, error } = classes;
+
+  const user = useAppSelector(selectUser);
+  const subjects = useAppSelector(selectSubjects);
+
+  const { selectedSubject } = subjects;
 
   const subjectsList = useAppSelector(selectSubjectOptionsForClass);
 
@@ -144,16 +155,35 @@ export default function CreateClassForm() {
     try {
       await dispatch(createNewClass(body)).unwrap();
 
-      //TODO add good notification
       handleOpenCreateClassAlert();
+
+      resetFields();
+      resetErrors();
     } catch (rejectedValueOrSerializedError) {
       handleOpenCreateClassFailedAlert();
     }
   };
 
-  const handleReturnToManagePage = () => {
+  const handleSetCategory = () => {
+    if (user.role === Role.PROFESSOR) {
+      const [subjectOption] = subjectsList.filter(
+        (item) => item.id === selectedSubject?.id
+      );
+
+      if (subjectOption !== undefined || subjectOption !== null) {
+        setChosenSubject(subjectOption);
+        setCategories(subjectOption.categories);
+      }
+    }
+  };
+
+  const handleReturnToPage = () => {
     resetFields();
-    navigate('/mais-ensino/gerenciamento');
+    resetErrors();
+
+    if (user.role === Role.ADMIN) navigate('/mais-ensino/gerenciamento');
+
+    if (user.role === Role.PROFESSOR) navigate('/mais-ensino/minha-disciplina');
   };
 
   const resetFields = () => {
@@ -166,10 +196,19 @@ export default function CreateClassForm() {
   };
 
   useEffect(() => {
-    dispatch(getClassOptions());
     resetFields();
-
+    dispatch(getClassOptions());
     dispatch(resetErrors());
+
+    if (user.role === Role.PROFESSOR) {
+      if (selectedSubject === null || selectedSubject === undefined) {
+        dispatch(getTeacherOrMonitorSubject());
+
+        if (selectedSubject === null || selectedSubject === undefined) {
+          navigate('*');
+        }
+      }
+    }
   }, []);
 
   return (
@@ -229,9 +268,14 @@ export default function CreateClassForm() {
       </Grid>
 
       <Grid item xs={8} container justifyContent="space-between" mt={1}>
-        <Grid item xs={5}>
+        <Grid
+          item
+          xs={5}
+          display={user.role === Role.PROFESSOR ? 'none' : 'flex'}
+        >
           <Autocomplete
             id="create-class-form-subject-option"
+            disabled={user.role === Role.PROFESSOR}
             noOptionsText="Nenhuma opção encontrada"
             options={subjectsList}
             value={chosenSubject}
@@ -262,6 +306,7 @@ export default function CreateClassForm() {
         </Grid>
         <Grid item xs={5}>
           <Autocomplete
+            onFocus={handleSetCategory}
             id="create-class-form-category-option"
             noOptionsText="Nenhuma opção encontrada"
             options={categories}
@@ -382,7 +427,7 @@ export default function CreateClassForm() {
           size="large"
           variant="contained"
           color="primary"
-          onClick={handleReturnToManagePage}
+          onClick={handleReturnToPage}
         >
           Voltar
         </Button>
