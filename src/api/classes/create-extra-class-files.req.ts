@@ -8,7 +8,12 @@ export const createExtraClassFiles = async (
 ): Promise<AxiosResponse> => {
   const form: any = new FormData();
 
-  form.append('extraFiles', extraFiles);
+  for (let i = 0; i < extraFiles.length; ++i) {
+    console.log(i);
+    console.log(extraFiles[i]);
+
+    form.append('extraFiles', extraFiles[i]);
+  }
 
   const res = await instance.post(`/class-files/${classId}/extra-files`, form);
 
