@@ -15,19 +15,6 @@ export default function MySubjectPage() {
 
   const { status, selectedSubject } = subjects;
 
-  const handleSubjectDetailsDisplay = () => {
-    if (status === 'loading')
-      return (
-        <Grid item xs={12}>
-          <LinearProgress />
-        </Grid>
-      );
-
-    if (status === 'idle' && !selectedSubject) return <NoSubjectAssigned />;
-
-    if (status === 'idle' && selectedSubject) return <MySubjectDetails />;
-  };
-
   useEffect(() => {
     document.title = '+Ensino | Minha disciplina';
 
@@ -41,7 +28,8 @@ export default function MySubjectPage() {
         <Divider />
       </Grid>
 
-      {handleSubjectDetailsDisplay()}
+      {status === 'idle' && !selectedSubject && <NoSubjectAssigned />}
+      <MySubjectDetails />
     </Grid>
   );
 }
