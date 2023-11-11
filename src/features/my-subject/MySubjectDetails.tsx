@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import { CircularProgress, Fab, Grid, Typography } from '@mui/material';
+import { Fab, Grid, LinearProgress, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -14,6 +14,7 @@ import NotificationAlert from '../notification-alert';
 import MySubjectAddCategory from './AddCategory';
 import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
+import NoCategories from './NoCategories';
 import MySubjectRemoveCategory from './RemoveCategory';
 
 export default function MySubjectDetails() {
@@ -26,8 +27,6 @@ export default function MySubjectDetails() {
   const user = useAppSelector(selectUser);
 
   const categories = useAppSelector(selectCategories);
-
-  const [openAddTopic, setOpenAddTopic] = useState<boolean>(false);
 
   const [openRemoveCategory, setOpenRemoveCategory] = useState<boolean>(false);
   const [openRemoveCategoryAlert, setOpenRemoveCategoryAlert] =
@@ -91,7 +90,7 @@ export default function MySubjectDetails() {
     <Grid item xs={12} container mt={5}>
       {subjects.status === 'loading' || categories.status === 'loading' ? (
         <Grid item xs={12}>
-          <CircularProgress size="large" />
+          <LinearProgress />
         </Grid>
       ) : (
         <Grid
@@ -129,37 +128,54 @@ export default function MySubjectDetails() {
               </Grid>
 
               <Grid item xs="auto" px={1}>
-                <Fab
-                  variant="extended"
-                  color="secondary"
-                  onClick={handleOpenCreateClass}
+                <Tooltip
+                  title={
+                    selectedSubject?.categories.length === 0
+                      ? 'É necessária pelo menos 1 categoria para criar uma nova aula.'
+                      : ''
+                  }
+                  arrow
+                  placement="right"
                 >
-                  <AddIcon />
-                  <Typography>Aula</Typography>
-                </Fab>
+                  <span>
+                    <Fab
+                      variant="extended"
+                      color="secondary"
+                      onClick={handleOpenCreateClass}
+                      disabled={selectedSubject?.categories.length === 0}
+                    >
+                      <AddIcon />
+                      <Typography>Aula</Typography>
+                    </Fab>
+                  </span>
+                </Tooltip>
               </Grid>
             </Grid>
           )}
 
-          <Grid container justifyContent="space-evenly" item xs={12}>
-            {selectedSubject?.categories.map((category) => {
-              return (
-                <CategoryCard
-                  key={`subject-category-${category.id}`}
-                  category={category}
-                  onRemoveRequest={async () => {
-                    await dispatch(getCategory(category.id));
+          {selectedSubject?.categories.length === 0 ? (
+            <NoCategories />
+          ) : (
+            <Grid container justifyContent="space-evenly" item xs={12}>
+              {selectedSubject?.categories.map((category) => {
+                return (
+                  <CategoryCard
+                    key={`subject-category-${category.id}`}
+                    category={category}
+                    onRemoveRequest={async () => {
+                      await dispatch(getCategory(category.id));
 
-                    handleOpenRemoveCategory();
-                  }}
-                  onEditRequest={async () => {
-                    await dispatch(getCategory(category.id));
-                    handleOpenEditCategory();
-                  }}
-                />
-              );
-            })}
-          </Grid>
+                      handleOpenRemoveCategory();
+                    }}
+                    onEditRequest={async () => {
+                      await dispatch(getCategory(category.id));
+                      handleOpenEditCategory();
+                    }}
+                  />
+                );
+              })}
+            </Grid>
+          )}
         </Grid>
       )}
 
@@ -185,7 +201,7 @@ export default function MySubjectDetails() {
       <MySubjectEditCategory
         open={openEditCategory}
         onEdit={() => {
-          dispatch(getTeacherOrMonitorSubject());
+          // dispatch(getTeacherOrMonitorSubject());
           handleOpenEditCategoryAlert();
         }}
         onClose={handleCloseEditCategory}

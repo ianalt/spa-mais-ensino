@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   getTeacherOrMonitorSubject,
-  resetSubject,
   selectSubjects,
 } from '../../slices/subjectsSlice';
 import MySubjectPageContent from './MySubjectContent';
