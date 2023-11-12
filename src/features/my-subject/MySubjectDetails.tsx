@@ -1,6 +1,14 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Grid, LinearProgress, Tooltip, Typography } from '@mui/material';
-import { useState } from 'react';
+import {
+  Button,
+  Fab,
+  Grid,
+  LinearProgress,
+  Link,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getCategory, selectCategories } from '../../slices/categoriesSlice';
@@ -16,17 +24,26 @@ import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
 import NoCategories from './NoCategories';
 import MySubjectRemoveCategory from './RemoveCategory';
+import { ptBrTableLocalization } from '../../utils/pt-br-table-localization';
+import cloneDeep from 'lodash/cloneDeep';
+import {
+  getClass,
+  getClassesFromSubject,
+  selectClasses,
+} from '../../slices/classesSlice';
+import MaterialTable from 'material-table';
+import MySubjectRemoveClass from './RemoveClass';
 
 export default function MySubjectDetails() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const subjects = useAppSelector(selectSubjects);
-  const { selectedSubject } = subjects;
-
   const user = useAppSelector(selectUser);
-
+  const subjects = useAppSelector(selectSubjects);
   const categories = useAppSelector(selectCategories);
+  const classes = useAppSelector(selectClasses);
+
+  const { selectedSubject } = subjects;
 
   const [openRemoveCategory, setOpenRemoveCategory] = useState<boolean>(false);
   const [openRemoveCategoryAlert, setOpenRemoveCategoryAlert] =
@@ -39,6 +56,16 @@ export default function MySubjectDetails() {
   const [openAddCategory, setOpenAddCategory] = useState<boolean>(false);
   const [openAddCategoryAlert, setOpenAddCategoryAlert] =
     useState<boolean>(false);
+
+  const [openRemoveClass, setOpenRemoveClass] = useState<boolean>(false);
+  const [openRemoveClassAlert, setOpenRemoveClassAlert] =
+    useState<boolean>(false);
+
+  const [showClasses, setShowClasses] = useState<boolean>(false);
+
+  useEffect(() => {
+    setShowClasses(false);
+  }, []);
 
   const handleOpenCreateClass = () => {
     navigate('/mais-ensino/minha-disciplina/nova-aula');
@@ -84,6 +111,26 @@ export default function MySubjectDetails() {
     }
 
     setOpenEditCategoryAlert(false);
+  };
+
+  const handleShowClasses = () => {
+    setShowClasses(true);
+    if (subjects.selectedSubject)
+      dispatch(getClassesFromSubject(subjects.selectedSubject.id));
+  };
+
+  const handleOpenRemoveClass = () => setOpenRemoveClass(true);
+  const handleCloseRemoveClass = () => setOpenRemoveClass(false);
+  const handleOpenRemoveClassAlert = () => setOpenRemoveClassAlert(true);
+  const handleCloseRemoveClassAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenRemoveClassAlert(false);
   };
 
   return (
@@ -177,6 +224,75 @@ export default function MySubjectDetails() {
                 })}
               </Grid>
             )}
+
+            {!showClasses && (
+              <Grid item xs={12} container justifyContent="center" my={2}>
+                <Button onClick={handleShowClasses} size="large">
+                  <Typography variant="h6">Exibir aulas</Typography>
+                </Button>
+              </Grid>
+            )}
+
+            {classes.status === 'loading' ? (
+              <Grid item xs={12}>
+                <LinearProgress />
+              </Grid>
+            ) : (
+              showClasses && (
+                <Grid item xs={12} container justifyContent="center" mt={5}>
+                  <MaterialTable
+                    localization={ptBrTableLocalization}
+                    options={{
+                      search: true,
+                      filtering: true,
+                      grouping: true,
+                    }}
+                    actions={[
+                      (rowData) => ({
+                        icon: 'delete',
+                        tooltip: 'Remover',
+                        onClick: async (event) => {
+                          await dispatch(getClass(rowData.id));
+                          handleOpenRemoveClass();
+                          // handleOpenRemove();
+                        },
+                      }),
+                      (rowData) => ({
+                        icon: 'edit',
+                        tooltip: 'Editar',
+                        onClick: (event) => {
+                          // dispatch(setSelected(rowData));
+                          // handleOpenEdit();
+                        },
+                      }),
+                      (rowData) => ({
+                        icon: 'search',
+                        tooltip: 'Detalhes',
+                        onClick: (event) => {
+                          // dispatch(setSelected(rowData));
+                          // handleOpenDetails();
+                        },
+                      }),
+                    ]}
+                    columns={[
+                      { title: 'Título', field: 'title', defaultSort: 'asc' },
+                      {
+                        title: 'Categoria',
+                        field: 'category.name',
+                        defaultGroupOrder: 0,
+                      },
+                      {
+                        title: 'Aula ativa?',
+                        field: 'active',
+                        type: 'boolean',
+                      },
+                    ]}
+                    data={cloneDeep(classes.list)}
+                    title="Lista de aulas"
+                  />
+                </Grid>
+              )
+            )}
           </Grid>
         )) || <></>
       )}
@@ -208,6 +324,15 @@ export default function MySubjectDetails() {
         }}
         onClose={handleCloseEditCategory}
         subjectId={selectedSubject?.id || 0}
+      />
+
+      <MySubjectRemoveClass
+        open={openRemoveClass}
+        onRemove={() => {
+          dispatch(getTeacherOrMonitorSubject());
+          handleOpenRemoveClassAlert();
+        }}
+        onClose={handleCloseRemoveClass}
       />
 
       <NotificationAlert
@@ -268,6 +393,30 @@ export default function MySubjectDetails() {
         severity="error"
         status="Erro"
         message="Não foi possível remover a categoria"
+      />
+
+      <NotificationAlert
+        open={
+          openRemoveClassAlert &&
+          classes.status === 'idle' &&
+          !classes.isRemoving
+        }
+        onClose={handleCloseRemoveClassAlert}
+        severity="success"
+        status="Sucesso"
+        message="Aula removida com sucesso"
+      />
+
+      <NotificationAlert
+        open={
+          openRemoveClassAlert &&
+          classes.status === 'failed' &&
+          !classes.isRemoving
+        }
+        onClose={handleCloseRemoveClassAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível remover a aula"
       />
     </Grid>
   );

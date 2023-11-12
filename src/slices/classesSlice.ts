@@ -10,7 +10,12 @@ import { CreateClassBody } from '../features/manage/tables/classes-table/types/c
 import { createClass } from '../api/classes/create-class.req';
 import { createVideoClassFile } from '../api/classes/create-video-class-file.req';
 import { createExtraClassFiles } from '../api/classes/create-extra-class-files.req';
-import { fetchClass } from '../api/classes/classes.req';
+import {
+  fetchClass,
+  fetchClasses,
+  fetchClassesFromSubject,
+} from '../api/classes/classes.req';
+import { deleteClass } from '../api/classes/delete-category.req';
 
 export interface ClassesState {
   status: 'idle' | 'loading' | 'failed';
@@ -18,6 +23,7 @@ export interface ClassesState {
   selected: Classes | null;
   subjectsList: SubjectWithCategories[];
   isCreating: boolean;
+  isRemoving: boolean;
   error: any;
 }
 
@@ -27,6 +33,7 @@ const initialState: ClassesState = {
   selected: null,
   subjectsList: [],
   isCreating: false,
+  isRemoving: false,
   error: null,
 };
 
@@ -68,6 +75,33 @@ export const classesSlice = createSlice({
       );
 
     builder
+      .addCase(getClassesFromSubject.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getClassesFromSubject.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(
+        getClassesFromSubject.fulfilled,
+        (state, action: PayloadAction<Classes[]>) => {
+          state.status = 'idle';
+          state.list = action.payload;
+        }
+      );
+
+    builder
+      .addCase(getClass.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getClass.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(getClass.fulfilled, (state, action: PayloadAction<Classes>) => {
+        state.status = 'idle';
+        state.selected = action.payload;
+      });
+
+    builder
       .addCase(createNewClass.pending, (state) => {
         state.status = 'loading';
         state.isCreating = true;
@@ -87,8 +121,37 @@ export const classesSlice = createSlice({
           state.isCreating = false;
         }
       );
+
+    builder
+      .addCase(removeClass.pending, (state) => {
+        state.status = 'loading';
+        state.isRemoving = true;
+      })
+      .addCase(removeClass.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isRemoving = false;
+      })
+      .addCase(
+        removeClass.fulfilled,
+        (state, action: PayloadAction<Classes[]>) => {
+          state.list = action.payload;
+          state.status = 'idle';
+          state.isRemoving = false;
+        }
+      );
   },
 });
+
+export const getClassesFromSubject = createAsyncThunk(
+  'classes/getClasses',
+  async (subjectId: number) => {
+    const response = await fetchClassesFromSubject(subjectId);
+    const classes: Classes[] = response.data;
+
+    return classes;
+  }
+);
 
 export const getClassOptions = createAsyncThunk(
   'classes/getClassOptions',
@@ -97,6 +160,17 @@ export const getClassOptions = createAsyncThunk(
     const classOptions: ClassOptions = response.data;
 
     return classOptions;
+  }
+);
+
+export const getClass = createAsyncThunk(
+  'classes/getClass',
+  async (id: number) => {
+    const response = await fetchClass(id);
+
+    const foundClass: Classes = response.data;
+
+    return foundClass;
   }
 );
 
@@ -121,6 +195,35 @@ export const createNewClass = createAsyncThunk(
       const foundClassResponse = await fetchClass(newClass.id);
 
       return foundClassResponse.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const removeClass = createAsyncThunk(
+  'classes/removeClass',
+  async (classId: number, thunkAPI) => {
+    try {
+      await deleteClass(classId);
+
+      const response = await fetchClasses();
+
+      return response.data;
     } catch (e: any) {
       if (e.isAxiosError) {
         if (typeof e.response.data.message === 'string') {

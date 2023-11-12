@@ -12,3 +12,11 @@ export const fetchClass = async (classId: number): Promise<AxiosResponse> => {
 
   return res;
 };
+
+export const fetchClassesFromSubject = async (
+  subjectId: number
+): Promise<AxiosResponse> => {
+  const res = await instance.get(`/classes?subjectId=${subjectId}`);
+
+  return res;
+};
