@@ -1,4 +1,4 @@
-import { Divider, Grid, LinearProgress } from '@mui/material';
+import { Divider, Grid } from '@mui/material';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {

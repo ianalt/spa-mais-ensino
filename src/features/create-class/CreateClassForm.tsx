@@ -36,6 +36,7 @@ import {
   BasicCategoryInfo,
   SubjectWithCategories,
 } from './types/class-options';
+import { FileSize } from '../../utils/enums/file-size.enum';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -55,6 +56,29 @@ export default function CreateClassForm() {
 
   const classes = useAppSelector(selectClasses);
   const { status, isCreating, error } = classes;
+
+  const validateFileSize = (value: FileList | null, maxSize: FileSize) => {
+    if (value !== null && value.length === 1) {
+      return value[0].size <= maxSize;
+    }
+
+    if (value !== null && value.length > 1) {
+      const length = value.length;
+
+      for (let i = 0; i < length; ++i) {
+        const item = value.item(i);
+
+        if (item !== null && item.size > maxSize) return false;
+      }
+    }
+
+    return true;
+  };
+
+  const [isVideoClassSizeInvalid, setIsVideoClassSizeInvalid] =
+    useState<boolean>(false);
+  const [isAnyExtraFileSizeInvalid, setIsAnyExtraFileSizeInvalid] =
+    useState<boolean>(false);
 
   const user = useAppSelector(selectUser);
   const subjects = useAppSelector(selectSubjects);
@@ -193,6 +217,8 @@ export default function CreateClassForm() {
     setChosenCategory(null);
     setVideoClassFile(null);
     setExtraFiles(null);
+    setIsVideoClassSizeInvalid(false);
+    setIsAnyExtraFileSizeInvalid(false);
   };
 
   useEffect(() => {
@@ -253,6 +279,25 @@ export default function CreateClassForm() {
             status="Sucesso"
             message="Aula criada com sucesso"
           />
+        )}
+      </Grid>
+
+      <Grid item xs={5}>
+        {isVideoClassSizeInvalid && (
+          <Grid item xs={12} m={2}>
+            <Alert severity="warning" sx={{ width: '100%' }}>
+              <strong>Atenção.</strong> O tamanho da videoaula não pode ser
+              maior que 50MB.
+            </Alert>
+          </Grid>
+        )}
+        {isAnyExtraFileSizeInvalid && (
+          <Grid item xs={12} m={2}>
+            <Alert severity="warning" sx={{ width: '100%' }}>
+              <strong>Atenção.</strong> O tamanho de um material complementar
+              não pode ultrapassar 5MB.
+            </Alert>
+          </Grid>
         )}
       </Grid>
 
@@ -349,27 +394,33 @@ export default function CreateClassForm() {
             <em>{`${videoClassFile[0].name}`}</em>
           )}
         </Grid>
-        <Grid item xs="auto" p={1}>
-          <Button
-            component="label"
-            variant="contained"
-            color="secondary"
-            startIcon={<CloudUploadIcon />}
-          >
-            Adicionar videoaula
-            <VisuallyHiddenInput
-              type="file"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const value =
-                  event.target.files && event.target.files.length > 0
-                    ? event.target.files
-                    : null;
+        <Grid item xs="auto" container p={1}>
+          <Grid item xs={12}>
+            <Button
+              component="label"
+              variant="contained"
+              color="secondary"
+              startIcon={<CloudUploadIcon />}
+            >
+              Adicionar videoaula
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  const value =
+                    event.target.files && event.target.files.length > 0
+                      ? event.target.files
+                      : null;
 
-                setVideoClassFile(value);
-              }}
-              accept=".mp4"
-            />
-          </Button>
+                  setIsVideoClassSizeInvalid(
+                    !validateFileSize(value, FileSize.CLASS_VIDEO)
+                  );
+
+                  setVideoClassFile(value);
+                }}
+                accept=".mp4"
+              />
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
 
@@ -389,11 +440,11 @@ export default function CreateClassForm() {
           {!extraFiles || extraFiles.length <= 0 ? (
             <em>Nenhum material selecionado</em>
           ) : (
-            //TODO list files names
             handleListExtraFilesNames()
           )}
         </Grid>
         <Grid item xs="auto" p={1}>
+          <Grid item xs={12}></Grid>
           <Button
             component="label"
             variant="contained"
@@ -409,9 +460,13 @@ export default function CreateClassForm() {
                     ? event.target.files
                     : null;
 
+                setIsAnyExtraFileSizeInvalid(
+                  !validateFileSize(value, FileSize.EXTRA_FILE)
+                );
+
                 setExtraFiles(value);
               }}
-              accept=".pdf, .docx, .doc"
+              accept=".pdf, .docx, .doc, .txt, .png, .jpg"
               multiple
             />
           </Button>
@@ -444,7 +499,9 @@ export default function CreateClassForm() {
             !chosenSubject ||
             !chosenCategory ||
             !videoClassFile ||
-            videoClassFile.length <= 0
+            videoClassFile.length <= 0 ||
+            isVideoClassSizeInvalid ||
+            isAnyExtraFileSizeInvalid
           }
         >
           Criar aula
