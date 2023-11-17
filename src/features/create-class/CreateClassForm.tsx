@@ -12,7 +12,6 @@ import {
   createFilterOptions,
   styled,
 } from '@mui/material';
-
 import { LoadingButton } from '@mui/lab';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -316,6 +315,7 @@ export default function CreateClassForm() {
         <Grid
           item
           xs={5}
+          // sx={{ border: '1px solid blue' }}
           display={user.role === Role.PROFESSOR ? 'none' : 'flex'}
         >
           <Autocomplete
@@ -324,6 +324,7 @@ export default function CreateClassForm() {
             noOptionsText="Nenhuma opção encontrada"
             options={subjectsList}
             value={chosenSubject}
+            fullWidth
             filterOptions={autoCompleteSubjectOptions}
             onChange={(event: any, newValue: SubjectWithCategories | null) => {
               setChosenSubject(newValue);
@@ -354,6 +355,7 @@ export default function CreateClassForm() {
             onFocus={handleSetCategory}
             id="create-class-form-category-option"
             noOptionsText="Nenhuma opção encontrada"
+            fullWidth
             options={categories}
             value={chosenCategory}
             filterOptions={autoCompleteCategoryOptions}
@@ -400,6 +402,7 @@ export default function CreateClassForm() {
               component="label"
               variant="contained"
               color="secondary"
+              disabled={isCreating || status === 'loading'}
               startIcon={<CloudUploadIcon />}
             >
               Adicionar videoaula
@@ -449,6 +452,7 @@ export default function CreateClassForm() {
             component="label"
             variant="contained"
             color="secondary"
+            disabled={isCreating || status === 'loading'}
             startIcon={<CloudUploadIcon />}
           >
             Adicionar materiais complementares

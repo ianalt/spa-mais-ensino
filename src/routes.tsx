@@ -21,6 +21,7 @@ import { login as reduxLogin, selectUser } from './user/userSlice';
 import { Role } from './utils/enums/role.enum';
 import MySubjectPage from './features/my-subject';
 import CreateClassPage from './features/create-class';
+import ClassPage from './features/access-class';
 
 export const AppRoutes = () => {
   return (
@@ -104,6 +105,17 @@ export const AppRoutes = () => {
             <RequireRole
               roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
             >
+              <ClassPage />
+            </RequireRole>
+          }
+          path="/mais-ensino/aula/:classId"
+        />
+
+        <Route
+          element={
+            <RequireRole
+              roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
+            >
               <ProfilePage />
             </RequireRole>
           }
@@ -127,7 +139,9 @@ const RequireRole = ({
   const user = useAppSelector(selectUser);
   let location = useLocation();
 
-  //TODO maybe error because of usuario
+  // //TODO maybe error because of usuario
+  if (user.role === Role.USUARIO) return <Navigate to="/" replace />;
+
   if (roles && !roles.includes(user.role)) {
     return <Navigate to="/mais-ensino" state={{ from: location }} replace />;
   }

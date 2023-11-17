@@ -13,6 +13,16 @@ interface ClassQuestion {
   createdBy: BasicUserInfo;
 }
 
+interface ClassFile {
+  id: number;
+  createdAt: Date;
+  fileType: FileType;
+  fileName: string;
+  contentLength: string;
+  contentType: string;
+  path: string;
+}
+
 interface ClassCategory {
   id: number;
   createdAt: Date;
@@ -40,7 +50,7 @@ export interface Classes {
 
   questions: ClassQuestion[];
 
-  classFiles: any[];
+  classFiles: ClassFile[];
 
   createdBy: BasicUserInfo;
 

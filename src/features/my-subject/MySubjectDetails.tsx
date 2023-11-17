@@ -30,6 +30,7 @@ import {
   getClass,
   getClassesFromSubject,
   selectClasses,
+  setSelected,
 } from '../../slices/classesSlice';
 import MaterialTable from 'material-table';
 import MySubjectRemoveClass from './RemoveClass';
@@ -254,23 +255,13 @@ export default function MySubjectDetails() {
                         onClick: async (event) => {
                           await dispatch(getClass(rowData.id));
                           handleOpenRemoveClass();
-                          // handleOpenRemove();
-                        },
-                      }),
-                      (rowData) => ({
-                        icon: 'edit',
-                        tooltip: 'Editar',
-                        onClick: (event) => {
-                          // dispatch(setSelected(rowData));
-                          // handleOpenEdit();
                         },
                       }),
                       (rowData) => ({
                         icon: 'search',
                         tooltip: 'Detalhes',
-                        onClick: (event) => {
-                          // dispatch(setSelected(rowData));
-                          // handleOpenDetails();
+                        onClick: () => {
+                          navigate(`/mais-ensino/aula/${rowData.id}`);
                         },
                       }),
                     ]}
