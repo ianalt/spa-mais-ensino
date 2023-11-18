@@ -16,6 +16,12 @@ import {
   fetchClassesFromSubject,
 } from '../api/classes/classes.req';
 import { deleteClass } from '../api/classes/delete-category.req';
+import { EditClassTitleBody } from '../features/access-class/types/edit-class-title-body';
+import {
+  updateClassCategory,
+  updateClassTitle,
+} from '../api/classes/update-class.req';
+import { EditClassCategoryBody } from '../features/access-class/types/edit-class-category-body';
 
 export interface ClassesState {
   status: 'idle' | 'loading' | 'failed';
@@ -24,6 +30,7 @@ export interface ClassesState {
   subjectsList: SubjectWithCategories[];
   isCreating: boolean;
   isRemoving: boolean;
+  isUpdating: boolean;
   error: any;
 }
 
@@ -34,6 +41,7 @@ const initialState: ClassesState = {
   subjectsList: [],
   isCreating: false,
   isRemoving: false,
+  isUpdating: false,
   error: null,
 };
 
@@ -214,6 +222,68 @@ export const createNewClass = createAsyncThunk(
     }
   }
 );
+
+export const editClassTitle = createAsyncThunk(
+  'classes/editClassTitle',
+  async (body: EditClassTitleBody, thunkAPI) => {
+    try {
+      const updatedClassResponse = await updateClassTitle(body);
+
+      const updatedClass: Classes = updatedClassResponse.data;
+
+      return updatedClass;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editClassCategory = createAsyncThunk(
+  'classes/editClassCategory',
+  async (body: EditClassCategoryBody, thunkAPI) => {
+    try {
+      const updatedClassResponse = await updateClassCategory(body);
+
+      const updatedClass: Classes = updatedClassResponse.data;
+
+      return updatedClass;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+//TODO edit video
+
+//TODO edit extra files (find a way to set files as empty if needed)
 
 export const removeClass = createAsyncThunk(
   'classes/removeClass',

@@ -9,9 +9,6 @@ export const createExtraClassFiles = async (
   const form: any = new FormData();
 
   for (let i = 0; i < extraFiles.length; ++i) {
-    console.log(i);
-    console.log(extraFiles[i]);
-
     form.append('extraFiles', extraFiles[i]);
   }
 

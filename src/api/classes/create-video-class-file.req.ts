@@ -1,5 +1,4 @@
 import { AxiosResponse } from 'axios';
-import { CreateClassBody } from '../../features/manage/tables/classes-table/types/create-class-body';
 import { instance } from '../instance';
 
 export const createVideoClassFile = async (
