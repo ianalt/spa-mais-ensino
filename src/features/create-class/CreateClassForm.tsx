@@ -447,7 +447,6 @@ export default function CreateClassForm() {
           )}
         </Grid>
         <Grid item xs="auto" p={1}>
-          <Grid item xs={12}></Grid>
           <Button
             component="label"
             variant="contained"

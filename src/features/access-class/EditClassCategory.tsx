@@ -223,8 +223,6 @@ export default function EditClassCategory({
               xs={5}
               display={user.role === Role.PROFESSOR ? 'none' : 'flex'}
             >
-              {JSON.stringify(subjectsList)}
-              {JSON.stringify(chosenSubject)}
               <Autocomplete
                 id="edit-class-category-subject-option"
                 disabled={user.role === Role.PROFESSOR}
@@ -261,8 +259,6 @@ export default function EditClassCategory({
               />
             </Grid>
             <Grid item xs={5}>
-              {JSON.stringify(categories)}
-              {JSON.stringify(chosenCategory)}
               <Autocomplete
                 onFocus={handleSetCategory}
                 id="edit-class-category-option"

@@ -32,7 +32,10 @@ export const updateClassVideo = async (
 
   form.append('videoClassFile', body.videoClassFile);
 
-  const res = await instance.patch(`/classes/${classId}/video-class`, form);
+  const res = await instance.patch(
+    `/class-files/${classId}/video-class/update`,
+    form
+  );
 
   return res;
 };

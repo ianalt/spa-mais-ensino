@@ -1,4 +1,4 @@
 export interface EditClassExtraFilesBody {
   classId: number;
-  extraFiles: FileList;
+  extraFiles: FileList | null;
 }

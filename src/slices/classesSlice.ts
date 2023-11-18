@@ -20,8 +20,10 @@ import { EditClassTitleBody } from '../features/access-class/types/edit-class-ti
 import {
   updateClassCategory,
   updateClassTitle,
+  updateClassVideo,
 } from '../api/classes/update-class.req';
 import { EditClassCategoryBody } from '../features/access-class/types/edit-class-category-body';
+import { EditClassVideoBody } from '../features/access-class/types/edit-class-video-body';
 
 export interface ClassesState {
   status: 'idle' | 'loading' | 'failed';
@@ -148,6 +150,83 @@ export const classesSlice = createSlice({
           state.isRemoving = false;
         }
       );
+
+    //TODO SET CASES
+    builder
+      .addCase(editClassTitle.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editClassTitle.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(
+        editClassTitle.fulfilled,
+        (state, action: PayloadAction<Classes>) => {
+          state.selected = action.payload;
+          state.status = 'idle';
+          state.isUpdating = false;
+        }
+      );
+
+    builder
+      .addCase(editClassCategory.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editClassCategory.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(
+        editClassCategory.fulfilled,
+        (state, action: PayloadAction<Classes>) => {
+          state.selected = action.payload;
+          state.status = 'idle';
+          state.isUpdating = false;
+        }
+      );
+
+    builder
+      .addCase(editClassVideo.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editClassVideo.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(
+        editClassVideo.fulfilled,
+        (state, action: PayloadAction<Classes>) => {
+          state.selected = action.payload;
+          state.status = 'idle';
+          state.isUpdating = false;
+        }
+      );
+
+    // builder
+    // .addCase(editClassExtraFiles.pending, (state) => {
+    //   state.status = 'loading';
+    //   state.isUpdating = true;
+    // })
+    // .addCase(editClassExtraFiles.rejected, (state, action) => {
+    //   state.error = action.payload;
+    //   state.status = 'failed';
+    //   state.isUpdating = false;
+    // })
+    // .addCase(
+    //   editClassExtraFiles.fulfilled,
+    //   (state, action: PayloadAction<Classes>) => {
+    //     state.selected = action.payload;
+    //     state.status = 'idle';
+    //     state.isUpdating = false;
+    //   }
+    // );
   },
 });
 
@@ -186,16 +265,12 @@ export const createNewClass = createAsyncThunk(
   'classes/createNewClass',
   async (body: CreateClassBody, thunkAPI) => {
     try {
-      //TODO criar aula. se der certo, cria arquivos
       const newClassResponse = await createClass(body);
 
-      //TODO se der erro na aula, taca erro
       const newClass: Classes = newClassResponse.data;
 
-      //TODO se criar aula, mas der erro no arquivo, deleta aula e arquivos
       await createVideoClassFile(body.videoClassFile, newClass.id);
 
-      //TODO se não tiver extraFiles, n faz request
       if (body.extraFiles) {
         await createExtraClassFiles(body.extraFiles, newClass.id);
       }
@@ -229,9 +304,7 @@ export const editClassTitle = createAsyncThunk(
     try {
       const updatedClassResponse = await updateClassTitle(body);
 
-      const updatedClass: Classes = updatedClassResponse.data;
-
-      return updatedClass;
+      return updatedClassResponse.data;
     } catch (e: any) {
       if (e.isAxiosError) {
         if (typeof e.response.data.message === 'string') {
@@ -258,9 +331,7 @@ export const editClassCategory = createAsyncThunk(
     try {
       const updatedClassResponse = await updateClassCategory(body);
 
-      const updatedClass: Classes = updatedClassResponse.data;
-
-      return updatedClass;
+      return updatedClassResponse.data;
     } catch (e: any) {
       if (e.isAxiosError) {
         if (typeof e.response.data.message === 'string') {
@@ -281,7 +352,32 @@ export const editClassCategory = createAsyncThunk(
   }
 );
 
-//TODO edit video
+export const editClassVideo = createAsyncThunk(
+  'classes/editClassVideo',
+  async (body: EditClassVideoBody, thunkAPI) => {
+    try {
+      const updatedClassResponse = await updateClassVideo(body);
+
+      return updatedClassResponse.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
 
 //TODO edit extra files (find a way to set files as empty if needed)
 

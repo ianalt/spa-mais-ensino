@@ -28,6 +28,8 @@ import { Role } from '../../utils/enums/role.enum';
 import NotificationAlert from '../notification-alert';
 import EditClassTitle from './EditClassTitle';
 import EditClassCategory from './EditClassCategory';
+import EditClassVideo from './EditClassVideo';
+import EditClassExtraFiles from './EditClassExtraFiles';
 
 export default function ClassPage() {
   const dispatch = useAppDispatch();
@@ -360,18 +362,15 @@ export default function ClassPage() {
         onClose={handleCloseEditCategoryDialog}
       />
 
-      {/* <EditClassVideo
+      <EditClassVideo
         open={openEditClassVideoDialog}
         onEdit={() => {
           dispatch(getClass(selected?.id || 0));
           handleOpenEditClassVideoAlert();
         }}
         onClose={handleCloseEditClassVideoDialog}
-        classVideo={selected?.classFiles.find(
-          (file) => file.fileType === FileType.VIDEOAULA
-        )}
-      /> */}
-      {/* 
+      />
+
       <EditClassExtraFiles
         open={openEditExtraFilesDialog}
         onEdit={() => {
@@ -379,10 +378,7 @@ export default function ClassPage() {
           handleOpenEditExtraFilesAlert();
         }}
         onClose={handleCloseEditExtraFilesDialog}
-        classVideo={selected?.classFiles.filter(
-          (file) => file.fileType === FileType.MATERIAL
-        )}
-      /> */}
+      />
 
       <NotificationAlert
         open={
