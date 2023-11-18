@@ -112,14 +112,14 @@ export default function EditClassTitle({
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="my-subject-edit-category-dialog-slide-description"
+        aria-describedby="class-edit-title-dialog-slide-description"
         maxWidth="lg"
         fullWidth
       >
         <DialogTitle>{'Editar título'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="class-edit-title-dialog-slide-description">
-            Preencha o campo abaixo para o título da aula.{' '}
+            Preencha o campo abaixo para editar o título da aula.{' '}
             <strong>Confirme</strong> o texto antes de clicar no botão{' '}
             <strong>Salvar mudanças</strong>.
           </DialogContentText>
@@ -131,7 +131,7 @@ export default function EditClassTitle({
                 onClose={handleCloseEditFailedAlert}
                 severity="error"
                 status="Erro"
-                message="Erro(s) detectado(s) durante edição de categoria"
+                message="Erro(s) detectado(s) durante edição de título da aula"
               />
             </Grid>
             {status === 'failed' && (

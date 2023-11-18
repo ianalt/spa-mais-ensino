@@ -18,7 +18,7 @@ export const updateClassCategory = async (
   body: EditClassCategoryBody
 ): Promise<AxiosResponse> => {
   const { classId, ...data } = body;
-  const res = await instance.patch(`/classes/${classId}/category`, data);
+  const res = await instance.patch(`/classes/${classId}/class-category`, data);
 
   return res;
 };

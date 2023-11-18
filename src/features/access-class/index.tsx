@@ -27,6 +27,7 @@ import Edit from '@mui/icons-material/Edit';
 import { Role } from '../../utils/enums/role.enum';
 import NotificationAlert from '../notification-alert';
 import EditClassTitle from './EditClassTitle';
+import EditClassCategory from './EditClassCategory';
 
 export default function ClassPage() {
   const dispatch = useAppDispatch();
@@ -350,17 +351,16 @@ export default function ClassPage() {
         onClose={handleCloseEditTitleDialog}
       />
 
-      {/* <EditClassCategory
+      <EditClassCategory
         open={openEditCategoryDialog}
         onEdit={() => {
           dispatch(getClass(selected?.id || 0));
           handleOpenEditCategoryAlert();
         }}
         onClose={handleCloseEditCategoryDialog}
-        category={selected?.category || null}
       />
 
-      <EditClassVideo
+      {/* <EditClassVideo
         open={openEditClassVideoDialog}
         onEdit={() => {
           dispatch(getClass(selected?.id || 0));
@@ -370,8 +370,8 @@ export default function ClassPage() {
         classVideo={selected?.classFiles.find(
           (file) => file.fileType === FileType.VIDEOAULA
         )}
-      />
-
+      /> */}
+      {/* 
       <EditClassExtraFiles
         open={openEditExtraFilesDialog}
         onEdit={() => {
