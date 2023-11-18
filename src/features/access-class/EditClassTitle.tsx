@@ -113,14 +113,14 @@ export default function EditClassTitle({
         keepMounted
         onClose={handleClose}
         aria-describedby="my-subject-edit-category-dialog-slide-description"
-        maxWidth="md"
+        maxWidth="lg"
         fullWidth
       >
-        <DialogTitle>{'Editar categoria'}</DialogTitle>
+        <DialogTitle>{'Editar título'}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText id="my-subject-edit-category-dialog-slide-description">
-            Preencha as informações abaixo para criar uma nova categoria.{' '}
-            <strong>Confirme</strong> os dados antes de clicar no botão{' '}
+          <DialogContentText id="class-edit-title-dialog-slide-description">
+            Preencha o campo abaixo para o título da aula.{' '}
+            <strong>Confirme</strong> o texto antes de clicar no botão{' '}
             <strong>Salvar mudanças</strong>.
           </DialogContentText>
 
@@ -154,14 +154,14 @@ export default function EditClassTitle({
           </Grid>
 
           <Grid container justifyContent={'flex-start'} py={2}>
-            <Grid item xs={4}>
+            <Grid item xs={12}>
               <TextField
                 id="class-edit-title"
                 margin="normal"
                 required
                 autoFocus
                 fullWidth
-                label="Nome"
+                label="Título"
                 placeholder="Digite o título da aula..."
                 name="name"
                 value={title}

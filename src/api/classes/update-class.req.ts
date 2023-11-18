@@ -9,7 +9,7 @@ export const updateClassTitle = async (
   body: EditClassTitleBody
 ): Promise<AxiosResponse> => {
   const { classId, ...data } = body;
-  const res = await instance.patch(`/classes/${classId}/title`, data);
+  const res = await instance.patch(`/classes/${classId}/class-title`, data);
 
   return res;
 };

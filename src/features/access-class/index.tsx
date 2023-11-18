@@ -1,6 +1,7 @@
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import EditIcon from '@mui/icons-material/Edit';
 import {
+  Button,
   CardMedia,
   Fab,
   Grid,
@@ -217,29 +218,34 @@ export default function ClassPage() {
                   </Typography>
                 </Grid>
 
-                <Grid xs={12} display={handleDisplay} mt={1}>
+                <Grid
+                  item
+                  xs={12}
+                  container
+                  display={handleDisplay}
+                  mt={1}
+                  mb={2}
+                >
                   <Grid item xs="auto" mr={3}>
-                    <Fab
-                      variant="extended"
+                    <Button
+                      variant="contained"
                       color="secondary"
-                      size="small"
                       onClick={handleOpenEditClassVideoDialog}
                     >
                       <EditIcon />
                       <Typography>Videoaula</Typography>
-                    </Fab>
+                    </Button>
                   </Grid>
 
                   <Grid item xs="auto">
-                    <Fab
-                      variant="extended"
+                    <Button
+                      variant="contained"
                       color="secondary"
-                      size="small"
                       onClick={handleOpenEditExtraFilesDialog}
                     >
                       <EditIcon />
                       <Typography>Materiais complementares</Typography>
-                    </Fab>
+                    </Button>
                   </Grid>
                 </Grid>
               </Grid>
@@ -342,10 +348,9 @@ export default function ClassPage() {
           handleOpenEditTitleAlert();
         }}
         onClose={handleCloseEditTitleDialog}
-        title={selected?.title || ''}
       />
 
-      <EditClassCategory
+      {/* <EditClassCategory
         open={openEditCategoryDialog}
         onEdit={() => {
           dispatch(getClass(selected?.id || 0));
@@ -377,7 +382,7 @@ export default function ClassPage() {
         classVideo={selected?.classFiles.filter(
           (file) => file.fileType === FileType.MATERIAL
         )}
-      />
+      /> */}
 
       <NotificationAlert
         open={
@@ -387,18 +392,6 @@ export default function ClassPage() {
         severity="success"
         status="Sucesso"
         message="Título editado com sucesso"
-      />
-
-      <NotificationAlert
-        open={
-          openEditTitleAlert &&
-          classes.status === 'failed' &&
-          !classes.isUpdating
-        }
-        onClose={handleCloseEditTitleAlert}
-        severity="error"
-        status="Erro"
-        message="Não foi possível editar o título"
       />
 
       <NotificationAlert
