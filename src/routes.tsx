@@ -62,7 +62,16 @@ export const AppRoutes = () => {
         }
         path="/mais-ensino"
       >
-        <Route index element={<HomePage />} />
+        <Route
+          index
+          element={
+            <RequireRole
+              roles={[Role.PROFESSOR, Role.MONITOR, Role.ADMIN, Role.ESTUDANTE]}
+            >
+              <HomePage />
+            </RequireRole>
+          }
+        />
 
         <Route
           element={
