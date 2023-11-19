@@ -20,7 +20,11 @@ export const subjectsSlice = createSlice({
   initialState,
   reducers: {
     resetErrors: (state) => {
-      state.status = 'idle';
+      state.status = initialState.status;
+    },
+
+    resetSubject: (state) => {
+      state.selectedSubject = initialState.selectedSubject;
     },
   },
   extraReducers: (builder) => {
@@ -51,7 +55,7 @@ export const getTeacherOrMonitorSubject = createAsyncThunk(
   }
 );
 
-export const { resetErrors } = subjectsSlice.actions;
+export const { resetErrors, resetSubject } = subjectsSlice.actions;
 
 export const selectSubjects = (state: RootState) => state.subjects;
 

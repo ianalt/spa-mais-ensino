@@ -3,7 +3,6 @@ import { Gender } from '../../../../../../../utils/enums/gender.enum';
 import { Role } from '../../../../../../../utils/enums/role.enum';
 import { Uf } from '../../../../../../../utils/enums/uf.enum';
 
-//TODO IF ADMIN: address, phone
 export interface CreateAdminBody {
   user: {
     email: string;

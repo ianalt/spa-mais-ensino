@@ -1,9 +1,9 @@
-import { Grid } from "@mui/material";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Typography from "@mui/material/Typography";
-import * as React from "react";
-import { EducationInfo } from "../../../types/education-info";
+import { Grid } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import * as React from 'react';
+import { EducationInfo } from '../../../types/education-info';
 
 interface EducationInfoDetailsProps {
   educationInfo: EducationInfo;
@@ -26,9 +26,8 @@ export default function EducationInfoDetails({
         primary={
           <React.Fragment>
             <Grid container>
-              {/* NOME DO CURSO CASO SEJA SUPERIOR */}
-              {schoolingLevel === "Ensino Superior Completo" ||
-              schoolingLevel === "Ensino Superior Incompleto" ? (
+              {schoolingLevel === 'Ensino Superior Completo' ||
+              schoolingLevel === 'Ensino Superior Incompleto' ? (
                 <Grid item xs={12}>
                   <Typography
                     component="span"
@@ -43,10 +42,10 @@ export default function EducationInfoDetails({
                 <Typography
                   component="span"
                   variant={
-                    schoolingLevel === "Ensino Superior Completo" ||
-                    schoolingLevel === "Ensino Superior Incompleto"
-                      ? "body2"
-                      : "body1"
+                    schoolingLevel === 'Ensino Superior Completo' ||
+                    schoolingLevel === 'Ensino Superior Incompleto'
+                      ? 'body2'
+                      : 'body1'
                   }
                   color="text.primary"
                 >
@@ -74,7 +73,7 @@ export default function EducationInfoDetails({
                   variant="body2"
                   color="text.secondary"
                 >
-                  {`${startYear} — ${conclusionYear || "Presente"}`}
+                  {`${startYear} — ${conclusionYear || 'Presente'}`}
                 </Typography>
               </Grid>
             </Grid>

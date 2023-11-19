@@ -4,7 +4,6 @@ import { Role } from '../../../../../../../utils/enums/role.enum';
 import { Uf } from '../../../../../../../utils/enums/uf.enum';
 import { EducationInfo } from './education-info';
 
-//TODO IF STUDENT: full user info, single education item (?)
 export interface CreateStudentBody {
   user: {
     email: string;

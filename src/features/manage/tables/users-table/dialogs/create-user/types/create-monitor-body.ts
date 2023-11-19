@@ -4,7 +4,6 @@ import { Role } from '../../../../../../../utils/enums/role.enum';
 import { Uf } from '../../../../../../../utils/enums/uf.enum';
 import { EducationInfo } from './education-info';
 
-//TODO IF MONITOR: address, phone, education
 export interface CreateMonitorBody {
   user: {
     email: string;

@@ -491,7 +491,6 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
               </Grid>
             </>
           )}
-          {/* //TODO comentários */}
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={handleClose}>

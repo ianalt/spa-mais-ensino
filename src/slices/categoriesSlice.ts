@@ -9,7 +9,7 @@ import { updateCategory } from '../api/categories/update-category.req';
 import { RootState } from '../app/store';
 import { AddCategoryBody } from '../features/manage/tables/categories-table/dialogs/add-category/types/add-category-body';
 import { EditCategoryBody } from '../features/manage/tables/categories-table/dialogs/edit-category/types/edit-category-body';
-import { Category } from '../features/manage/tables/categories-table/types/category';
+import { Category } from '../features/manage/tables/categories-table/dialogs/types/category';
 
 export interface CategoriesState {
   status: 'idle' | 'loading' | 'failed';

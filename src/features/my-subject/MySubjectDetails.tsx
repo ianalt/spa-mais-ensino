@@ -1,40 +1,50 @@
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import {
   Button,
-  CircularProgress,
   Fab,
   Grid,
+  LinearProgress,
+  Link,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getCategory, selectCategories } from '../../slices/categoriesSlice';
 import {
   getTeacherOrMonitorSubject,
   selectSubjects,
 } from '../../slices/subjectsSlice';
+import { selectUser } from '../../user/userSlice';
+import { Role } from '../../utils/enums/role.enum';
 import NotificationAlert from '../notification-alert';
 import MySubjectAddCategory from './AddCategory';
 import CategoryCard from './CategoryCard';
 import MySubjectEditCategory from './EditCategory';
+import NoCategories from './NoCategories';
 import MySubjectRemoveCategory from './RemoveCategory';
-import { Role } from '../../utils/enums/role.enum';
-import { selectUser } from '../../user/userSlice';
+import { ptBrTableLocalization } from '../../utils/pt-br-table-localization';
+import cloneDeep from 'lodash/cloneDeep';
+import {
+  getClass,
+  getClassesFromSubject,
+  selectClasses,
+  setSelected,
+} from '../../slices/classesSlice';
+import MaterialTable from 'material-table';
+import MySubjectRemoveClass from './RemoveClass';
 
 export default function MySubjectDetails() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const subjects = useAppSelector(selectSubjects);
-  const { selectedSubject } = subjects;
-
   const user = useAppSelector(selectUser);
-
+  const subjects = useAppSelector(selectSubjects);
   const categories = useAppSelector(selectCategories);
+  const classes = useAppSelector(selectClasses);
 
-  const [openAddTopic, setOpenAddTopic] = useState<boolean>(false);
+  const { selectedSubject } = subjects;
 
   const [openRemoveCategory, setOpenRemoveCategory] = useState<boolean>(false);
   const [openRemoveCategoryAlert, setOpenRemoveCategoryAlert] =
@@ -48,8 +58,19 @@ export default function MySubjectDetails() {
   const [openAddCategoryAlert, setOpenAddCategoryAlert] =
     useState<boolean>(false);
 
-  const handleOpenAddTopic = () => setOpenAddTopic(true);
-  const handleCloseAddTopic = () => setOpenAddTopic(false);
+  const [openRemoveClass, setOpenRemoveClass] = useState<boolean>(false);
+  const [openRemoveClassAlert, setOpenRemoveClassAlert] =
+    useState<boolean>(false);
+
+  const [showClasses, setShowClasses] = useState<boolean>(false);
+
+  useEffect(() => {
+    setShowClasses(false);
+  }, []);
+
+  const handleOpenCreateClass = () => {
+    navigate('/mais-ensino/minha-disciplina/nova-aula');
+  };
 
   const handleOpenAddCategory = () => setOpenAddCategory(true);
   const handleCloseAddCategory = () => setOpenAddCategory(false);
@@ -93,80 +114,178 @@ export default function MySubjectDetails() {
     setOpenEditCategoryAlert(false);
   };
 
+  const handleShowClasses = () => {
+    setShowClasses(true);
+    if (subjects.selectedSubject)
+      dispatch(getClassesFromSubject(subjects.selectedSubject.id));
+  };
+
+  const handleOpenRemoveClass = () => setOpenRemoveClass(true);
+  const handleCloseRemoveClass = () => setOpenRemoveClass(false);
+  const handleOpenRemoveClassAlert = () => setOpenRemoveClassAlert(true);
+  const handleCloseRemoveClassAlert = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenRemoveClassAlert(false);
+  };
+
   return (
     <Grid item xs={12} container mt={5}>
       {subjects.status === 'loading' || categories.status === 'loading' ? (
         <Grid item xs={12}>
-          <CircularProgress size="large" />
+          <LinearProgress />
         </Grid>
       ) : (
-        <Grid
-          container
-          item
-          xs={12}
-          alignContent="center"
-          textAlign="start"
-          p={2}
-        >
-          <Grid item xs={12}>
-            <Typography variant="h4">{selectedSubject?.name}</Typography>
-            <Typography variant="h6">
-              {selectedSubject?.knowledgeArea.name}
-            </Typography>
-          </Grid>
-
-          <Grid item xs={12} mb={2}>
-            <Typography variant="body1">
-              {selectedSubject?.description}
-            </Typography>
-          </Grid>
-
-          {user.role === Role.PROFESSOR && (
-            <Grid item xs={12} container justifyContent="flex-start" mb={5}>
-              <Grid item xs="auto" px={1}>
-                <Fab
-                  variant="extended"
-                  color="secondary"
-                  onClick={handleOpenAddCategory}
-                >
-                  <AddIcon />
-                  <Typography>Categoria</Typography>
-                </Fab>
-              </Grid>
-
-              <Grid item xs="auto" px={1}>
-                <Fab
-                  variant="extended"
-                  color="secondary"
-                  onClick={handleOpenAddTopic}
-                >
-                  <AddIcon />
-                  <Typography>Tópico</Typography>
-                </Fab>
-              </Grid>
+        (subjects.status === 'idle' && selectedSubject && (
+          <Grid
+            container
+            item
+            xs={12}
+            alignContent="center"
+            textAlign="start"
+            p={2}
+          >
+            <Grid item xs={12}>
+              <Typography variant="h4">{selectedSubject?.name}</Typography>
+              <Typography variant="h6">
+                {selectedSubject?.knowledgeArea.name}
+              </Typography>
             </Grid>
-          )}
 
-          <Grid container justifyContent="space-evenly" item xs={12}>
-            {selectedSubject?.categories.map((category) => {
-              return (
-                <CategoryCard
-                  key={`subject-category-${category.id}`}
-                  category={category}
-                  onRemoveRequest={async () => {
-                    await dispatch(getCategory(category.id));
+            <Grid item xs={12} mb={2}>
+              <Typography variant="body1">
+                {selectedSubject?.description}
+              </Typography>
+            </Grid>
 
-                    handleOpenRemoveCategory();
-                  }}
-                  onEditRequest={async () => {
-                    await dispatch(getCategory(category.id));
-                    handleOpenEditCategory();
-                  }}
-                />
-              );
-            })}
+            {user.role === Role.PROFESSOR && (
+              <Grid item xs={12} container justifyContent="flex-start" mb={5}>
+                <Grid item xs="auto" px={1}>
+                  <Fab
+                    variant="extended"
+                    color="secondary"
+                    onClick={handleOpenAddCategory}
+                  >
+                    <AddIcon />
+                    <Typography>Categoria</Typography>
+                  </Fab>
+                </Grid>
+
+                <Grid item xs="auto" px={1}>
+                  <Tooltip
+                    title={
+                      selectedSubject?.categories.length === 0
+                        ? 'É necessária pelo menos 1 categoria para criar uma nova aula.'
+                        : ''
+                    }
+                    arrow
+                    placement="right"
+                  >
+                    <span>
+                      <Fab
+                        variant="extended"
+                        color="secondary"
+                        onClick={handleOpenCreateClass}
+                        disabled={selectedSubject?.categories.length === 0}
+                      >
+                        <AddIcon />
+                        <Typography>Aula</Typography>
+                      </Fab>
+                    </span>
+                  </Tooltip>
+                </Grid>
+              </Grid>
+            )}
+
+            {selectedSubject?.categories.length === 0 ? (
+              <NoCategories />
+            ) : (
+              <Grid container justifyContent="space-evenly" item xs={12}>
+                {selectedSubject?.categories.map((category) => {
+                  return (
+                    <CategoryCard
+                      key={`subject-category-${category.id}`}
+                      category={category}
+                      onRemoveRequest={async () => {
+                        await dispatch(getCategory(category.id));
+
+                        handleOpenRemoveCategory();
+                      }}
+                      onEditRequest={async () => {
+                        await dispatch(getCategory(category.id));
+                        handleOpenEditCategory();
+                      }}
+                    />
+                  );
+                })}
+              </Grid>
+            )}
+
+            {!showClasses && (
+              <Grid item xs={12} container justifyContent="center" my={2}>
+                <Button onClick={handleShowClasses} size="large">
+                  <Typography variant="h6">Exibir aulas</Typography>
+                </Button>
+              </Grid>
+            )}
+
+            {classes.status === 'loading' ? (
+              <Grid item xs={12}>
+                <LinearProgress />
+              </Grid>
+            ) : (
+              showClasses && (
+                <Grid item xs={12} container justifyContent="center" mt={5}>
+                  <MaterialTable
+                    localization={ptBrTableLocalization}
+                    options={{
+                      search: true,
+                      filtering: true,
+                      grouping: true,
+                    }}
+                    actions={[
+                      (rowData) => ({
+                        icon: 'delete',
+                        tooltip: 'Remover',
+                        onClick: async (event) => {
+                          await dispatch(getClass(rowData.id));
+                          handleOpenRemoveClass();
+                        },
+                      }),
+                      (rowData) => ({
+                        icon: 'search',
+                        tooltip: 'Detalhes',
+                        onClick: () => {
+                          navigate(`/mais-ensino/aula/${rowData.id}`);
+                        },
+                      }),
+                    ]}
+                    columns={[
+                      { title: 'Título', field: 'title', defaultSort: 'asc' },
+                      {
+                        title: 'Categoria',
+                        field: 'category.name',
+                        defaultGroupOrder: 0,
+                      },
+                      {
+                        title: 'Aula ativa?',
+                        field: 'active',
+                        type: 'boolean',
+                      },
+                    ]}
+                    data={cloneDeep(classes.list)}
+                    title="Lista de aulas"
+                  />
+                </Grid>
+              )
+            )}
           </Grid>
-        </Grid>
+        )) || <></>
       )}
 
       <MySubjectAddCategory
@@ -196,6 +315,15 @@ export default function MySubjectDetails() {
         }}
         onClose={handleCloseEditCategory}
         subjectId={selectedSubject?.id || 0}
+      />
+
+      <MySubjectRemoveClass
+        open={openRemoveClass}
+        onRemove={() => {
+          dispatch(getTeacherOrMonitorSubject());
+          handleOpenRemoveClassAlert();
+        }}
+        onClose={handleCloseRemoveClass}
       />
 
       <NotificationAlert
@@ -256,6 +384,30 @@ export default function MySubjectDetails() {
         severity="error"
         status="Erro"
         message="Não foi possível remover a categoria"
+      />
+
+      <NotificationAlert
+        open={
+          openRemoveClassAlert &&
+          classes.status === 'idle' &&
+          !classes.isRemoving
+        }
+        onClose={handleCloseRemoveClassAlert}
+        severity="success"
+        status="Sucesso"
+        message="Aula removida com sucesso"
+      />
+
+      <NotificationAlert
+        open={
+          openRemoveClassAlert &&
+          classes.status === 'failed' &&
+          !classes.isRemoving
+        }
+        onClose={handleCloseRemoveClassAlert}
+        severity="error"
+        status="Erro"
+        message="Não foi possível remover a aula"
       />
     </Grid>
   );
