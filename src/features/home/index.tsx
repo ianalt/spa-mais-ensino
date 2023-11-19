@@ -3,7 +3,8 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getProfile, selectUser } from '../../user/userSlice';
 import { Grid, LinearProgress } from '@mui/material';
 import HomePageIntro from './HomePageIntro';
-import RecentClasses from './RecentClasses';
+import RecentClasses from './RecentClassesList';
+import { getRecentClasses, selectClasses } from '../../slices/classesSlice';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -11,22 +12,12 @@ export default function HomePage() {
 
   useEffect(() => {
     document.title = '+Ensino: Página inicial';
-
-    dispatch(getProfile());
   }, []);
 
   return (
     <Grid container>
-      {user.status === 'loading' ? (
-        <Grid item xs={12}>
-          <LinearProgress />
-        </Grid>
-      ) : (
-        <>
-          <HomePageIntro />
-          <RecentClasses />
-        </>
-      )}
+      <HomePageIntro />
+      <RecentClasses />
     </Grid>
   );
 }
