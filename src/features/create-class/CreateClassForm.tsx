@@ -315,7 +315,6 @@ export default function CreateClassForm() {
         <Grid
           item
           xs={5}
-          // sx={{ border: '1px solid blue' }}
           display={user.role === Role.PROFESSOR ? 'none' : 'flex'}
         >
           <Autocomplete

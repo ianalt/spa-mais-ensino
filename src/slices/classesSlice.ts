@@ -18,12 +18,15 @@ import {
 import { deleteClass } from '../api/classes/delete-category.req';
 import { EditClassTitleBody } from '../features/access-class/types/edit-class-title-body';
 import {
+  removeClassExtraFiles,
   updateClassCategory,
+  updateClassExtraFiles,
   updateClassTitle,
   updateClassVideo,
 } from '../api/classes/update-class.req';
 import { EditClassCategoryBody } from '../features/access-class/types/edit-class-category-body';
 import { EditClassVideoBody } from '../features/access-class/types/edit-class-video-body';
+import { EditClassExtraFilesBody } from '../features/access-class/types/edit-class-extra-files-body';
 
 export interface ClassesState {
   status: 'idle' | 'loading' | 'failed';
@@ -209,24 +212,24 @@ export const classesSlice = createSlice({
         }
       );
 
-    // builder
-    // .addCase(editClassExtraFiles.pending, (state) => {
-    //   state.status = 'loading';
-    //   state.isUpdating = true;
-    // })
-    // .addCase(editClassExtraFiles.rejected, (state, action) => {
-    //   state.error = action.payload;
-    //   state.status = 'failed';
-    //   state.isUpdating = false;
-    // })
-    // .addCase(
-    //   editClassExtraFiles.fulfilled,
-    //   (state, action: PayloadAction<Classes>) => {
-    //     state.selected = action.payload;
-    //     state.status = 'idle';
-    //     state.isUpdating = false;
-    //   }
-    // );
+    builder
+      .addCase(editClassExtraFiles.pending, (state) => {
+        state.status = 'loading';
+        state.isUpdating = true;
+      })
+      .addCase(editClassExtraFiles.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+        state.isUpdating = false;
+      })
+      .addCase(
+        editClassExtraFiles.fulfilled,
+        (state, action: PayloadAction<Classes>) => {
+          state.selected = action.payload;
+          state.status = 'idle';
+          state.isUpdating = false;
+        }
+      );
   },
 });
 
@@ -358,6 +361,41 @@ export const editClassVideo = createAsyncThunk(
     try {
       const updatedClassResponse = await updateClassVideo(body);
 
+      return updatedClassResponse.data;
+    } catch (e: any) {
+      if (e.isAxiosError) {
+        if (typeof e.response.data.message === 'string') {
+          const error = [e.response.data.message];
+
+          return thunkAPI.rejectWithValue(error);
+        }
+
+        const errors = [...e.response.data.message].map((error: string) => {
+          const afterDot = error.lastIndexOf('.') + 1;
+
+          return error.substring(afterDot);
+        });
+
+        return thunkAPI.rejectWithValue(errors);
+      }
+    }
+  }
+);
+
+export const editClassExtraFiles = createAsyncThunk(
+  'classes/editClassExtraFiles',
+  async (body: EditClassExtraFilesBody, thunkAPI) => {
+    try {
+      if (body.extraFiles !== null) {
+        const { classId, extraFiles } = body;
+        const updatedClassResponse = await updateClassExtraFiles(
+          classId,
+          extraFiles
+        );
+        return updatedClassResponse.data;
+      }
+
+      const updatedClassResponse = await removeClassExtraFiles(body.classId);
       return updatedClassResponse.data;
     } catch (e: any) {
       if (e.isAxiosError) {

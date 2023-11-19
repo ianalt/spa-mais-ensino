@@ -404,18 +404,6 @@ export default function ClassPage() {
 
       <NotificationAlert
         open={
-          openEditCategoryAlert &&
-          classes.status === 'failed' &&
-          !classes.isUpdating
-        }
-        onClose={handleCloseEditCategoryAlert}
-        severity="error"
-        status="Erro"
-        message="Não foi possível editar a categoria"
-      />
-
-      <NotificationAlert
-        open={
           openEditClassVideoAlert &&
           classes.status === 'idle' &&
           !classes.isUpdating
@@ -428,18 +416,6 @@ export default function ClassPage() {
 
       <NotificationAlert
         open={
-          openEditClassVideoAlert &&
-          classes.status === 'failed' &&
-          !classes.isUpdating
-        }
-        onClose={handleCloseEditClassVideoAlert}
-        severity="error"
-        status="Erro"
-        message="Não foi possível editar a videoaula"
-      />
-
-      <NotificationAlert
-        open={
           openEditExtraFilesAlert &&
           classes.status === 'idle' &&
           !classes.isUpdating
@@ -448,18 +424,6 @@ export default function ClassPage() {
         severity="success"
         status="Sucesso"
         message="Materiais complementares editados com sucesso"
-      />
-
-      <NotificationAlert
-        open={
-          openEditExtraFilesAlert &&
-          classes.status === 'failed' &&
-          !classes.isUpdating
-        }
-        onClose={handleCloseEditExtraFilesAlert}
-        severity="error"
-        status="Erro"
-        message="Não foi possível editar os materiais complementares"
       />
     </>
   );

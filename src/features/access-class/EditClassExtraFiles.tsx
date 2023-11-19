@@ -19,6 +19,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
+  editClassExtraFiles,
   editClassVideo,
   getClassOptions,
   resetErrors,
@@ -127,7 +128,7 @@ export default function EditClassExtraFiles({
     };
 
     try {
-      //   await dispatch(editClassExtraFiles(body)).unwrap();
+      await dispatch(editClassExtraFiles(body)).unwrap();
 
       onEdit();
       handleClose();
@@ -282,16 +283,9 @@ export default function EditClassExtraFiles({
 
           <LoadingButton
             variant="contained"
-            // onClick={handleEditClassExtraFiles}
-            onClick={() => alert('SHOW!')}
+            onClick={handleEditClassExtraFiles}
             loading={status === 'loading' || isUpdating}
-            // disabled={
-            //   !extraFiles ||
-            //   extraFiles.length <= 0 ||
-            //   isUpdating ||
-            //   status === 'loading'
-            // }
-            disabled
+            disabled={isUpdating || status === 'loading'}
           >
             Salvar mudanças
           </LoadingButton>

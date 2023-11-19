@@ -41,17 +41,29 @@ export const updateClassVideo = async (
 };
 
 export const updateClassExtraFiles = async (
-  body: EditClassExtraFilesBody
+  classId: number,
+  extraFiles: FileList
 ): Promise<AxiosResponse> => {
-  const { classId } = body;
-
   const form: any = new FormData();
 
-  for (let i = 0; i < body.extraFiles.length; ++i) {
-    form.append('extraFiles', body.extraFiles[i]);
+  for (let i = 0; i < extraFiles.length; ++i) {
+    form.append('extraFiles', extraFiles[i]);
   }
 
-  const res = await instance.post(`/class-files/${classId}/extra-files`, form);
+  const res = await instance.patch(
+    `/class-files/${classId}/extra-files/update`,
+    form
+  );
+
+  return res;
+};
+
+export const removeClassExtraFiles = async (
+  classId: number
+): Promise<AxiosResponse> => {
+  const res = await instance.delete(
+    `/class-files/${classId}/extra-files/remove`
+  );
 
   return res;
 };
