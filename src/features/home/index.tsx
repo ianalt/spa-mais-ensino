@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getProfile, selectUser } from '../../user/userSlice';
 import { Grid, LinearProgress } from '@mui/material';
 import HomePageIntro from './HomePageIntro';
+import RecentClasses from './RecentClasses';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -23,6 +24,7 @@ export default function HomePage() {
       ) : (
         <>
           <HomePageIntro />
+          <RecentClasses />
         </>
       )}
     </Grid>

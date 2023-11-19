@@ -21,7 +21,7 @@ export default function HomePageIntro() {
           <Typography variant="body1">
             <strong>Bons estudos!</strong> Aqui você encontra as aulas mais
             recentes postadas no <strong>+Ensino</strong>. Você também pode
-            encontrar as aulas navagando pelas seções de disciplinas, agrupadas
+            encontrar as aulas navegando pelas seções de disciplinas, agrupadas
             por suas respectivas <strong>áreas de conhecimento</strong>.
           </Typography>
         </Grid>
