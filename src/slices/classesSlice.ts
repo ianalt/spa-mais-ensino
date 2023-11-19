@@ -15,7 +15,7 @@ import {
   fetchClasses,
   fetchClassesFromSubject,
 } from '../api/classes/classes.req';
-import { deleteClass } from '../api/classes/delete-category.req';
+import { deleteClass } from '../api/classes/delete-class.req';
 import { EditClassTitleBody } from '../features/access-class/types/edit-class-title-body';
 import {
   removeClassExtraFiles,
@@ -416,8 +416,6 @@ export const editClassExtraFiles = createAsyncThunk(
     }
   }
 );
-
-//TODO edit extra files (find a way to set files as empty if needed)
 
 export const removeClass = createAsyncThunk(
   'classes/removeClass',

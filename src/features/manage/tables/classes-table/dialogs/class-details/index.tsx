@@ -45,10 +45,10 @@ export default function ClassDetails({ open, onClose }: ClassDetailsProps) {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{'Detalhes do tópico'}</DialogTitle>
+        <DialogTitle>{'Detalhes da aula'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="class-details-dialog-slide-description">
-            {'Aqui estão os detalhes sobre tópico: '}
+            {'Aqui estão os detalhes sobre a aula: '}
           </DialogContentText>
 
           <Grid container justifyContent={'flex-start'}>

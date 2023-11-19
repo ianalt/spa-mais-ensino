@@ -1,8 +1,10 @@
-import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { Fab, Grid, LinearProgress, Tooltip, Typography } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import MaterialTable from 'material-table';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { ptBrTableLocalization } from '../../../../utils/pt-br-table-localization';
 import {
@@ -10,11 +12,7 @@ import {
   getIsLoading,
   resetSelected,
   selectClassesTable,
-  setSelected,
 } from './classesTableSlice';
-import ClassDetails from './dialogs/class-details';
-import { Fab, Grid, LinearProgress, Tooltip, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 
 export default function ClassesTable() {
   const navigate = useNavigate();
@@ -23,47 +21,19 @@ export default function ClassesTable() {
   const { list } = classesTable;
   const isLoading = useAppSelector(getIsLoading);
 
-  const [openDetails, setOpenDetails] = useState(false);
-  const [openRemove, setOpenRemove] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-
-  const handleOpenDetails = () => {
-    setOpenDetails(true);
-  };
-
-  const handleCloseDetails = () => {
-    setOpenDetails(false);
-  };
-
-  const handleOpenRemove = () => {
-    setOpenRemove(true);
-  };
-
-  const handleCloseRemove = () => {
-    setOpenRemove(false);
-  };
-
-  const handleOpenEdit = () => {
-    setOpenEdit(true);
-  };
-
-  const handleCloseEdit = () => {
-    setOpenEdit(false);
+  const handleOpenClass = (classId: number) => {
+    navigate(`/mais-ensino/aula/${classId}`);
   };
 
   const handleOpenCreate = () => {
     navigate('/mais-ensino/gerenciamento/nova-aula');
   };
 
-  const handleRefreshUsers = () => {
+  const handleRefreshClasses = () => {
     dispatch(getClassesList());
   };
 
   useEffect(() => {
-    handleCloseDetails();
-    handleCloseEdit();
-    handleCloseRemove();
-
     dispatch(resetSelected());
     dispatch(getClassesList());
   }, []);
@@ -103,8 +73,8 @@ export default function ClassesTable() {
                   <span>
                     <Fab
                       color="primary"
-                      aria-label="refresh-users"
-                      onClick={handleRefreshUsers}
+                      aria-label="refresh-classes"
+                      onClick={handleRefreshClasses}
                       disabled={isLoading}
                     >
                       <RefreshIcon />
@@ -125,29 +95,10 @@ export default function ClassesTable() {
                 }}
                 actions={[
                   (rowData) => ({
-                    icon: 'delete',
-                    tooltip: 'Remover',
-
-                    onClick: () => {
-                      dispatch(setSelected(rowData));
-                      handleOpenRemove();
-                    },
-                  }),
-                  (rowData) => ({
                     icon: 'search',
                     tooltip: 'Detalhes',
-                    onClick: () => {
-                      dispatch(setSelected(rowData));
-                      handleOpenDetails();
-                    },
-                  }),
-                  (rowData) => ({
-                    icon: 'edit',
-                    tooltip: 'Editar',
-
-                    onClick: () => {
-                      dispatch(setSelected(rowData));
-                      handleOpenEdit();
+                    onClick: async () => {
+                      handleOpenClass(rowData.id);
                     },
                   }),
                 ]}
@@ -164,7 +115,6 @@ export default function ClassesTable() {
           </>
         )}
       </Grid>
-      <ClassDetails open={openDetails} onClose={() => setOpenDetails(false)} />
     </>
   );
 }

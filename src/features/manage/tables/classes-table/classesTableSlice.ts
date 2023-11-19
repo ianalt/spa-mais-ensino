@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchClasses } from '../../../../api/classes/classes.req';
 import { RootState } from '../../../../app/store';
 import { Classes } from './types/classes';
+import { deleteClass } from '../../../../api/classes/delete-class.req';
 
 export interface ClassesTableState {
   status: 'idle' | 'loading' | 'failed';

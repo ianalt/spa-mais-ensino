@@ -68,7 +68,7 @@ export default function MySubjectRemoveClass({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{'Remover categoria'}</DialogTitle>
+        <DialogTitle>{'Remover aula'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="my-subject-remove-class-dialog-slide-description">
             {'Tem certeza que deseja deletar esta aula?'}
@@ -78,7 +78,7 @@ export default function MySubjectRemoveClass({
             <Grid item xs={12} container my={1}>
               <Grid item xs={4} p={1}>
                 <Grid item xs={12}>
-                  <Typography fontWeight={700}>{'Criado em:'} </Typography>
+                  <Typography fontWeight={700}>{'Criada em:'} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>
@@ -135,17 +135,6 @@ export default function MySubjectRemoveClass({
                 </Grid>
                 <Grid item xs={12}>
                   <Typography>{selected?.title}</Typography>
-                </Grid>
-              </Grid>
-
-              <Grid item container xs="auto" py={1} pr={1}>
-                <Grid item xs={12}>
-                  <Typography fontWeight={700}>
-                    {'Categoria ativa?'}{' '}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>{selected?.active ? 'Sim' : 'Não'}</Typography>
                 </Grid>
               </Grid>
             </Grid>

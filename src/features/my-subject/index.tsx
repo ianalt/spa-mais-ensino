@@ -8,7 +8,6 @@ import {
 import MySubjectPageContent from './MySubjectContent';
 import MySubjectDetails from './MySubjectDetails';
 import NoSubjectAssigned from './NoSubjectAssigned';
-import { getClassesFromSubject } from '../../slices/classesSlice';
 
 export default function MySubjectPage() {
   const dispatch = useAppDispatch();

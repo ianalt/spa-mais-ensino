@@ -127,7 +127,6 @@ export default function ClassPage() {
     handleCloseEditExtraFilesDialog();
   };
 
-  //TODO SOLVE DOWNLOADS
   const handleDownloadFile = (path: string) => {
     const fullPath = `${path}/download`;
     window.open(fullPath);
@@ -191,7 +190,6 @@ export default function ClassPage() {
                           size="small"
                           color="primary"
                           onClick={handleOpenEditCategoryDialog}
-                          //   disabled={status === 'loading'}
                         >
                           <EditIcon />
                         </IconButton>
@@ -301,14 +299,12 @@ export default function ClassPage() {
                                       file.fileType === FileType.MATERIAL
                                   )
                                   .map((file) => {
-                                    const { fileName, contentType, path } =
-                                      file;
+                                    const { fileName, path } = file;
 
                                     return (
                                       <ListItem>
                                         <ListItemButton
-                                          component="a"
-                                          href="#"
+                                          component="button"
                                           onClick={() =>
                                             handleDownloadFile(path)
                                           }
@@ -322,9 +318,7 @@ export default function ClassPage() {
                                                 ? `${fileName.substring(
                                                     0,
                                                     20
-                                                  )}... .${contentType.substring(
-                                                    6
-                                                  )}`
+                                                  )}...`
                                                 : fileName
                                             }
                                           />
