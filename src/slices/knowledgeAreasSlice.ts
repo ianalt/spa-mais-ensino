@@ -1,5 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchKnowledgeAreasWelcome } from '../api/knowledge-areas/knowledge-areas.req';
+import {
+  fetchKnowledgeAreas,
+  fetchKnowledgeAreasWelcome,
+} from '../api/knowledge-areas/knowledge-areas.req';
 import { RootState } from '../app/store';
 
 export interface KnowledgeArea {
@@ -9,7 +12,7 @@ export interface KnowledgeArea {
   active: boolean;
   name: string;
   description: string | null;
-  subjects: { id: number; name: string; description: string }[];
+  subjects: { id: number; name: string }[];
 }
 
 export interface KnowledgeAreasState {
@@ -30,6 +33,21 @@ export const knowledgeAreasSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(getKnowledgeAreas.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getKnowledgeAreas.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(
+        getKnowledgeAreas.fulfilled,
+        (state, action: PayloadAction<KnowledgeArea[]>) => {
+          state.status = 'idle';
+          state.list = action.payload;
+        }
+      );
+
+    builder
       .addCase(getKnowledgeAreasWelcome.pending, (state) => {
         state.status = 'loading';
       })
@@ -45,6 +63,16 @@ export const knowledgeAreasSlice = createSlice({
       );
   },
 });
+
+export const getKnowledgeAreas = createAsyncThunk(
+  'knowledgeAreas/getKnowledgeAreas',
+  async () => {
+    const response = await fetchKnowledgeAreas();
+    const knowledgeAreas: KnowledgeArea[] = response.data;
+
+    return knowledgeAreas;
+  }
+);
 
 export const getKnowledgeAreasWelcome = createAsyncThunk(
   'knowledgeAreas/getKnowledgeAreasWelcome',

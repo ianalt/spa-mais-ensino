@@ -14,6 +14,7 @@ import {
   fetchClass,
   fetchClasses,
   fetchClassesFromSubject,
+  fetchRecentClasses,
 } from '../api/classes/classes.req';
 import { deleteClass } from '../api/classes/delete-class.req';
 import { EditClassTitleBody } from '../features/access-class/types/edit-class-title-body';
@@ -27,6 +28,7 @@ import {
 import { EditClassCategoryBody } from '../features/access-class/types/edit-class-category-body';
 import { EditClassVideoBody } from '../features/access-class/types/edit-class-video-body';
 import { EditClassExtraFilesBody } from '../features/access-class/types/edit-class-extra-files-body';
+import { RecentClassInfo } from '../features/manage/tables/classes-table/types/recent-class-info';
 
 export interface ClassesState {
   status: 'idle' | 'loading' | 'failed';
@@ -37,6 +39,7 @@ export interface ClassesState {
   isRemoving: boolean;
   isUpdating: boolean;
   error: any;
+  recentClasses: RecentClassInfo[];
 }
 
 const initialState: ClassesState = {
@@ -48,6 +51,7 @@ const initialState: ClassesState = {
   isRemoving: false,
   isUpdating: false,
   error: null,
+  recentClasses: [],
 };
 
 export const classesSlice = createSlice({
@@ -115,6 +119,21 @@ export const classesSlice = createSlice({
       });
 
     builder
+      .addCase(getRecentClasses.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getRecentClasses.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(
+        getRecentClasses.fulfilled,
+        (state, action: PayloadAction<RecentClassInfo[]>) => {
+          state.status = 'idle';
+          state.recentClasses = action.payload;
+        }
+      );
+
+    builder
       .addCase(createNewClass.pending, (state) => {
         state.status = 'loading';
         state.isCreating = true;
@@ -154,7 +173,6 @@ export const classesSlice = createSlice({
         }
       );
 
-    //TODO SET CASES
     builder
       .addCase(editClassTitle.pending, (state) => {
         state.status = 'loading';
@@ -261,6 +279,15 @@ export const getClass = createAsyncThunk(
     const foundClass: Classes = response.data;
 
     return foundClass;
+  }
+);
+
+export const getRecentClasses = createAsyncThunk(
+  'classes/getRecentClasses',
+  async () => {
+    const response = await fetchRecentClasses();
+
+    return response.data;
   }
 );
 
