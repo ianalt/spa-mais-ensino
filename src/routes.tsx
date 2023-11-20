@@ -22,6 +22,7 @@ import { Role } from './utils/enums/role.enum';
 import MySubjectPage from './features/my-subject';
 import CreateClassPage from './features/create-class';
 import ClassPage from './features/access-class';
+import SubjectPage from './features/access-subject';
 
 export const AppRoutes = () => {
   return (
@@ -107,6 +108,17 @@ export const AppRoutes = () => {
             </RequireRole>
           }
           path="/mais-ensino/gerenciamento/nova-aula"
+        />
+
+        <Route
+          element={
+            <RequireRole
+              roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
+            >
+              <SubjectPage />
+            </RequireRole>
+          }
+          path="/mais-ensino/disciplina/:subjectId"
         />
 
         <Route

@@ -25,3 +25,53 @@ export interface Subject {
   knowledgeArea: KnowledgeAreaOption;
   categories: BasicCategoryInfo[];
 }
+
+interface BasicSubjectInfo {
+  id: number;
+  name: string;
+}
+
+interface KnowledgeAreaForSubject {
+  id: number;
+  name: string;
+}
+
+interface CategoryWithSubject {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  active: boolean;
+  name: string;
+  subject: BasicSubjectInfo;
+}
+
+interface BasicClassInfo {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  active: boolean;
+  title: string;
+  createdBy: BasicUserInfo;
+  category?: CategoryWithSubject;
+}
+
+interface FullCategoryInfo {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  active: boolean;
+  name: string;
+  classes: BasicClassInfo[];
+}
+
+export interface FullSubjectInfo {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  active: boolean;
+  name: string;
+  description: string;
+  users: BasicUserInfo[];
+  knowledgeArea: KnowledgeAreaForSubject;
+  categories: FullCategoryInfo[];
+}
