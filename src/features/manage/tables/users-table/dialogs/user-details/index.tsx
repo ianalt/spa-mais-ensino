@@ -20,7 +20,7 @@ import { Dispatch, SetStateAction, forwardRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
 import { Role } from '../../../../../../utils/enums/role.enum';
 import {
-  getIsMonitorOrTeacher,
+  getIsTeacher,
   selectUsersTable,
   setSelected,
 } from '../../usersTableSlice';
@@ -44,7 +44,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
   const dispatch = useAppDispatch();
   const usersTable = useAppSelector(selectUsersTable);
   const { selected } = usersTable;
-  const isMonitorOrTeacher = useAppSelector(getIsMonitorOrTeacher);
+  const isTeacher = useAppSelector(getIsTeacher);
 
   const handleClose = () => {
     onClose(true);
@@ -174,7 +174,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Grid>
               </Grid>
 
-              {isMonitorOrTeacher && (
+              {isTeacher && (
                 <Grid item xs={4} container p={1}>
                   <Grid item xs={9}>
                     <Grid item xs={12}>
@@ -257,8 +257,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Grid>
               </Grid>
 
-              {selected?.role === Role.MONITOR ||
-              selected?.role === Role.PROFESSOR ||
+              {selected?.role === Role.PROFESSOR ||
               selected?.role === Role.ADMIN ? (
                 <></>
               ) : (
@@ -276,8 +275,7 @@ export default function UserDetails({ open, onClose }: UserDetailsProps) {
                 </Grid>
               )}
 
-              {selected?.role === Role.MONITOR ||
-              selected?.role === Role.PROFESSOR ||
+              {selected?.role === Role.PROFESSOR ||
               selected?.role === Role.ADMIN ? (
                 <></>
               ) : (

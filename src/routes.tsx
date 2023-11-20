@@ -66,9 +66,7 @@ export const AppRoutes = () => {
         <Route
           index
           element={
-            <RequireRole
-              roles={[Role.PROFESSOR, Role.MONITOR, Role.ADMIN, Role.ESTUDANTE]}
-            >
+            <RequireRole roles={[Role.PROFESSOR, Role.ADMIN, Role.ESTUDANTE]}>
               <HomePage />
             </RequireRole>
           }
@@ -76,7 +74,7 @@ export const AppRoutes = () => {
 
         <Route
           element={
-            <RequireRole roles={[Role.PROFESSOR, Role.MONITOR]}>
+            <RequireRole roles={[Role.PROFESSOR]}>
               <MySubjectPage />
             </RequireRole>
           }
@@ -112,9 +110,7 @@ export const AppRoutes = () => {
 
         <Route
           element={
-            <RequireRole
-              roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
-            >
+            <RequireRole roles={[Role.ADMIN, Role.PROFESSOR, Role.ESTUDANTE]}>
               <SubjectPage />
             </RequireRole>
           }
@@ -123,9 +119,7 @@ export const AppRoutes = () => {
 
         <Route
           element={
-            <RequireRole
-              roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
-            >
+            <RequireRole roles={[Role.ADMIN, Role.PROFESSOR, Role.ESTUDANTE]}>
               <ClassPage />
             </RequireRole>
           }
@@ -134,9 +128,7 @@ export const AppRoutes = () => {
 
         <Route
           element={
-            <RequireRole
-              roles={[Role.ADMIN, Role.PROFESSOR, Role.MONITOR, Role.ESTUDANTE]}
-            >
+            <RequireRole roles={[Role.ADMIN, Role.PROFESSOR, Role.ESTUDANTE]}>
               <ProfilePage />
             </RequireRole>
           }
@@ -160,7 +152,6 @@ const RequireRole = ({
   const user = useAppSelector(selectUser);
   let location = useLocation();
 
-  // //TODO maybe error because of usuario
   if (user.role === Role.USUARIO) return <Navigate to="/" replace />;
 
   if (roles && !roles.includes(user.role)) {

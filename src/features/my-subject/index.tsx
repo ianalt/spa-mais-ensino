@@ -1,10 +1,7 @@
 import { Divider, Grid } from '@mui/material';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import {
-  getTeacherOrMonitorSubject,
-  selectSubjects,
-} from '../../slices/subjectsSlice';
+import { getTeacherSubject, selectSubjects } from '../../slices/subjectsSlice';
 import MySubjectPageContent from './MySubjectContent';
 import MySubjectDetails from './MySubjectDetails';
 import NoSubjectAssigned from './NoSubjectAssigned';
@@ -18,7 +15,7 @@ export default function MySubjectPage() {
   useEffect(() => {
     document.title = '+Ensino | Minha disciplina';
 
-    dispatch(getTeacherOrMonitorSubject());
+    dispatch(getTeacherSubject());
   }, []);
 
   return (

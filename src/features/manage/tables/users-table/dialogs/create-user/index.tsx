@@ -52,14 +52,13 @@ import { ufOptions } from '../../../../../../utils/options/uf-options';
 import NotificationAlert from '../../../../../notification-alert';
 import {
   createNewAdmin,
-  createNewMonitor,
   createNewStudent,
   createNewTeacher,
   resetErrors,
   selectUsersTable,
 } from '../../usersTableSlice';
 import { CreateAdminBody } from './types/create-admin-body';
-import { CreateMonitorBody } from './types/create-monitor-body';
+
 import { CreateStudentBody } from './types/create-student-body';
 import { CreateTeacherBody } from './types/create-teacher-body';
 import { EducationInfoOption } from './types/education-info-option';
@@ -301,11 +300,7 @@ export default function CreateUser({
   };
 
   const filterFieldsByRole = () => {
-    if (
-      role?.value === Role.MONITOR ||
-      role?.value === Role.PROFESSOR ||
-      role?.value === Role.ADMIN
-    ) {
+    if (role?.value === Role.PROFESSOR || role?.value === Role.ADMIN) {
       setGeneralIncome(0);
       setTotalHouseHoldMembers(0);
       setEducationInfoList([
@@ -428,67 +423,6 @@ export default function CreateUser({
 
       try {
         await dispatch(createNewStudent(body)).unwrap();
-
-        onCreate();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenCreateFailedAlert();
-      }
-    }
-
-    if (role?.value === Role.MONITOR) {
-      const phoneNumbers = !phoneNumber2
-        ? [phoneNumber1].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          })
-        : [phoneNumber1, phoneNumber2].map((phone) => {
-            return {
-              phoneNumber: phone,
-            };
-          });
-
-      const body: CreateMonitorBody = {
-        user: {
-          email,
-          password,
-          role: role?.value,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-        },
-
-        address: {
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-        phoneNumbers,
-
-        educationInfoList: educationInfoList.map((educationInfo) => {
-          return {
-            ...educationInfo,
-            schoolingLevel: educationInfo.schoolingLevel
-              ? educationInfo.schoolingLevel.value
-              : null,
-            conclusionYear:
-              educationInfo.conclusionYear === ''
-                ? null
-                : educationInfo.conclusionYear,
-          };
-        }),
-      };
-
-      try {
-        await dispatch(createNewMonitor(body)).unwrap();
 
         onCreate();
         handleClose();
@@ -902,9 +836,7 @@ export default function CreateUser({
                 </Grid>
               </Grid>
 
-              {role?.value === Role.MONITOR ||
-              role?.value === Role.PROFESSOR ||
-              role?.value === Role.ADMIN ? (
+              {role?.value === Role.PROFESSOR || role?.value === Role.ADMIN ? (
                 <></>
               ) : (
                 <Grid item xs={2} container p={1}>
@@ -930,9 +862,7 @@ export default function CreateUser({
                 </Grid>
               )}
 
-              {role?.value === Role.MONITOR ||
-              role?.value === Role.PROFESSOR ||
-              role?.value === Role.ADMIN ? (
+              {role?.value === Role.PROFESSOR || role?.value === Role.ADMIN ? (
                 <></>
               ) : (
                 <Grid item xs={2} container p={1}>

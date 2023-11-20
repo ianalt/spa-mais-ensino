@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchSubject,
-  fetchTeacherOrMonitorSubject,
+  fetchTeacherSubject,
 } from '../api/subjects/subjects.req';
 import { RootState } from '../app/store';
 import {
@@ -52,14 +52,14 @@ export const subjectsSlice = createSlice({
       );
 
     builder
-      .addCase(getTeacherOrMonitorSubject.pending, (state) => {
+      .addCase(getTeacherSubject.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(getTeacherOrMonitorSubject.rejected, (state) => {
+      .addCase(getTeacherSubject.rejected, (state) => {
         state.status = 'failed';
       })
       .addCase(
-        getTeacherOrMonitorSubject.fulfilled,
+        getTeacherSubject.fulfilled,
         (state, action: PayloadAction<Subject>) => {
           state.status = 'idle';
           state.selectedSubject = action.payload;
@@ -77,10 +77,10 @@ export const getSubject = createAsyncThunk(
   }
 );
 
-export const getTeacherOrMonitorSubject = createAsyncThunk(
-  'subjects/getTeacherOrMonitorSubject',
+export const getTeacherSubject = createAsyncThunk(
+  'subjects/getTeacherSubject',
   async () => {
-    const response = await fetchTeacherOrMonitorSubject();
+    const response = await fetchTeacherSubject();
     const subject: Subject = response.data;
 
     return subject;

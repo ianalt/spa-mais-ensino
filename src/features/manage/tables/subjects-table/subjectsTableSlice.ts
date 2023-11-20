@@ -11,7 +11,6 @@ import { AddSubjectBody } from './dialogs/add-subject/types/add-subject-body';
 import { AddSubjectOptions } from './dialogs/add-subject/types/add-subject-options';
 import { EditSubjectOptions } from './dialogs/edit-subject/types/edit-subject-options';
 import { KnowledgeAreaOption } from './types/knowledge-area-option';
-import { MonitorOption } from './types/monitor-option';
 import { Subject } from './types/subject';
 import { TeacherOption } from './types/teacher-option';
 import { EditSubjectBody } from './dialogs/edit-subject/types/edit-subject-body';
@@ -27,7 +26,6 @@ export interface SubjectsTableState {
   isUpdating: boolean;
   knowledgeAreasList: KnowledgeAreaOption[];
   teachersList: TeacherOption[];
-  monitorsList: MonitorOption[];
 }
 
 const initialState: SubjectsTableState = {
@@ -40,7 +38,6 @@ const initialState: SubjectsTableState = {
   isUpdating: false,
   knowledgeAreasList: [],
   teachersList: [],
-  monitorsList: [],
 };
 
 export const subjectsTableSlice = createSlice({
@@ -88,13 +85,11 @@ export const subjectsTableSlice = createSlice({
       .addCase(
         getAddSubjectOptions.fulfilled,
         (state, action: PayloadAction<AddSubjectOptions>) => {
-          const { knowledgeAreasList, teachersList, monitorsList } =
-            action.payload;
+          const { knowledgeAreasList, teachersList } = action.payload;
 
           state.status = 'idle';
           state.knowledgeAreasList = knowledgeAreasList;
           state.teachersList = teachersList;
-          state.monitorsList = monitorsList;
         }
       );
 
@@ -132,13 +127,11 @@ export const subjectsTableSlice = createSlice({
       .addCase(
         getEditSubjectOptions.fulfilled,
         (state, action: PayloadAction<EditSubjectOptions>) => {
-          const { knowledgeAreasList, teachersList, monitorsList } =
-            action.payload;
+          const { knowledgeAreasList, teachersList } = action.payload;
 
           state.status = 'idle';
           state.knowledgeAreasList = knowledgeAreasList;
           state.teachersList = teachersList;
-          state.monitorsList = monitorsList;
         }
       );
 
@@ -207,7 +200,6 @@ export const getAddSubjectOptions = createAsyncThunk(
     const options: AddSubjectOptions = {
       knowledgeAreasList: res.data.knowledgeAreaOptions,
       teachersList: res.data.teacherOptions,
-      monitorsList: res.data.monitorsOptions,
     };
 
     return options;
@@ -249,7 +241,6 @@ export const getEditSubjectOptions = createAsyncThunk(
     const options: EditSubjectOptions = {
       knowledgeAreasList: res.data.knowledgeAreaOptions,
       teachersList: res.data.teacherOptions,
-      monitorsList: res.data.monitorsOptions,
     };
 
     return options;

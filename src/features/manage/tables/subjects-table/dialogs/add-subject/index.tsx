@@ -28,7 +28,6 @@ import {
   selectSubjectsTable,
 } from '../../subjectsTableSlice';
 import { KnowledgeAreaOption } from '../../types/knowledge-area-option';
-import { MonitorOption } from '../../types/monitor-option';
 import { TeacherOption } from '../../types/teacher-option';
 import { AddSubjectBody } from './types/add-subject-body';
 
@@ -54,14 +53,8 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
   const dispatch = useAppDispatch();
   const subjectsTable = useAppSelector(selectSubjectsTable);
 
-  const {
-    status,
-    isCreating,
-    error,
-    knowledgeAreasList,
-    teachersList,
-    monitorsList,
-  } = subjectsTable;
+  const { status, isCreating, error, knowledgeAreasList, teachersList } =
+    subjectsTable;
 
   const [openAddFailedAlert, setOpenAddFailedAlert] = useState<boolean>(false);
 
@@ -72,14 +65,12 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
   const [chosenTeacher, setChosenTeacher] = useState<TeacherOption | null>(
     null
   );
-  const [chosenMonitors, setChosenMonitors] = useState<MonitorOption[]>([]);
 
   const resetFields = () => {
     setName('');
     setDescription('');
     setChosenKnowledgeArea(null);
     setChosenTeacher(null);
-    setChosenMonitors([]);
   };
 
   const handleAddSubject = async () => {
@@ -87,17 +78,11 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
 
     const teacherId = chosenTeacher?.id || 0;
 
-    const monitorsIds =
-      chosenMonitors.length > 0
-        ? chosenMonitors.map((monitor) => monitor.id)
-        : [];
-
     const body: AddSubjectBody = {
       name: name.trim(),
       description: description.trim(),
       knowledgeAreaId,
       teacherId,
-      monitorsIds,
     };
 
     try {
@@ -109,11 +94,6 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
       handleOpenAddFailedAlert();
     }
   };
-
-  const autoCompleteMonitorOptions = createFilterOptions<MonitorOption>({
-    matchFrom: 'start',
-    stringify: (option) => `${option.firstName} ${option.lastName}`,
-  });
 
   const autoCompleteKnowledgeAreaOptions =
     createFilterOptions<KnowledgeAreaOption>({
@@ -284,45 +264,6 @@ export default function AddSubject({ open, onClose, onAdd }: AddSubjectProps) {
                       required
                       fullWidth
                       label="Professor(a)"
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-
-            <Grid item xs={12} container mt={2} mb={5}>
-              <Grid item xs={12}>
-                <Autocomplete
-                  id="add-subject-monitors-options"
-                  noOptionsText="Nenhuma opção encontrada"
-                  multiple
-                  options={monitorsList}
-                  value={chosenMonitors}
-                  defaultValue={chosenMonitors}
-                  filterOptions={autoCompleteMonitorOptions}
-                  disableCloseOnSelect
-                  onChange={(event: any, newValue: MonitorOption[]) => {
-                    setChosenMonitors(newValue);
-                  }}
-                  getOptionLabel={(option) =>
-                    `${option.firstName} ${option.lastName}`
-                  }
-                  renderOption={(props, option, { selected }) => (
-                    <li {...props}>
-                      <Checkbox
-                        icon={icon}
-                        checkedIcon={checkedIcon}
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                      />
-                      {`${option.firstName} ${option.lastName}`}
-                    </li>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Monitores(as)"
-                      placeholder="Selecione os(as) monitores(as) para esta disciplina"
                     />
                   )}
                 />

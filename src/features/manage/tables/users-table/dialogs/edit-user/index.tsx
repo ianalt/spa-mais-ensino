@@ -49,7 +49,6 @@ import { ufOptions } from '../../../../../../utils/options/uf-options';
 import NotificationAlert from '../../../../../notification-alert';
 import {
   editAdmin,
-  editMonitor,
   editStudent,
   editTeacher,
   resetErrors,
@@ -61,7 +60,6 @@ import { EducationInfoOption } from '../create-user/types/education-info-option'
 import { ActiveOption } from '../../../../../../utils/options/types/active-option';
 import { activeOptions } from '../../../../../../utils/options/types/active-options';
 import { UpdateAdminBody } from './types/update-admin-body';
-import { UpdateMonitorBody } from './types/update-monitor-body';
 import { UpdateStudentBody } from './types/update-student-body';
 import { UpdateTeacherBody } from './types/update-teacher-body';
 
@@ -561,71 +559,6 @@ export default function EditUser({ open, onClose, onEdit }: EditUserProps) {
       }
     }
 
-    if (selected?.role === Role.MONITOR) {
-      const phoneNumbers: { id?: number; phoneNumber?: string }[] =
-        !phoneNumber2
-          ? [phoneNumber1].map((phone) => {
-              return {
-                phoneNumber: phone,
-              };
-            })
-          : [phoneNumber1, phoneNumber2].map((phone, i) => {
-              return {
-                phoneNumber: phone,
-              };
-            });
-
-      const body: UpdateMonitorBody = {
-        userId: selected.id,
-
-        user: {
-          email,
-          firstName,
-          lastName,
-          cpf,
-          birthDate: convertBirthDate(birthDate),
-          ethnicity: ethnicity?.value,
-          gender: gender?.value,
-          active: active?.value,
-        },
-
-        address: {
-          id: selected.address.id,
-          cep,
-          street,
-          streetNumber,
-          neighborhood,
-          complement,
-          city,
-          uf: uf?.value,
-        },
-
-        phoneNumbers,
-
-        educationInfoList: educationInfoList.map((educationInfo) => {
-          return {
-            ...educationInfo,
-            conclusionYear:
-              educationInfo.conclusionYear === ''
-                ? null
-                : educationInfo.conclusionYear,
-            schoolingLevel: educationInfo.schoolingLevel
-              ? educationInfo.schoolingLevel.value
-              : null,
-          };
-        }),
-      };
-
-      try {
-        await dispatch(editMonitor(body)).unwrap();
-
-        onEdit();
-        handleClose();
-      } catch (rejectedValueOrSerializedError) {
-        handleOpenUpdateFailedAlert();
-      }
-    }
-
     if (selected?.role === Role.PROFESSOR) {
       const phoneNumbers: { id?: number; phoneNumber?: string }[] =
         !phoneNumber2
@@ -975,8 +908,7 @@ export default function EditUser({ open, onClose, onEdit }: EditUserProps) {
                 </Grid>
               </Grid>
 
-              {selected?.role === Role.MONITOR ||
-              selected?.role === Role.PROFESSOR ||
+              {selected?.role === Role.PROFESSOR ||
               selected?.role === Role.ADMIN ? (
                 <></>
               ) : (
@@ -1003,8 +935,7 @@ export default function EditUser({ open, onClose, onEdit }: EditUserProps) {
                 </Grid>
               )}
 
-              {selected?.role === Role.MONITOR ||
-              selected?.role === Role.PROFESSOR ||
+              {selected?.role === Role.PROFESSOR ||
               selected?.role === Role.ADMIN ? (
                 <></>
               ) : (

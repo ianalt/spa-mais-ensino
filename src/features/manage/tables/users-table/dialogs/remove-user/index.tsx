@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from '../../../../../../app/hooks';
 import { Role } from '../../../../../../utils/enums/role.enum';
 import {
   deleteUser,
-  getIsMonitorOrTeacher,
+  getIsTeacher,
   selectUsersTable,
   setSelected,
 } from '../../usersTableSlice';
@@ -51,7 +51,7 @@ export default function RemoveUser({
   const dispatch = useAppDispatch();
   const usersTable = useAppSelector(selectUsersTable);
   const { selected, isRemoving } = usersTable;
-  const isMonitorOrTeacher = useAppSelector(getIsMonitorOrTeacher);
+  const isTeacher = useAppSelector(getIsTeacher);
 
   const handleClose = () => {
     onClose(true);
@@ -191,7 +191,7 @@ export default function RemoveUser({
                 </Grid>
               </Grid>
 
-              {isMonitorOrTeacher && (
+              {isTeacher && (
                 <Grid item xs={4} container p={1}>
                   <Grid item xs={9}>
                     <Grid item xs={12}>
@@ -274,8 +274,7 @@ export default function RemoveUser({
                 </Grid>
               </Grid>
 
-              {selected?.role === Role.MONITOR ||
-              selected?.role === Role.PROFESSOR ||
+              {selected?.role === Role.PROFESSOR ||
               selected?.role === Role.ADMIN ? (
                 <></>
               ) : (
@@ -293,8 +292,7 @@ export default function RemoveUser({
                 </Grid>
               )}
 
-              {selected?.role === Role.MONITOR ||
-              selected?.role === Role.PROFESSOR ||
+              {selected?.role === Role.PROFESSOR ||
               selected?.role === Role.ADMIN ? (
                 <></>
               ) : (

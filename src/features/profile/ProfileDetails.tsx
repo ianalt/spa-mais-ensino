@@ -9,14 +9,14 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../app/hooks';
-import { getIsMonitorOrTeacher, selectUserProfile } from '../../user/userSlice';
+import { getIsTeacher, selectUserProfile } from '../../user/userSlice';
 import { Role } from '../../utils/enums/role.enum';
 import { format } from 'date-fns';
 
 export default function ProfileDetails() {
   const profile = useAppSelector(selectUserProfile);
 
-  const isMonitorOrTeacher = useAppSelector(getIsMonitorOrTeacher);
+  const isTeacher = useAppSelector(getIsTeacher);
 
   const formatRole = () => {
     return profile?.role.split('').reduce((acc, val, i) => {
@@ -101,7 +101,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          {isMonitorOrTeacher && (
+          {isTeacher && (
             <Grid item xs="auto" container p={2}>
               <Grid item xs={9}>
                 <Grid item xs={12}>
@@ -180,9 +180,7 @@ export default function ProfileDetails() {
             </Grid>
           </Grid>
 
-          {profile?.role === Role.MONITOR ||
-          profile?.role === Role.PROFESSOR ||
-          profile?.role === Role.ADMIN ? (
+          {profile?.role === Role.PROFESSOR || profile?.role === Role.ADMIN ? (
             <></>
           ) : (
             <Grid item xs={2} container p={2}>
@@ -199,9 +197,7 @@ export default function ProfileDetails() {
             </Grid>
           )}
 
-          {profile?.role === Role.MONITOR ||
-          profile?.role === Role.PROFESSOR ||
-          profile?.role === Role.ADMIN ? (
+          {profile?.role === Role.PROFESSOR || profile?.role === Role.ADMIN ? (
             <></>
           ) : (
             <Grid item xs={3} container p={2}>
