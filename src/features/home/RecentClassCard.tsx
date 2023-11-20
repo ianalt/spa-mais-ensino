@@ -7,18 +7,22 @@ import {
   Typography,
 } from '@mui/material';
 import { RecentClassInfo } from '../manage/tables/classes-table/types/recent-class-info';
-import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface RecentClassCardProps {
   recentClass: RecentClassInfo;
 }
 
 export default function RecentClassCard({ recentClass }: RecentClassCardProps) {
-  const { title, category, createdBy } = recentClass;
+  const navigate = useNavigate();
+  const { id, title, category, createdBy } = recentClass;
+
+  const handleNavigate = () => navigate(`/mais-ensino/aula/${id}`);
+
   return (
     <Grid item xs="auto" p={1} mx={1}>
       <Card sx={{ maxWidth: 380, maxHeight: 270 }}>
-        <CardActionArea>
+        <CardActionArea onClick={handleNavigate}>
           <CardMedia
             component="img"
             height="130"

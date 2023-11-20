@@ -1,16 +1,7 @@
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Divider,
-  Grid,
-  LinearProgress,
-  Typography,
-} from '@mui/material';
+import { Divider, Grid, LinearProgress, Typography } from '@mui/material';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getRecentClasses, selectClasses } from '../../slices/classesSlice';
-import { useEffect } from 'react';
 import RecentClassCard from './RecentClassCard';
 
 export default function RecentClassesList() {
@@ -30,9 +21,9 @@ export default function RecentClassesList() {
           <LinearProgress />
         </Grid>
       ) : (
-        <Grid item xs={12} container>
+        <Grid item xs={12} container my={1}>
           <Grid item xs={12}>
-            <Typography variant="h5">Aulas mais recentes</Typography>
+            <Typography variant="h4">Aulas mais recentes:</Typography>
           </Grid>
 
           <Grid item xs={12} py={1}>
