@@ -7,6 +7,7 @@ import {
 } from '../../slices/knowledgeAreasSlice';
 import { getSubject, selectSubjects } from '../../slices/subjectsSlice';
 import { useParams } from 'react-router-dom';
+import CategoryItem from './CategoryItem';
 
 export default function CategoriesList() {
   const dispatch = useAppDispatch();
@@ -39,11 +40,10 @@ export default function CategoriesList() {
             openedSubject.categories.length > 0 ? (
               openedSubject.categories.map((category) => {
                 return (
-                  //   <CategoryItem
-                  //     key={`category-${category.id}`}
-                  //     category={category}
-                  //   />
-                  JSON.stringify(category)
+                  <CategoryItem
+                    key={`category-${category.id}`}
+                    category={category}
+                  />
                 );
               })
             ) : (
