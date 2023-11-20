@@ -7,6 +7,14 @@ export const fetchSubjects = async (): Promise<AxiosResponse> => {
   return res;
 };
 
+export const fetchSubject = async (
+  subjectId: number
+): Promise<AxiosResponse> => {
+  const res = await instance.get(`/subjects/${subjectId}`);
+
+  return res;
+};
+
 export const fetchCreateSubjectOptions = async (): Promise<AxiosResponse> => {
   const res = await instance.get('/subjects/create-options');
 
