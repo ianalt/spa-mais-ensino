@@ -1,8 +1,9 @@
 import { Grid, LinearProgress } from '@mui/material';
 import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getSubject, selectSubjects } from '../../slices/subjectsSlice';
-import { useParams } from 'react-router-dom';
+import SubjectPageIntro from './SubjectPageIntro';
 
 export default function SubjectPage() {
   const dispatch = useAppDispatch();
@@ -12,7 +13,6 @@ export default function SubjectPage() {
   const subjects = useAppSelector(selectSubjects);
 
   const { openedSubject } = subjects;
-  // undraw_teaching_re_g7e3.svg
 
   useEffect(() => {
     dispatch(getSubject(subjectId));
@@ -26,7 +26,9 @@ export default function SubjectPage() {
           <LinearProgress />
         </Grid>
       ) : (
-        <>{JSON.stringify(openedSubject)}</>
+        <>
+          <SubjectPageIntro />
+        </>
       )}
     </Grid>
   );
