@@ -45,14 +45,12 @@ interface CategoryWithSubject {
   subject: BasicSubjectInfo;
 }
 
-interface BasicClassInfo {
+export interface BasicClassInfo {
   id: number;
   createdAt: Date;
   updatedAt: Date;
   active: boolean;
   title: string;
-  createdBy: BasicUserInfo;
-  category?: CategoryWithSubject;
 }
 
 interface FullCategoryInfo {

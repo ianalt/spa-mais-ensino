@@ -1,5 +1,6 @@
 import { Divider, Grid, Typography } from '@mui/material';
 import { FullCategoryInfo } from '../manage/tables/subjects-table/types/subject';
+import ClassCard from './ClassCard';
 
 interface CategoryItemProps {
   category: FullCategoryInfo;
@@ -22,13 +23,12 @@ export default function CategoryItem({ category }: CategoryItemProps) {
       </Grid>
 
       <Grid item xs={12} container justifyContent={'flex-start'}>
-        {classes.length > 0 ? (
-          //   classes.map((oneClass) => {
-          //     return (
-          //       <ClassCard key={`class-${oneClass.id}`} oneClass={oneClass} />
-          //     );
-          //   })
-          JSON.stringify(classes)
+        {category.classes && classes.length > 0 ? (
+          classes.map((oneClass) => {
+            return (
+              <ClassCard key={`class-${oneClass.id}`} oneClass={oneClass} />
+            );
+          })
         ) : (
           <Grid item xs={12}>
             <Typography textAlign="start">

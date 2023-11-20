@@ -32,7 +32,6 @@ export default function SubjectPage() {
 
           {/* categories list */}
           <CategoriesList />
-          {/* <CategoriesList /> */}
         </>
       )}
     </Grid>
