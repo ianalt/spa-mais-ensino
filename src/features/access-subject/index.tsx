@@ -3,8 +3,9 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getSubject, selectSubjects } from '../../slices/subjectsSlice';
-import SubjectPageIntro from './SubjectPageIntro';
 import CategoriesList from './CategoriesList';
+import SearchClass from './SearchClass';
+import SubjectPageIntro from './SubjectPageIntro';
 
 export default function SubjectPage() {
   const dispatch = useAppDispatch();
@@ -29,6 +30,7 @@ export default function SubjectPage() {
         <>
           <SubjectPageIntro />
           {/* search bar */}
+          <SearchClass />
 
           {/* categories list */}
           <CategoriesList />
