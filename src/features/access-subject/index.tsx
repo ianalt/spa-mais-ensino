@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getSubject, selectSubjects } from '../../slices/subjectsSlice';
 import SubjectPageIntro from './SubjectPageIntro';
+import CategoriesList from './CategoriesList';
 
 export default function SubjectPage() {
   const dispatch = useAppDispatch();
@@ -12,11 +13,10 @@ export default function SubjectPage() {
 
   const subjects = useAppSelector(selectSubjects);
 
-  const { openedSubject } = subjects;
-
   useEffect(() => {
     dispatch(getSubject(subjectId));
-    document.title = `+Ensino | ${openedSubject?.name}`;
+
+    document.title = `+Ensino | Porque o ensino é um direito de todos`;
   }, []);
 
   return (
@@ -28,6 +28,11 @@ export default function SubjectPage() {
       ) : (
         <>
           <SubjectPageIntro />
+          {/* search bar */}
+
+          {/* categories list */}
+          <CategoriesList />
+          {/* <CategoriesList /> */}
         </>
       )}
     </Grid>
