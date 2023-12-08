@@ -261,7 +261,6 @@ export const usersTableSlice = createSlice({
         state.isRemoving = false;
       });
 
-    //TODO n me parece certo
     builder
       .addCase(getEthnicityStats.pending, (state) => {
         state.status = 'loading';

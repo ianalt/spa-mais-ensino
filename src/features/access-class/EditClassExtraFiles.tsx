@@ -177,7 +177,7 @@ export default function EditClassExtraFiles({
         maxWidth="lg"
         fullWidth
       >
-        <DialogTitle>{'Editar videoaula'}</DialogTitle>
+        <DialogTitle>{'Editar materiais complementares'}</DialogTitle>
         <DialogContent dividers>
           <DialogContentText id="class-edit-video-dialog-slide-description">
             Escolha um vídeo para a aula. <strong>Confirme</strong> a opção

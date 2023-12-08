@@ -93,7 +93,6 @@ export default function SignUp() {
   const [startYear, setStartYear] = useState<string>('');
   const [conclusionYear, setConclusionYear] = useState<string | null>();
 
-  //TODO complete email and password confirmation (or send to api)
   const [isEmailConfirmed, setIsEmailConfirmed] = useState<boolean>(true);
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState<boolean>(true);
 
@@ -835,7 +834,6 @@ export default function SignUp() {
                       </Grid>
 
                       <Grid item xs={1} mr={2}>
-                        {/* //TODO fix UF bug */}
                         <Autocomplete
                           id="uf-options"
                           value={uf}

@@ -186,7 +186,6 @@ export default function WelcomePage() {
           </Typography>
         </Grid>
 
-        {/* //TODO quando clicar na área de conhecimento, apresentar dialog com categorias etc */}
         <Grid
           item
           container
