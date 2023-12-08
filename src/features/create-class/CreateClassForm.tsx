@@ -23,10 +23,7 @@ import {
   selectClasses,
   selectSubjectOptionsForClass,
 } from '../../slices/classesSlice';
-import {
-  getTeacherOrMonitorSubject,
-  selectSubjects,
-} from '../../slices/subjectsSlice';
+import { getTeacherSubject, selectSubjects } from '../../slices/subjectsSlice';
 import { selectUser } from '../../user/userSlice';
 import { Role } from '../../utils/enums/role.enum';
 import { CreateClassBody } from '../manage/tables/classes-table/types/create-class-body';
@@ -227,7 +224,7 @@ export default function CreateClassForm() {
 
     if (user.role === Role.PROFESSOR) {
       if (selectedSubject === null || selectedSubject === undefined) {
-        dispatch(getTeacherOrMonitorSubject());
+        dispatch(getTeacherSubject());
 
         if (selectedSubject === null || selectedSubject === undefined) {
           navigate('*');

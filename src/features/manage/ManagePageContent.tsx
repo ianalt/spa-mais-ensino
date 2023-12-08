@@ -11,8 +11,8 @@ export default function ManagePageContent() {
           como consultar <strong>estatísticas</strong> sobre acesso dos
           estudantes, total de <strong>tópicos publicados</strong> e comentários
           por aula, além de <strong>designar</strong>{' '}
-          <strong>professores</strong> e <strong>monitores</strong> para suas
-          respectivas <strong>disciplinas</strong>.
+          <strong>professores</strong> para suas respectivas{' '}
+          <strong>disciplinas</strong>.
         </Typography>
       </Grid>
       <Grid item xs={6} p={4}>

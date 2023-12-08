@@ -10,6 +10,4 @@ export interface EditSubjectBody {
   knowledgeAreaId: number;
 
   teacherId: number;
-
-  monitorsIds: number[];
 }

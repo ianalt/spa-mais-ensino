@@ -3,7 +3,6 @@ import EditIcon from '@mui/icons-material/Edit';
 
 import {
   Card,
-  CardActionArea,
   CardActions,
   CardContent,
   CardMedia,
@@ -12,11 +11,11 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { BasicCategoryInfo } from '../manage/tables/subjects-table/types/subject';
-import { selectCategories } from '../../slices/categoriesSlice';
 import { useAppSelector } from '../../app/hooks';
+import { selectCategories } from '../../slices/categoriesSlice';
 import { selectUser } from '../../user/userSlice';
 import { Role } from '../../utils/enums/role.enum';
+import { BasicCategoryInfo } from '../manage/tables/subjects-table/types/subject';
 
 interface CategoryCardProps {
   category: BasicCategoryInfo;
@@ -45,7 +44,7 @@ export default function CategoryCard({
   return (
     <Grid item p={1}>
       <Card sx={{ maxWidth: 300 }}>
-        <CardActionArea onClick={() => alert('expandir categoria')}>
+        <CardContent>
           <CardMedia
             sx={{ objectFit: 'contain' }}
             component="img"
@@ -53,12 +52,11 @@ export default function CategoryCard({
             image="/undraw_book_lover_re_rwjy.svg"
             alt="pessoa com livro"
           />
-          <CardContent>
-            <Typography gutterBottom variant="h5" textAlign="center">
-              {category.name}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
+          <Typography gutterBottom variant="h5" textAlign="center">
+            {category.name}
+          </Typography>
+        </CardContent>
+
         {role === Role.PROFESSOR && (
           <CardActions>
             <Grid container justifyContent="space-between">

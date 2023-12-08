@@ -12,10 +12,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { getCategory, selectCategories } from '../../slices/categoriesSlice';
-import {
-  getTeacherOrMonitorSubject,
-  selectSubjects,
-} from '../../slices/subjectsSlice';
+import { getTeacherSubject, selectSubjects } from '../../slices/subjectsSlice';
 import { selectUser } from '../../user/userSlice';
 import { Role } from '../../utils/enums/role.enum';
 import NotificationAlert from '../notification-alert';
@@ -291,7 +288,7 @@ export default function MySubjectDetails() {
       <MySubjectAddCategory
         open={openAddCategory}
         onAdd={() => {
-          dispatch(getTeacherOrMonitorSubject());
+          dispatch(getTeacherSubject());
           handleOpenAddCategoryAlert();
         }}
         onClose={handleCloseAddCategory}
@@ -301,7 +298,7 @@ export default function MySubjectDetails() {
       <MySubjectRemoveCategory
         open={openRemoveCategory}
         onRemove={() => {
-          dispatch(getTeacherOrMonitorSubject());
+          dispatch(getTeacherSubject());
           handleOpenRemoveCategoryAlert();
         }}
         onClose={handleCloseRemoveCategory}
@@ -310,7 +307,7 @@ export default function MySubjectDetails() {
       <MySubjectEditCategory
         open={openEditCategory}
         onEdit={() => {
-          dispatch(getTeacherOrMonitorSubject());
+          dispatch(getTeacherSubject());
           handleOpenEditCategoryAlert();
         }}
         onClose={handleCloseEditCategory}
@@ -320,7 +317,7 @@ export default function MySubjectDetails() {
       <MySubjectRemoveClass
         open={openRemoveClass}
         onRemove={() => {
-          dispatch(getTeacherOrMonitorSubject());
+          dispatch(getTeacherSubject());
           handleOpenRemoveClassAlert();
         }}
         onClose={handleCloseRemoveClass}

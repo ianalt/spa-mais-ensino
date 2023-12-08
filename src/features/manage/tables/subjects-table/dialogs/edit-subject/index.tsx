@@ -29,7 +29,6 @@ import {
   selectSubjectsTable,
 } from '../../subjectsTableSlice';
 import { KnowledgeAreaOption } from '../../types/knowledge-area-option';
-import { MonitorOption } from '../../types/monitor-option';
 import { TeacherOption } from '../../types/teacher-option';
 import { EditSubjectBody } from './types/edit-subject-body';
 import { ActiveOption } from '../../../../../../utils/options/types/active-option';
@@ -67,7 +66,6 @@ export default function EditSubject({
     error,
     knowledgeAreasList,
     teachersList,
-    monitorsList,
     selected,
   } = subjectsTable;
 
@@ -81,7 +79,6 @@ export default function EditSubject({
   const [chosenTeacher, setChosenTeacher] = useState<TeacherOption | null>(
     null
   );
-  const [chosenMonitors, setChosenMonitors] = useState<MonitorOption[]>([]);
   const [active, setActive] = useState<ActiveOption | null>(null);
 
   const setFields = () => {
@@ -92,7 +89,6 @@ export default function EditSubject({
     setDescription(selected?.description || '');
     setChosenKnowledgeArea(selected?.knowledgeArea || null);
     setChosenTeacher(teacherFound);
-    setChosenMonitors([]);
 
     const initialActive = activeOptions.find(
       (option) => option.value === selected?.active
@@ -111,11 +107,6 @@ export default function EditSubject({
 
     const teacherId = chosenTeacher?.id || 0;
 
-    const monitorsIds =
-      chosenMonitors.length > 0
-        ? chosenMonitors.map((monitor) => monitor.id)
-        : [];
-
     const body: EditSubjectBody = {
       subjectId: selected?.id || 0,
       active: active?.value || false,
@@ -123,7 +114,6 @@ export default function EditSubject({
       description: description.trim(),
       knowledgeAreaId,
       teacherId,
-      monitorsIds,
     };
 
     try {
@@ -135,11 +125,6 @@ export default function EditSubject({
       handleOpenEditFailedAlert();
     }
   };
-
-  const autoCompleteMonitorOptions = createFilterOptions<MonitorOption>({
-    matchFrom: 'start',
-    stringify: (option) => `${option.firstName} ${option.lastName}`,
-  });
 
   const autoCompleteKnowledgeAreaOptions =
     createFilterOptions<KnowledgeAreaOption>({
@@ -335,44 +320,6 @@ export default function EditSubject({
                       required
                       fullWidth
                       label="Professor(a)"
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-
-            <Grid item xs={12} container mt={2} mb={5}>
-              <Grid item xs={12}>
-                <Autocomplete
-                  id="edit-subject-monitors-options"
-                  noOptionsText="Nenhuma opção encontrada"
-                  multiple
-                  options={monitorsList}
-                  value={chosenMonitors}
-                  filterOptions={autoCompleteMonitorOptions}
-                  disableCloseOnSelect
-                  onChange={(event: any, newValue: MonitorOption[]) => {
-                    setChosenMonitors(newValue);
-                  }}
-                  getOptionLabel={(option) =>
-                    `${option.firstName} ${option.lastName}`
-                  }
-                  renderOption={(props, option, { selected }) => (
-                    <li {...props}>
-                      <Checkbox
-                        icon={icon}
-                        checkedIcon={checkedIcon}
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                      />
-                      {`${option.firstName} ${option.lastName}`}
-                    </li>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Monitores(as)"
-                      placeholder="Selecione os(as) monitores(as) para esta disciplina"
                     />
                   )}
                 />

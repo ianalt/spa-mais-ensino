@@ -6,6 +6,4 @@ export interface AddSubjectBody {
   knowledgeAreaId: number;
 
   teacherId: number;
-
-  monitorsIds: number[];
 }

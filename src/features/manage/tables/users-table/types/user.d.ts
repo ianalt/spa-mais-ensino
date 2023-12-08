@@ -27,7 +27,4 @@ export interface User {
   phoneNumbers: PhoneNumber[];
   educationInfoList: EducationInfo[];
   subject: BasicSubjectInfo | null;
-  //TODO questions and answers
-  createdQuestions: any[];
-  createdAnswers: any[];
 }

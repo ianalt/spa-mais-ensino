@@ -704,8 +704,7 @@ export default function EditProfile({
                 </Grid>
               </Grid>
 
-              {profile?.role === Role.MONITOR ||
-              profile?.role === Role.PROFESSOR ||
+              {profile?.role === Role.PROFESSOR ||
               profile?.role === Role.ADMIN ? (
                 <></>
               ) : (
@@ -732,8 +731,7 @@ export default function EditProfile({
                 </Grid>
               )}
 
-              {profile?.role === Role.MONITOR ||
-              profile?.role === Role.PROFESSOR ||
+              {profile?.role === Role.PROFESSOR ||
               profile?.role === Role.ADMIN ? (
                 <></>
               ) : (

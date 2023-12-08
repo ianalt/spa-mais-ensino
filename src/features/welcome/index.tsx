@@ -94,12 +94,9 @@ export default function WelcomePage() {
                 </Grid>
                 <Grid item xs={12} px={2} mt={1} mb={2}>
                   <Typography variant="body1" textAlign="justify">
-                    Uma vez cadastrado, você poderá encontrar os mais diversos{' '}
-                    <strong>tópicos</strong> das áreas de conhecimento,{' '}
-                    <strong>baixar</strong> materiais de estudo,{' '}
-                    <strong>assistir</strong> às videoaulas gravadas por nossos
-                    professores e <strong>tirar suas dúvidas</strong> com eles e
-                    os monitores disponíveis.
+                    Uma vez cadastrado, você poderá encontrar as mais diversas{' '}
+                    <strong>aulas</strong> das áreas de conhecimento e{' '}
+                    <strong>baixar</strong> materiais de estudo.
                   </Typography>
                 </Grid>
               </Grid>
@@ -189,7 +186,6 @@ export default function WelcomePage() {
           </Typography>
         </Grid>
 
-        {/* //TODO quando clicar na área de conhecimento, apresentar dialog com categorias etc */}
         <Grid
           item
           container
@@ -210,74 +206,6 @@ export default function WelcomePage() {
               </Grid>
             );
           })}
-        </Grid>
-
-        <Grid
-          item
-          container
-          xs={12}
-          my={5}
-          justifyContent="space-between"
-          alignContent="center"
-        >
-          <Grid
-            item
-            container
-            xs={12}
-            md={6.5}
-            mb={{ xs: 3, md: 0 }}
-            order={{ xs: 2, md: 1 }}
-          >
-            <Paper
-              elevation={2}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Grid item container xs={12}>
-                <Grid item container xs={12}>
-                  <Grid item xs={12} px={2} my={1}>
-                    <Typography
-                      variant="h4"
-                      textAlign={{ xs: 'center', md: 'justify' }}
-                    >
-                      <strong>Dúvidas sobre algum conteúdo?</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} px={2} mb={1}>
-                    <Typography
-                      variant="h5"
-                      textAlign={{ xs: 'center', md: 'justify' }}
-                    >
-                      Nós te ajudamos, basta publicá-la!
-                    </Typography>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={12} px={2} mt={1} mb={2}>
-                  <Typography variant="body1" textAlign="justify">
-                    Com a <strong>sessão de comentários</strong> em cada aula
-                    das disciplinas, <strong>professores</strong> e{' '}
-                    <strong>monitores</strong> do <strong>+Ensino</strong> se
-                    responsabilizam não apenas a criarem o conteúdo que você irá
-                    consumir, como também a{' '}
-                    <strong>sanarem suas dúvidas</strong>.
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={5} order={{ xs: 1, md: 2 }}>
-            <img
-              src="/undraw_instant_support_re_s7un.svg"
-              alt="Imagem"
-              height="350"
-              width="100%"
-            />
-          </Grid>
         </Grid>
 
         <Grid item xs={12}>

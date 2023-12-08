@@ -43,14 +43,6 @@ const navigation = [
     title: 'Início',
   },
   {
-    link: '/mais-ensino/disciplinas',
-    title: 'Disciplinas',
-  },
-  {
-    link: '/mais-ensino/comentarios',
-    title: 'Comentários',
-  },
-  {
     link: '/mais-ensino/minha-disciplina',
     title: 'Minha Disciplina',
   },
@@ -60,13 +52,7 @@ const navigation = [
   },
 ];
 
-const pages = [
-  'Início',
-  'Disciplinas',
-  'Comentários',
-  'Minha Disciplina',
-  'Gerenciamento',
-];
+const pages = ['Início', 'Minha Disciplina', 'Gerenciamento'];
 
 const settings = ['Editar perfil', 'Sair'];
 
@@ -81,14 +67,10 @@ export const DefaultAppBar = () => {
   const filterUserPages = () => {
     if (user.role === Role.ESTUDANTE)
       return pages.filter((page) => {
-        return (
-          page !== 'Comentários' &&
-          page !== 'Minha Disciplina' &&
-          page !== 'Gerenciamento'
-        );
+        return page !== 'Minha Disciplina' && page !== 'Gerenciamento';
       });
 
-    if (user.role === Role.MONITOR || user.role === Role.PROFESSOR)
+    if (user.role === Role.PROFESSOR)
       return pages.filter((page) => {
         return page !== 'Gerenciamento';
       });
@@ -102,13 +84,11 @@ export const DefaultAppBar = () => {
     if (user.role === Role.ESTUDANTE)
       return navigation.filter((nav) => {
         return (
-          nav.title !== 'Comentários' &&
-          nav.title !== 'Minha Disciplina' &&
-          nav.title !== 'Gerenciamento'
+          nav.title !== 'Minha Disciplina' && nav.title !== 'Gerenciamento'
         );
       });
 
-    if (user.role === Role.MONITOR || user.role === Role.PROFESSOR)
+    if (user.role === Role.PROFESSOR)
       return navigation.filter((nav) => {
         return nav.title !== 'Gerenciamento';
       });

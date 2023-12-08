@@ -1,24 +1,22 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   addNewAdmin,
-  addNewMonitor,
   addNewStudent,
   addNewTeacher,
 } from '../../../../api/users/create-users.req';
 import { fetchUsers } from '../../../../api/users/login';
 import { RootState } from '../../../../app/store';
 import { CreateAdminBody } from './dialogs/create-user/types/create-admin-body';
-import { CreateMonitorBody } from './dialogs/create-user/types/create-monitor-body';
+
 import { CreateStudentBody } from './dialogs/create-user/types/create-student-body';
 import { CreateTeacherBody } from './dialogs/create-user/types/create-teacher-body';
 import { User } from './types/user';
 import { removeUser } from '../../../../api/users/remove-user.req';
 import { UpdateTeacherBody } from './dialogs/edit-user/types/update-teacher-body';
-import { UpdateMonitorBody } from './dialogs/edit-user/types/update-monitor-body';
+
 import { UpdateStudentBody } from './dialogs/edit-user/types/update-student-body';
 import {
   updateAdmin,
-  updateMonitor,
   updateStudent,
   updateTeacher,
 } from '../../../../api/users/update-users.req';
@@ -131,30 +129,6 @@ export const usersTableSlice = createSlice({
       );
 
     builder
-      .addCase(createNewMonitor.pending, (state) => {
-        state.status = 'loading';
-        state.isCreating = true;
-      })
-      .addCase(createNewMonitor.rejected, (state, action) => {
-        state.error = action.payload;
-        state.status = 'failed';
-        state.isCreating = false;
-      })
-      .addCase(
-        createNewMonitor.fulfilled,
-        (state, action: PayloadAction<User>) => {
-          const { list } = state;
-
-          const newMonitor = action.payload;
-
-          state.list = [newMonitor, ...list];
-
-          state.status = 'idle';
-          state.isCreating = false;
-        }
-      );
-
-    builder
       .addCase(createNewTeacher.pending, (state) => {
         state.status = 'loading';
         state.isCreating = true;
@@ -196,29 +170,6 @@ export const usersTableSlice = createSlice({
         );
 
         state.list = [editedStudent, ...currentList];
-
-        state.status = 'idle';
-        state.isUpdating = false;
-      });
-
-    builder
-      .addCase(editMonitor.pending, (state) => {
-        state.status = 'loading';
-        state.isUpdating = true;
-      })
-      .addCase(editMonitor.rejected, (state, action) => {
-        state.error = action.payload;
-        state.status = 'failed';
-        state.isUpdating = false;
-      })
-      .addCase(editMonitor.fulfilled, (state, action: PayloadAction<User>) => {
-        const editedMonitor = action.payload;
-
-        const currentList = state.list.filter(
-          (user) => user.id !== editedMonitor.id
-        );
-
-        state.list = [editedMonitor, ...currentList];
 
         state.status = 'idle';
         state.isUpdating = false;
@@ -310,7 +261,6 @@ export const usersTableSlice = createSlice({
         state.isRemoving = false;
       });
 
-    //TODO n me parece certo
     builder
       .addCase(getEthnicityStats.pending, (state) => {
         state.status = 'loading';
@@ -408,33 +358,6 @@ export const createNewStudent = createAsyncThunk(
   async (body: CreateStudentBody, thunkAPI) => {
     try {
       const response = await addNewStudent(body);
-
-      return response.data;
-    } catch (e: any) {
-      if (e.isAxiosError) {
-        if (typeof e.response.data.message === 'string') {
-          const error = [e.response.data.message];
-
-          return thunkAPI.rejectWithValue(error);
-        }
-
-        const errors = [...e.response.data.message].map((error: string) => {
-          const afterDot = error.lastIndexOf('.') + 1;
-
-          return error.substring(afterDot);
-        });
-
-        return thunkAPI.rejectWithValue(errors);
-      }
-    }
-  }
-);
-
-export const createNewMonitor = createAsyncThunk(
-  'usersTable/createNewMonitor',
-  async (body: CreateMonitorBody, thunkAPI) => {
-    try {
-      const response = await addNewMonitor(body);
 
       return response.data;
     } catch (e: any) {
@@ -565,33 +488,6 @@ export const editStudent = createAsyncThunk(
   }
 );
 
-export const editMonitor = createAsyncThunk(
-  'usersTable/editMonitor',
-  async (body: UpdateMonitorBody, thunkAPI) => {
-    try {
-      const response = await updateMonitor(body);
-
-      return response.data;
-    } catch (e: any) {
-      if (e.isAxiosError) {
-        if (typeof e.response.data.message === 'string') {
-          const error = [e.response.data.message];
-
-          return thunkAPI.rejectWithValue(error);
-        }
-
-        const errors = [...e.response.data.message].map((error: string) => {
-          const afterDot = error.lastIndexOf('.') + 1;
-
-          return error.substring(afterDot);
-        });
-
-        return thunkAPI.rejectWithValue(errors);
-      }
-    }
-  }
-);
-
 export const editTeacher = createAsyncThunk(
   'usersTable/editTeacher',
   async (body: UpdateTeacherBody, thunkAPI) => {
@@ -697,10 +593,10 @@ export const getIsLoading = (state: RootState) => {
   return status === 'loading' || isCreating || isRemoving || isUpdating;
 };
 
-export const getIsMonitorOrTeacher = (state: RootState) => {
+export const getIsTeacher = (state: RootState) => {
   const { selected } = state.usersTable;
 
-  return selected?.role === Role.MONITOR || selected?.role === Role.PROFESSOR;
+  return selected?.role === Role.PROFESSOR;
 };
 
 export const getStudentsEthnicityStats = (state: RootState) => {

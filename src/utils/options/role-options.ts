@@ -7,10 +7,6 @@ export const roleOptions: RoleOption[] = [
     value: Role.ESTUDANTE,
   },
   {
-    label: 'Monitor(a)',
-    value: Role.MONITOR,
-  },
-  {
     label: 'Professor(a)',
     value: Role.PROFESSOR,
   },
